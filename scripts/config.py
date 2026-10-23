@@ -2,20 +2,20 @@
 from pathlib import Path
 
 # ======================= paths =======================
-ROOT = Path(__file__).resolve().parents[1]          # repository root (parent of scripts/)
-RAW_DIR = ROOT / "data" / "raw"                     # gitignored: scraped HTML, downloaded files
-PROCESSED_DIR = ROOT / "data" / "processed"         # cleaned and merged tables
+ROOT = Path(__file__).resolve().parents[1]           # repository root (parent of scripts/)
+RAW_DIR = ROOT / "data" / "raw"                      # gitignored: scraped HTML, downloaded files
+PROCESSED_DIR = ROOT / "data" / "processed"          # cleaned and merged tables
 
-HTML_CACHE_DIR = RAW_DIR / "feiertagskalender"      # raw HTML of feiertagskalender.ch
-RAW_POP_FILE = RAW_DIR / "population_raw.csv"       # manual download from stats.swiss (BFS STATPOP)
-POP_FILE = PROCESSED_DIR / "population_canton.csv"  # cleaned: canton;population;year
+HTML_CACHE_DIR = RAW_DIR / "holidays" / "html_cache" # raw HTML of feiertagskalender.ch
+RAW_POP_FILE = RAW_DIR / "population_raw.csv"        # manual download from stats.swiss (BFS)
+POP_FILE = PROCESSED_DIR / "population_canton.csv"   # cleaned: canton;population;year
 
 # ======================= settings =======================
 YEARS = range(2019, 2026)   # 2019 to 2025 inclusive
-CLASS = 4                   # feiertagskalender class parameter is cumulative: 1 to 4 inclusive
+CLASS = 4                   # holidays class parameter is cumulative: 1 to 4 inclusive
 LANG = "en"                 # page language: en, de, fr, it
 
-NATIONAL_GEO = 3056         # Switzerland ID used by feiertagskalender.ch
+NATIONAL_GEO = 3056         # Switzerland ID used by holidays.ch
 CANTONS = {    # canton geo IDs
     "AG": 1,    "AR": 245,  "AI": 266,  "BL": 273,  "BS": 365,  "BE": 369,
     "FR": 796,  "GE": 1026, "GL": 1072, "GR": 1102, "JU": 1323, "LU": 1410,
@@ -49,5 +49,5 @@ CLASS_WEIGHT = {"1": 1.0, "2": 1.0, "3": 0.5, "4": 1.0}  # class 3 = half day of
 
 
 def cache_path(geo, year):
-    """Where the raw HTML of one feiertagskalender page is stored."""
+    """Where the raw HTML of one holidays page is stored."""
     return HTML_CACHE_DIR / f"{geo}_{year}_{CLASS}_{LANG}.html"

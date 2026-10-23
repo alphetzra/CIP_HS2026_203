@@ -1,0 +1,10 @@
+- set up env
+- reorganize holidays.py with functions
+- setup download html
+  - year, date, canton, holiday, class
+- read data from html
+- join population.csv
+  - year, canton, population
+- final df:
+  - date, region, cantons, holiday share/population weight, holiday, class
+- documentation
