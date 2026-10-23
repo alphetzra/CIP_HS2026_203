@@ -180,11 +180,29 @@ cython_debug/
 .cursorignore
 .cursorindexingignore
 
-# Downloaded RAW data (re-download with the script)
+# Downloaded RAW data
 data/raw/
+
+# Generated data
+data/interim/
+data/processed/
+
+# Keep the empty data folder structure in repo
+!data/raw/.gitkeep
+!data/interim/.gitkeep
+!data/processed/.gitkeep
 
 # PyCharm settings
 .idea/
 
-# Windows clutter
+# Windows
 Thumbs.db
+desktop.ini
+
+# macOS
+.DS_Store
+
+# marimo
+__marimo__/
+
+
