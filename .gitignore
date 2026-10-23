@@ -179,3 +179,12 @@ cython_debug/
 #  refer to https://docs.cursor.com/context/ignore-files
 .cursorignore
 .cursorindexingignore
+
+# Downloaded RAW data (re-download with the script)
+data/raw/
+
+# PyCharm settings
+.idea/
+
+# Windows clutter
+Thumbs.db
