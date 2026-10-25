@@ -7,15 +7,15 @@ RAW_DIR = ROOT / "data" / "raw"                      # gitignored: scraped HTML,
 PROCESSED_DIR = ROOT / "data" / "processed"          # cleaned and merged tables
 
 HTML_CACHE_DIR = RAW_DIR / "holidays" / "html_cache" # raw HTML of feiertagskalender.ch
-RAW_POP_FILE = RAW_DIR / "population_raw.csv"        # manual download from stats.swiss (BFS)
-POP_FILE = PROCESSED_DIR / "population_canton.csv"   # cleaned: canton;population;year
+POP_FILE = ROOT / "scripts" / "acquisition" / "population.csv"  # manual download from BFS
+
 
 # ======================= settings =======================
 YEARS = range(2019, 2026)   # 2019 to 2025 inclusive
 CLASS = 4                   # holidays class parameter is cumulative: 1 to 4 inclusive
 LANG = "en"                 # page language: en, de, fr, it
 
-NATIONAL_GEO = 3056         # Switzerland ID used by holidays.ch
+NATIONAL_GEO = 3056         # Switzerland ID used by feiertagskalender.ch
 CANTONS = {    # canton geo IDs
     "AG": 1,    "AR": 245,  "AI": 266,  "BL": 273,  "BS": 365,  "BE": 369,
     "FR": 796,  "GE": 1026, "GL": 1072, "GR": 1102, "JU": 1323, "LU": 1410,
@@ -43,9 +43,6 @@ CANTON_TO_REGION = {}   # map canton to region (inverse of previous dictionary R
 for region, cantons_in_region in REGIONS.items():
     for canton in cantons_in_region:
         CANTON_TO_REGION[canton] = region
-
-# How much of a canton has the day off, by the value in the "Class" column of a canton page
-CLASS_WEIGHT = {"1": 1.0, "2": 1.0, "3": 0.5, "4": 1.0}  # class 3 = half day off
 
 
 def cache_path(geo, year):
