@@ -1,0 +1,1 @@
+from .scrape_holidays import run as scrape_holidays

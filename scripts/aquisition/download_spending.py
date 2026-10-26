@@ -20,7 +20,7 @@ def _(mo):
 
     Spending data is essential for the project, in fact they are used to answer all the Research Questions part of it
     - Q1: _How do major events (# of participants) in Canton Zürich affect daily POS **spending** across different merchant categories compared with similar non-event days?_
-    - Q2:	_How much of the daily variation in **spending** by category is explained by calendar effects (weekday, month, public holidays)? Specifically, how does a regional public holiday change **spending** by category in regions where it applies, compared with regions where the same date is a normal working day?_
+    - Q2:	_How much of the daily variation in **spending** by category is explained by calendar effects (weekday, month, public raw_holidays)? Specifically, how does a regional public holiday change **spending** by category in regions where it applies, compared with regions where the same date is a normal working day?_
     - Q3:	_Is **spending** in border regions more strongly affected by a decrease in EUR/CHF exchange rate than **spending** in non-border regions, and does this effect differ between border regions?_
 
 
@@ -60,7 +60,6 @@ def _(Path):
     url = ("https://drive.switch.ch/index.php/s/yLISs3KVE7ASE68/download?path=/2_ACQUIRING%20DATA&files=ACQ_POS_Grossregion_NOGA.csv")
 
     output_folder = Path("../../data/raw/raw_spending.parquet")
-
     return output_folder, url
 
 

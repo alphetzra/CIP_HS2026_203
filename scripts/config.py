@@ -6,30 +6,41 @@ ROOT = Path(__file__).resolve().parents[1]           # repository root (parent o
 RAW_DIR = ROOT / "data" / "raw"                      # gitignored: scraped HTML, downloaded files
 PROCESSED_DIR = ROOT / "data" / "processed"          # cleaned and merged tables
 
-HTML_CACHE_DIR = RAW_DIR / "holidays" / "html_cache" # raw HTML of feiertagskalender.ch
-POP_FILE = ROOT / "scripts" / "acquisition" / "population.csv"  # manual download from BFS
-
+HTML_CACHE_DIR = RAW_DIR / "raw_holidays" / "html_cache"      # raw HTML of feiertagskalender.ch
+CLEANED_HOLIDAYS = PROCESSED_DIR / "cleaned_holidays.csv"     # cleaned holidays
+POP_FILE = RAW_DIR / "raw_population.csv"                     # manual download from BFS
+CLEANED_POPULATION = PROCESSED_DIR / "cleaned_population.csv" # cleaned population
 
 # ======================= settings =======================
+ROW_SELECTOR = "table.table tbody tr"
 YEARS = range(2019, 2026)   # 2019 to 2025 inclusive
-CLASS = 4                   # holidays class parameter is cumulative: 1 to 4 inclusive
+CLASS = 4                   # raw_holidays class parameter is cumulative: 1 to 4 inclusive
 LANG = "en"                 # page language: en, de, fr, it
 
+CLASS_LABELS = {   # Holiday categories of feiertagskalender.ch.
+    1: "official holiday",
+    2: "public holiday on a par with Sundays",
+    3: "half-holiday",
+    4: "legally not recognized holiday",
+    5: "event day",
+    "partial": "partially valid (only in some municipalities)",
+}
+
 NATIONAL_GEO = 3056         # Switzerland ID used by feiertagskalender.ch
-CANTONS = {    # canton geo IDs
+CANTONS = {         # canton geo IDs
     "AG": 1,    "AR": 245,  "AI": 266,  "BL": 273,  "BS": 365,  "BE": 369,
     "FR": 796,  "GE": 1026, "GL": 1072, "GR": 1102, "JU": 1323, "LU": 1410,
     "NE": 1523, "NW": 1592, "OW": 1604, "SH": 1612, "SZ": 1653, "SO": 1690,
     "SG": 1827, "TI": 1932, "TG": 2173, "UR": 2262, "VD": 2283, "VS": 2685,
     "ZG": 2860, "ZH": 2872,
 }
-CANTON_NO = {  # canton numbers used in BFS (column KANT in the stats.swiss export)
+CANTON_NO = {       # canton numbers used in BFS (column KANT in the stats.swiss export)
     1: "ZH",  2: "BE",  3: "LU",  4: "UR",  5: "SZ",  6: "OW",  7: "NW",
     8: "GL",  9: "ZG", 10: "FR", 11: "SO", 12: "BS", 13: "BL", 14: "SH",
     15: "AR", 16: "AI", 17: "SG", 18: "GR", 19: "AG", 20: "TG", 21: "TI",
     22: "VD", 23: "VS", 24: "NE", 25: "GE", 26: "JU",
 }
-REGIONS = {    # map regions to cantons according to Monitoring Consumption Switzerland
+REGIONS = {         # map regions to cantons according to Monitoring Consumption Switzerland
     "Central":           ["LU", "OW", "NW", "SZ", "UR", "ZG"],
     "Eastern":           ["AI", "AR", "GL", "GR", "SG", "SH", "TG"],
     "Espace Mittelland": ["BE", "FR", "JU", "NE", "SO"],
@@ -46,5 +57,5 @@ for region, cantons_in_region in REGIONS.items():
 
 
 def cache_path(geo, year):
-    """Where the raw HTML of one holidays page is stored."""
+    """Where the raw HTML of one raw_holidays page is stored."""
     return HTML_CACHE_DIR / f"{geo}_{year}_{CLASS}_{LANG}.html"

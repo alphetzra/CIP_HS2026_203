@@ -4,18 +4,7 @@ import pandas as pd
 from bs4 import BeautifulSoup
 from scripts import config
 
-ROW_SELECTOR = "table.table tbody tr"
 PERCENT_RE = re.compile(r"(<)?\s*([\d.]+)\s*%")
-
-CLASS_LABELS = {   # Holiday categories of feiertagskalender.ch.
-    1: "official holiday",
-    2: "public holiday on a par with Sundays",
-    3: "half-holiday",
-    4: "legally not recognized holiday",
-    5: "event day",
-    "partial": "partially valid (only in some municipalities)",
-}
-
 
 def cached_files():
     """Generate (path, label) tuples for cached pages."""
@@ -23,7 +12,7 @@ def cached_files():
     labels.update({geo: canton for canton, geo in config.CANTONS.items()})
     for year in config.YEARS:
         for geo, label in labels.items():
-            path = Path(config.cache_path(geo, year))
+            path = config.cache_path(geo, year)
             if path.exists():
                 yield path, label
             else:
@@ -44,9 +33,9 @@ def parse_file(path: Path, canton: str) -> list[dict]:
     """"""
     soup = BeautifulSoup(path.read_text(encoding="utf-8"), "html.parser")
     rows = []
-    for tr in soup.select(ROW_SELECTOR):
+    for tr in soup.select(config.ROW_SELECTOR):
         cells = tr.find_all("td")
-        if len(cells) < 5:  # month-header rows have a single colspan cell
+        if len(cells) < 5:
             continue
 
         date = pd.to_datetime(cells[0].get_text(strip=True), format="%d.%m.%Y")
@@ -62,7 +51,7 @@ def parse_file(path: Path, canton: str) -> list[dict]:
             holiday_class = "partial"
             class_text = cells[4].get_text(" ", strip=True)
             canton_share, is_below = parse_percent(class_text)
-            if canton_share is None:  # 'varies' / 'n.a.': share unknown, decided later
+            if canton_share is None:
                 canton_share = float("nan")
                 share_note = class_text
 
@@ -73,41 +62,39 @@ def parse_file(path: Path, canton: str) -> list[dict]:
 
 
 def parse_holidays() -> pd.DataFrame:
-    """One row per (date, holiday, canton)."""
+    """One row per date, holiday, canton/national."""
     rows = []
     for path, canton in cached_files():
         for row in parse_file(path, canton):
             rows.append(row)
     df = pd.DataFrame(rows, columns=["date", "holiday", "class", "canton",
                                      "canton_share", "is_below", "share_note"])
+    df["level"] = df["canton"].eq("CH").map({True: "national", False: "canton"})
     return df.sort_values(["date", "holiday", "canton"]).reset_index(drop=True)
 
+def missing_national_dates(df: pd.DataFrame) -> pd.DataFrame:
+    """National holidays not in canton's list."""
+    national = df.loc[(df["level"] == "national") & (df["class"] != "partial"),
+               ["date", "holiday"]].drop_duplicates("date")
+    cantonal = df.loc[df["level"] == "canton", ["date", "canton"]].drop_duplicates()
 
-def main() -> None:
+    expected = national.merge(pd.DataFrame({"canton": list(config.CANTONS)}), how="cross")
+    merged = expected.merge(cantonal, on=["date", "canton"], how="left", indicator=True)
+    return merged.loc[merged["_merge"] == "left_only"].drop(columns="_merge")
+
+
+def run() -> pd.DataFrame:
     df = parse_holidays()
     print(f"\n{len(df)} rows")
 
-    output = Path("cleaned_holidays.csv")
+    output = config.CLEANED_HOLIDAYS
     output.parent.mkdir(parents=True, exist_ok=True)
     df.to_csv(output, index=False)
     print(f"Saved to {output}")
 
+    missing = missing_national_dates(df)
+    print(f"\n{len(missing)} national dates missing in canton level.")
+    return df
+
 if __name__ == "__main__":
-    main()
-
-
-#def compare_national_to_cantons(holidays):
-#    """Report where canton lists differ from the national list."""
-#    report = {}
-#    for year in config.YEARS:
-#        national = holidays.get(("CH", year), {})
-#        for canton in config.CANTONS:
-#            canton_days = holidays.get((canton, year), {})
-#            missing = sorted(set(national) - set(canton_days))
-#            extra = sorted(set(canton_days) - set(national))
-#            if missing or extra:
-#                report[(canton, year)] = {
-#                    "missing": [(d, national[d]) for d in missing],
-#                    "extra": [(d, canton_days[d]) for d in extra],
-#                }
-#    return report
+    run()

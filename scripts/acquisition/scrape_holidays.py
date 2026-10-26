@@ -10,7 +10,7 @@ from scripts import config
 def get_config() -> tuple[str, str] | None:
     """Read the debugging port and browser path from the environment."""
     debug_port = os.getenv("BROWSER_DEBUGGING_PORT")
-    browser_dir = os.getenv("BROWSER_URL")
+    browser_dir = os.getenv("BROWSER_PATH")
     if debug_port is None or browser_dir is None:
         print("Enter debugging port and browser_dir in env")
         return None
@@ -51,13 +51,10 @@ def open_url(page: Page, url: str) -> None:
     time.sleep(5)
 
 
-ROW_SELECTOR = "table.table tbody tr"
-
-
 def has_table(page: Page, timeout_ms: int = 3000) -> bool:
     """Wait up to timeout_ms for the holiday table to appear."""
     try:
-        page.wait_for_selector(ROW_SELECTOR, timeout=timeout_ms)
+        page.wait_for_selector(config.ROW_SELECTOR, timeout=timeout_ms)
         return True
     except Timeout:
         return False
@@ -91,7 +88,7 @@ def scrape(page: Page) -> bool:
             has_table(page)
 
         html = page.content()
-        if page.locator(ROW_SELECTOR).count() > 0:
+        if page.locator(config.ROW_SELECTOR).count() > 0:
             with open(config.cache_path(geo, year), "w", encoding="utf-8") as f:
                 f.write(html)
         else:
@@ -104,8 +101,8 @@ def scrape(page: Page) -> bool:
     return True
 
 
-def main() -> None:
-    load_dotenv()
+def run() -> None:
+    """Download all holiday pages into data/raw/raw_holidays."""
     cfg = get_config()
     if cfg is None:
         return
@@ -120,26 +117,24 @@ def main() -> None:
         def browse():
             local_browser = connect_browser(p, debug_port)
             if local_browser is None:
-                print("Error: no browser")
-                exit(1)
-            page = get_page(local_browser)
-            return scrape(page)
+                raise RuntimeError("Could not connect to the browser.")
+            return scrape(get_page(local_browser))
 
-
-        error_counter = 0
+        errors = 0
         try:
             success =  browse()
-            while not success and error_counter < 5:
+            while not success and errors < 5:
                 launch_browser(browser_dir, debug_port, "Error occurred. Please close the"
                                                         " browser and press enter so the script "
-                                                        "can restart...")
+                                                        "can restart.")
                 time.sleep(2)
                 success = browse()
-                error_counter+=1
-            print("Total blocked/errors: ", error_counter)
+                errors +=1
+            print("Total blocked/errors: ", errors)
         finally:
             browser.close()
 
 
 if __name__ == "__main__":
-    main()
+    load_dotenv()
+    run()
