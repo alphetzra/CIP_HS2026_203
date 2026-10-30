@@ -30,7 +30,7 @@ def parse_percent(text: str) -> tuple[float | None, bool]:
 
 
 def parse_file(path: Path, canton: str) -> list[dict]:
-    """"""
+    """Parse one cached page into a list of holiday rows."""
     soup = BeautifulSoup(path.read_text(encoding="utf-8"), "html.parser")
     rows = []
     for tr in soup.select(config.ROW_SELECTOR):
@@ -44,20 +44,22 @@ def parse_file(path: Path, canton: str) -> list[dict]:
         badge = cells[4].select_one("span.badge")
         share_note = None
         is_below = False
-        if badge is not None:
+        if badge is not None:  # full holiday with a class
             holiday_class = int(badge.get_text(strip=True))
+            is_partial = False
             canton_share = 1.0
         else:
-            holiday_class = "partial"
+            holiday_class = None
+            is_partial = True
             class_text = cells[4].get_text(" ", strip=True)
             canton_share, is_below = parse_percent(class_text)
             if canton_share is None:
                 canton_share = float("nan")
                 share_note = class_text
-
-        rows.append({"date": date, "holiday": holiday, "class": holiday_class,
-                     "canton": canton, "canton_share": canton_share,
-                     "is_below": is_below, "share_note": share_note})
+        rows.append({"date": date, "holiday": holiday, "holiday_class": holiday_class,
+                     "is_partial": is_partial, "canton": canton,
+                     "canton_share": canton_share, "is_below": is_below,
+                     "share_note": share_note})
     return rows
 
 
@@ -67,14 +69,17 @@ def parse_holidays() -> pd.DataFrame:
     for path, canton in cached_files():
         for row in parse_file(path, canton):
             rows.append(row)
-    df = pd.DataFrame(rows, columns=["date", "holiday", "class", "canton",
-                                     "canton_share", "is_below", "share_note"])
+    df = pd.DataFrame(rows, columns=["date", "holiday", "holiday_class", "is_partial",
+                                     "canton", "canton_share", "is_below",
+                                     "share_note"])
+    df["holiday_class"] = df["holiday_class"].astype("Int64")
     df["level"] = df["canton"].eq("CH").map({True: "national", False: "canton"})
     return df.sort_values(["date", "holiday", "canton"]).reset_index(drop=True)
 
+
 def missing_national_dates(df: pd.DataFrame) -> pd.DataFrame:
     """National holidays not in canton's list."""
-    national = df.loc[(df["level"] == "national") & (df["class"] != "partial"),
+    national = df.loc[(df["level"] == "national") & (~df["is_partial"]),
                ["date", "holiday"]].drop_duplicates("date")
     cantonal = df.loc[df["level"] == "canton", ["date", "canton"]].drop_duplicates()
 
