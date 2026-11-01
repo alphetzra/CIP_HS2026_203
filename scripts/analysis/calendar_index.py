@@ -1,4 +1,5 @@
 """Describe how spending varies by weekday and month, per merchant category."""
+
 import matplotlib.pyplot as plt
 import pandas as pd
 import seaborn as sns
@@ -20,27 +21,27 @@ def spending_index(daily: pd.DataFrame, by: str) -> pd.DataFrame:
     return (mean.div(mean.mean(axis=1), axis=0) * 100).round(1)
 
 
-def plot_spending_index(weekday: pd.DataFrame, month: pd.DataFrame) -> None:
-    """Heatmaps side by side: category x weekday and category x month."""
-    fig, axes = plt.subplots(1, 2, figsize=(16, 5), gridspec_kw={"width_ratios": [7, 12]})
-    settings = dict(annot=True, fmt=".0f", cmap="RdBu_r", center=100, vmin=0, vmax=200,
-                    cbar=False, linewidths=0.5)
-
-    sns.heatmap(weekday, ax=axes[0], **settings)
-    axes[0].set_title("By weekday")
-    axes[0].set_xlabel("")
-    axes[0].set_ylabel("Merchant category")
-
-    sns.heatmap(month.set_axis(MONTH_LABELS, axis=1), ax=axes[1], yticklabels=False, **settings)
-    axes[1].set_title("By month")
-    axes[1].set_xlabel("")
-    axes[1].set_ylabel("")
-
-    fig.suptitle("Spending index by weekday and month (100 = average day of the category), "
-                 f"Switzerland {min(config.YEARS)}-{max(config.YEARS)}")
+def _plot_heatmap(index: pd.DataFrame, title: str, filename: str, cell_width: float) -> None:
+    """Heatmap of category x period."""
+    n_rows, n_cols = index.shape
+    fig, ax = plt.subplots(figsize=(3 + n_cols * cell_width, 1.5 + n_rows * 0.5))
+    sns.heatmap(index, ax=ax, annot=True, fmt=".0f", cmap="RdBu_r", center=100,
+                vmin=0, vmax=200, linewidths=0.5,
+                cbar_kws={"label": "Index (100 = average day)", "shrink": 0.8})
+    ax.set_title(f"{title}, Switzerland {min(config.YEARS)}-{max(config.YEARS)}")
+    ax.set_xlabel("")
+    ax.set_ylabel("Merchant category")
     fig.tight_layout()
-    fig.savefig(config.FIGURES_DIR / "spending_index.png", dpi=200)
+    fig.savefig(config.FIGURES_DIR / filename, dpi=200)
     plt.close(fig)
+
+
+def plot_spending_index(weekday: pd.DataFrame, month: pd.DataFrame) -> None:
+    """Heatmaps: category x weekday and category x month."""
+    _plot_heatmap(weekday, "Spending index by weekday", "spending_index_weekday.png",
+                  cell_width=1.0)
+    _plot_heatmap(month.set_axis(MONTH_LABELS, axis=1), "Spending index by month",
+                  "spending_index_month.png", cell_width=0.8)
 
 
 def run() -> None:
