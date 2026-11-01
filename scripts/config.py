@@ -12,9 +12,17 @@ POP_FILE = RAW_DIR / "raw_population.csv"
 CLEANED_POPULATION = PROCESSED_DIR / "cleaned_population.csv"
 SPENDING_URL = "https://drive.switch.ch/index.php/s/yLISs3KVE7ASE68/download?path=/2_ACQUIRING%20DATA&files=ACQ_POS_Grossregion_NOGA.csv"
 RAW_SPENDING = RAW_DIR / "raw_spending.parquet"
-CLEANED_SPENDING = PROCESSED_DIR / "cleaned_spending.parquet" # cleaned spending
-REGION_HOLIDAY_SHARE = PROCESSED_DIR / "region_holiday_share.csv"  # holiday share per region/day
+CLEANED_SPENDING = PROCESSED_DIR / "cleaned_spending.parquet"
+REGION_HOLIDAY_SHARE = PROCESSED_DIR / "region_holiday_share.csv"
 DF_Q2 = PROCESSED_DIR / "df_q2.parquet"
+RESULTS_DIR = ROOT / "results"
+FIGURES_DIR = RESULTS_DIR / "figures"
+TABLES_DIR = RESULTS_DIR / "tables"
+COVID_PERIOD = [("2020-03-16", "2022-12-31")]
+
+def cache_path(geo, year):
+    """Where the raw HTML of one raw_holidays page is stored."""
+    return HTML_CACHE_DIR / f"{geo}_{year}_{CLASS}_{LANG}.html"
 
 # ======================= settings =======================
 ROW_SELECTOR = "table.table tbody tr"
@@ -46,13 +54,13 @@ CANTON_NO = {
     22: "VD", 23: "VS", 24: "NE", 25: "GE", 26: "JU",
 }
 REGIONS = {
+    "Lake Geneva":       ["GE", "VD", "VS"],
+    "Espace Mittelland": ["BE", "FR", "JU", "NE", "SO"],
+    "Northwestern":      ["AG", "BL", "BS"],
+    "Zurich":            ["ZH"],
     "Central":           ["LU", "OW", "NW", "SZ", "UR", "ZG"],
     "Eastern":           ["AI", "AR", "GL", "GR", "SG", "SH", "TG"],
-    "Espace Mittelland": ["BE", "FR", "JU", "NE", "SO"],
-    "Lake Geneva":       ["GE", "VD", "VS"],
-    "Northwestern":      ["AG", "BL", "BS"],
     "Ticino":            ["TI"],
-    "Zurich":            ["ZH"],
 }
 
 CANTON_TO_REGION = {}
@@ -76,6 +84,3 @@ SPENDING_COLUMNS = {
 WEEKDAYS = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"]
 
 
-def cache_path(geo, year):
-    """Where the raw HTML of one raw_holidays page is stored."""
-    return HTML_CACHE_DIR / f"{geo}_{year}_{CLASS}_{LANG}.html"

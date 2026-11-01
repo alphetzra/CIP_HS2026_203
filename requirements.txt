@@ -16,6 +16,7 @@ interface_meta==2.0.1
 itsdangerous==2.2.0
 jedi==0.20.1
 kiwisolver==1.5.1
+linearmodels==7.1
 loro==1.17.1
 marimo==0.25.2
 Markdown==3.11.2
