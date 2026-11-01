@@ -5,14 +5,15 @@ app = marimo.App()
 
 
 @app.cell
-def _(mo):
+def _():
     import sys
+    import marimo as mo
     import pandas as pd
 
     sys.path.insert(0, str(mo.notebook_dir().parent))
     from scripts import config
 
-    return config, pd
+    return config, mo, pd
 
 
 @app.cell(hide_code=True)
