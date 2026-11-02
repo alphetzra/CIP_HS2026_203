@@ -1,3 +1,56 @@
+"""Holiday data acquisition - web scraping.
+
+1. Introduction
+
+Public holiday data is needed for Research Question 2:
+
+How much of the daily variation in spending by category is explained by calendar effects
+(weekday, month, public holidays)? Specifically, how does a regional public holiday change
+spending by category in regions where it applies, compared with regions where the same date
+is a normal working day?
+
+To compare regions with and without a holiday on the same date, we need the
+holidays of every canton.
+
+2. Data source
+---------------------------------------------------------------------------------------------------
+| Source                | Content                                         | Method of acquisition  |
+|-----------------------|-------------------------------------------------|------------------------|
+| feiertagskalender.ch  | National and cantonal public holidays per year  | Web scraping           |
+|                       | (one page per canton and year, see config.YEARS)| (Playwright)           |
+---------------------------------------------------------------------------------------------------
+
+Why scraping: feiertagskalender.ch lists the holidays of all 26 cantons
+as HTML tables. Its API is a paid product, while the free website content
+may be used for personal, non-commercial purposes, and the robots.txt does
+not disallow the pages used.
+
+3. Script description
+
+The script opens one page per canton and year (plus one national page) and
+saves the full HTML unchanged into data/raw/raw_holidays/.
+
+Why Playwright with a real browser (instead of requests/BeautifulSoup):
+the site shows a security check to automated clients. A plain HTTP request
+only gets the check page, not the table. The script therefore attaches to a
+normal browser started by the user (Chrome DevTools Protocol). When the check
+appears, the user confirms it manually in the browser and the script continues.
+
+Polite scraping:
+- every page is cached as an HTML file and never downloaded twice
+  (the script can be stopped and resumed; re-runs only fetch missing pages),
+- a pause of 2 seconds between requests.
+
+4. Notes
+
+- Setup: copy .example.env to .env (not tracked in git) and fill in
+  BROWSER_DEBUGGING_PORT and BROWSER_PATH (path to the Chrome executable).
+- The script needs a person at the keyboard (browser restart, security
+  check), so it is not fully automated.
+- The HTML pages are stored unchanged.
+- Data accessed: 25/11/2026.
+"""
+
 import os
 import time
 import subprocess
@@ -21,6 +74,8 @@ def launch_browser(browser_dir: str, debug_port: str,
                    message: str = "Press enter when you closed all browser, "
                                   "so the script can start a browser with debug port."):
     """Start the browser with remote debugging."""
+    # the browser must be fully closed first: if an instance is already
+    # running, the new one ignores the --remote-debugging-port flag
     input(message)
     subprocess.Popen(
         [browser_dir, f"--remote-debugging-port={debug_port}"],
@@ -40,7 +95,7 @@ def connect_browser(p: Playwright, debug_port: str) -> Browser | None:
 
 
 def get_page(browser: Browser) -> Page:
-    """Open new tab."""
+    """Open a new tab in the existing browser window."""
     context = browser.contexts[0]
     return context.new_page()
 
@@ -61,10 +116,16 @@ def has_table(page: Page, timeout_ms: int = 3000) -> bool:
 
 
 def scrape(page: Page) -> bool:
-    """Download holiday pages and cache them as HTML files."""
+    """Download holiday pages and cache them as HTML files.
+
+    Returns False if a page could not be loaded (e.g. browser closed or
+    connection lost), so run() can restart the browser and try again.
+    """
+    # one national page ("CH") + one page per canton
     pages = [(config.NATIONAL_GEO, "CH")] + [
         (geo, canton) for canton, geo in config.CANTONS.items()
     ]
+    # only pages that are not cached yet
     todo = [
         (geo, label, year)
         for year in config.YEARS
@@ -74,6 +135,8 @@ def scrape(page: Page) -> bool:
     print(f"{len(todo)} pages to download")
 
     for geo, label, year in todo:
+        # geo = canton id on the website, jahr = year,
+        # klasse = holiday class, hl = language
         url = (f"https://www.feiertagskalender.ch/index.php"
                f"?geo={geo}&jahr={year}&klasse={config.CLASS}&hl={config.LANG}")
         print(f"Loading {label} {year}")
@@ -109,17 +172,22 @@ def run() -> None:
     debug_port, browser_dir = cfg
 
     with sync_playwright() as p:
-        browser = connect_browser(p, debug_port)  # is Browser already open?
+        # reuse a browser that already runs with the debug port, else start one
+        browser = connect_browser(p, debug_port)
         if browser is None:
             launch_browser(browser_dir, debug_port)
             time.sleep(2)
 
         def browse():
+            # (re)connect every time because the browser may have been restarted
             local_browser = connect_browser(p, debug_port)
             if local_browser is None:
                 raise RuntimeError("Could not connect to the browser.")
             return scrape(get_page(local_browser))
 
+        # retry up to 5 times if the browser crashes or the connection is lost;
+        # already downloaded pages are cached, so each retry continues where
+        # the last stopped
         errors = 0
         try:
             success =  browse()

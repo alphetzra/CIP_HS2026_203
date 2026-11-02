@@ -1,6 +1,20 @@
-"""Download the daily card spending data of Monitoring Consumption Switzerland."""
+"""Download the daily card spending data of Monitoring Consumption Switzerland.
+
+Source: Monitoring Consumption Switzerland (debit/credit card transactions,
+daily, by region and spending category). The dataset is published as an open
+CSV download, so pandas read it from the URL defined in config.SPENDING_URL.
+
+Design choices:
+- The raw data is stored *unchanged*, so the original data can always be
+  inspected.
+- Parquet instead of CSV: the file is large (daily rows x regions x
+  categories); parquet is compressed, faster to read and keeps column dtypes.
+- The download runs only once. If the raw file already exists it is skipped,
+  so re-running the pipeline does not hit the server again and results stay
+  reproducible even if the online dataset is updated later.
+"""
 import pandas as pd
-from scripts import config
+from scripts import config  # central place for URLs and file paths
 
 
 def download_spending(url: str = config.SPENDING_URL) -> pd.DataFrame:
