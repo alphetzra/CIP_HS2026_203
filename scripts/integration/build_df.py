@@ -72,9 +72,7 @@ def add_calendar(df: pd.DataFrame) -> pd.DataFrame:
 
 def add_log_value(df: pd.DataFrame) -> pd.DataFrame:
     """Log of spending, so regression coefficients read as percentage changes."""
-    # safeguard: log is only defined for values > 0 (the data has no zero or
-    # negative spending
-    df["log_spending"] = np.log(df["spending"].where(df["spending"] > 0))
+    df["log_spending"] = np.log(df["spending"])
     return df
 
 

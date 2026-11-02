@@ -1,7 +1,51 @@
-"""How much of the daily variation in spending is explained by calendar effects?
+"""Analysis Q2 - how much of the daily variation in spending do calendar effects explain?
 
-Method (one regression per merchant category, ordinary least squares):
-    log_spending ~ region + weekday + month + year + COVID + holiday_share"""
+1. Introduction
+
+Answers the first part of Q2 with linear regressions (OLS), one per merchant
+category: log_spending ~ region + weekday + month + year + COVID + holiday_share
+and estimates the holiday effect (all holidays, national and regional).
+
+2. Data
+
+------------------------------------------------------------------------------
+| Input                        | Output                                       |
+|------------------------------|----------------------------------------------|
+| data/processed/df_q2.parquet | results/tables/r2_by_category.csv            |
+|                              | results/tables/holiday_effect_all.csv        |
+|                              | results/tables/holiday_effect_by_region.csv  |
+|                              | results/figures/r2_by_category.png           |
+|                              | results/figures/holiday_heatmap.png          |
+------------------------------------------------------------------------------
+
+3. Script description
+
+1. Read df_q2 and add a COVID flag (config.COVID_PERIOD).
+2. Explained variation: per category, add the variable groups one by one
+   (region, weekday, month, year, COVID, holiday) and store the R² after
+   each step. The increase in R² is the part explained by that group.
+   Region is added first and only removes the level differences between
+   regions; the shares are expressed as % of the remaining (within-region)
+   variation.
+3. Holiday effect per category: full model with all groups; the
+   coefficient of holiday_share is converted to a % change.
+4. Holiday effect per region x category: same model without region,
+   estimated separately for each region and category -> heatmap.
+
+4. Notes
+
+- holiday_share goes from 0 (normal day) to 1 (whole region off), so its
+  coefficient is the effect of a full holiday. Log points are converted to
+  % change with (exp(b) - 1) * 100.
+- Weekday, month and year are categorical (one dummy per value), so no
+  shape (e.g. linear trend) is assumed.
+- COVID is flagged and controlled for instead of deleted.
+- Robust standard errors (HC1) are used for the holiday effects, because
+  the variance of spending is not the same on all days.
+- The R² shares depend on the order in which the groups are added: a group
+  added earlier also gets the variation it shares with later groups
+  (e.g. year and COVID).
+"""
 
 import matplotlib.pyplot as plt
 import numpy as np
@@ -10,6 +54,8 @@ import seaborn as sns
 import statsmodels.formula.api as smf
 from scripts import config
 
+# variable groups in the order they are added to the model;
+# C(...) = treat as categorical (one dummy per value)
 STEPS = {
     "region": "C(region)",
     "weekday": "C(weekday)",
@@ -30,12 +76,8 @@ def add_covid_flag(df: pd.DataFrame) -> pd.DataFrame:
 
 
 def load_df() -> pd.DataFrame:
-    """Read df_q2, remove days without a log value (spending 0) if any, add the COVID flag."""
+    """Read df_q2 and add the COVID flag."""
     df = pd.read_parquet(config.DF_Q2)
-    n_missing = df[config.TARGET].isna().sum()
-    print(f"Days without log value: {n_missing}")
-    if n_missing > 0:
-        df = df.dropna(subset=[config.TARGET]).copy()
     return add_covid_flag(df)
 
 # ======================= 1. explained variation =======================
@@ -48,18 +90,21 @@ def r2_groups(cat_df: pd.DataFrame) -> dict:
         parts.append(part)
         formula = f"{config.TARGET} ~ " + " + ".join(parts)
         r2[group] = smf.ols(formula, data=cat_df).fit().rsquared
-    return r2
+    return r2     # cumulative R²
 
 
 def within_region_shares(r2: dict) -> dict:
     """Turn cumulative R² into the share of within-region variation each group explains."""
     r2_region = r2["region"]
+    # variation that is left after removing the region level differences
     within_total = 1 - r2_region
     shares = {}
     previous = r2_region
-    for step in list(STEPS)[1:]:
+    for step in list(STEPS)[1:]:     # all groups except region
+        # increase in R² by this group, as share of the within-region variation
         shares[step] = (r2[step] - previous) / within_total
         previous = r2[step]
+    # rest = not explained by any calendar group
     shares["not explained"] = 1 - (previous - r2_region) / within_total
     return shares
 
@@ -69,6 +114,7 @@ def explained_variation(df: pd.DataFrame) -> pd.DataFrame:
     rows = {}
     for category, cat_df in df.groupby("category", observed=True):
         rows[category] = within_region_shares(r2_groups(cat_df))
+    # .T: categories as rows, groups as columns
     return pd.DataFrame(rows).T.round(3)
 
 
@@ -92,13 +138,14 @@ def holiday_effect(model) -> dict:
     """Coefficient of holiday_share as % change, with 95% confidence interval."""
     b = model.params["holiday_share"]
     low, high = model.conf_int().loc["holiday_share"]
-    to_pct = lambda x: (np.exp(x) - 1) * 100  # log points -> % change
+    to_pct = lambda x: (np.exp(x) - 1) * 100     # log points -> % change
     return {"effect_pct": to_pct(b), "ci_low": to_pct(low), "ci_high": to_pct(high),
             "p_value": model.pvalues["holiday_share"], "n_obs": int(model.nobs)}
 
 
 def full_formula(with_region: bool = True) -> str:
     """Formula with all variable groups (optionally without region)."""
+    # without region: used when the model is fitted for one region only
     parts = list(STEPS.values()) if with_region else list(STEPS.values())[1:]
     return f"{config.TARGET} ~ " + " + ".join(parts)
 
@@ -146,17 +193,20 @@ def run() -> None:
     config.TABLES_DIR.mkdir(parents=True, exist_ok=True)
     df = load_df()
 
+    # 1. explained variation
     shares = explained_variation(df)
     shares.to_csv(config.TABLES_DIR / "r2_by_category.csv")
     plot_r2(shares)
     print("Share of within-region variation explained:\n", shares, "\n")
 
+    # 2. holiday effect per category
     effects = holiday_effect_by_category(df)
     effects.to_csv(config.TABLES_DIR / "holiday_effect_all.csv")
     print("Holiday effect per category (% change on a full holiday):\n", effects, "\n")
 
+    # 3. holiday effect per region x category
     region_effects = holiday_effect_by_region(df)
-    region_effects.to_csv(config.TABLES_DIR / "holiday_effect_region.csv", index=False)
+    region_effects.to_csv(config.TABLES_DIR / "holiday_effect_by_region.csv", index=False)
     plot_heatmap(region_effects)
     print(f"Tables saved to {config.TABLES_DIR}, figures to {config.FIGURES_DIR}")
 

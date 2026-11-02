@@ -1,4 +1,40 @@
-"""Describe how spending varies by weekday and month, per merchant category."""
+"""Analysis Q2 - descriptive spending index by weekday and month.
+
+1. Introduction
+
+Descriptive overview of the calendar pattern in spending: for each
+merchant category, how spending on each weekday and in each month
+compares with the category's overall average.
+
+2. Data
+
+-----------------------------------------------------------------------------
+| Input                        | Output                                      |
+|------------------------------|---------------------------------------------|
+| data/processed/df_q2.parquet | results/tables/weekday_index.csv            |
+|                              | results/tables/month_index.csv              |
+|                              | results/figures/spending_index_weekday.png  |
+|                              | results/figures/spending_index_month.png    |
+-----------------------------------------------------------------------------
+
+3. Script description
+
+1. Sum the 7 regions per date and category -> one Swiss value per day.
+2. Average spending per category and weekday/month.
+3. Divide by the average over all weekdays/months of that category and
+   multiply by 100 -> index (100 = average).
+4. Save the tables and draw one heatmap each (category x weekday,
+   category x month).
+
+4. Notes
+
+- The spending values are scaled, not CHF, so only relative values are compared.
+- Indexing per category makes categories with very different spending
+  levels comparable in one figure.
+- Simple averages over all days: holidays and the COVID period are included, so
+  the weekday and month values partly reflect these other effects. They are
+  separated in the regression (calendar_regression.py).
+"""
 
 import matplotlib.pyplot as plt
 import pandas as pd
@@ -11,6 +47,7 @@ MONTH_LABELS = ["Jan", "Feb", "Mar", "Apr", "May", "Jun",
 
 def swiss_daily_total(df: pd.DataFrame) -> pd.DataFrame:
     """Sum the seven regions -> one national value per date and category."""
+    # weekday and month are in the groupby only to keep them as columns
     return (df.groupby(["date", "category", "weekday", "month"], observed=True, as_index=False)
               ["spending"].sum())
 
@@ -25,6 +62,8 @@ def _plot_heatmap(index: pd.DataFrame, title: str, filename: str, cell_width: fl
     """Heatmap of category x period."""
     n_rows, n_cols = index.shape
     fig, ax = plt.subplots(figsize=(3 + n_cols * cell_width, 1.5 + n_rows * 0.5))
+    # diverging colors centred on 100: blue = below average, red = above;
+    # fixed scale 0-200 so both heatmaps use the same colors
     sns.heatmap(index, ax=ax, annot=True, fmt=".0f", cmap="RdBu_r", center=100,
                 vmin=0, vmax=200, linewidths=0.5,
                 cbar_kws={"label": "Index (100 = average day)", "shrink": 0.8})

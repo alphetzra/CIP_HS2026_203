@@ -39,12 +39,11 @@
 
 ## Analysis (Q2)
 - add COVID flag &rarr; ok
-- add map?
 - regression: log spending on holiday share, weekday, month, year, region,
   holiday &times; category interaction &rarr; ok
 - heatmap of holiday effect by region and category &rarr; ok
 - weekday / month plots &rarr; ok
 
 ## Documentation
-- methods: list cleaning steps and holiday choices (weights, class 4, threshold) &rarr; writing...
+- methods: list cleaning steps and holiday choices &rarr; writing...
 - README: my code contribution &rarr; open

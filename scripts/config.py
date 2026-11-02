@@ -90,7 +90,13 @@ WEEKDAYS = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", 
 
 # ======================= analysis =======================
 TARGET = "log_spending"                      # dependent variable of the regressions
-# COVID-19 period, flagged instead of deleted: first lockdown to end of 2022
+
+# COVID-19 period, flagged instead of deleted (controlled for in the regression).
+# Defined from the weekly laboratory-confirmed SARS-CoV-2 cases reported to the
+# FOPH (BAG): weeks with more than 50 cases per 100,000 inhabitants, extended
+# slightly before and after, because consumer behaviour already changes before
+# measures start and needs time to return to normal afterwards.
+# Source: FOPH, https://www.idd.bag.admin.ch/en/diseases/covid/statistic
 COVID_PERIOD = [("2020-03-16", "2022-12-31")]
 
 
