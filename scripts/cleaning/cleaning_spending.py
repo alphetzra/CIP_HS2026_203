@@ -9,8 +9,9 @@ def read_spending(path=config.RAW_SPENDING) -> pd.DataFrame:
     return df.rename(columns=config.SPENDING_COLUMNS)
 
 
-def drop_9999(df: pd.DataFrame) -> pd.DataFrame:
-    """Remove code 9999 in region (Liechtenstein/Campione) and category (unassigned)."""
+def drop_unused(df: pd.DataFrame) -> pd.DataFrame:
+    """Drop the unused transactions column and code 9999 in region/category."""
+    df = df.drop(columns="n_transactions")
     for col in ["region", "category"]:
         df[col] = df[col].astype(str).str.strip()
         is_9999 = df[col] == "9999"
@@ -23,8 +24,9 @@ def fix_dtypes(df: pd.DataFrame) -> pd.DataFrame:
     """Dates as datetime and spending as numbers.
        errors="coerce" turns anything that is not a number into NaN."""
     df["date"] = pd.to_datetime(df["date"])
-    df["scaled_value"] = pd.to_numeric(df["scaled_value"], errors="coerce")
-    df["n_transactions"] = pd.to_numeric(df["n_transactions"], errors="coerce")
+    df["region"] = pd.Categorical(df["region"], categories=list(config.REGIONS))
+    df["category"] = df["category"].astype("category")
+    df["spending"] = pd.to_numeric(df["spending"], errors="coerce")
     return df
 
 
@@ -44,8 +46,8 @@ def check_spending(df: pd.DataFrame) -> None:
     if duplicates:
         raise ValueError(f"{duplicates} duplicate date/region/category rows.")
 
-    print(f"Negative values: {(df['scaled_value'] < 0).sum()}, "
-          f"zero values: {(df['scaled_value'] == 0).sum()}")
+    print(f"Negative values: {(df['spending'] < 0).sum()}, "
+          f"zero values: {(df['spending'] == 0).sum()}")
 
     all_days = pd.date_range(f"{min(config.YEARS)}-01-01", f"{max(config.YEARS)}-12-31")
     days_present = df.groupby(["region", "category"])["date"].nunique()
@@ -56,13 +58,25 @@ def check_spending(df: pd.DataFrame) -> None:
         print(f"Missing days per region/category:\n{gaps.sort_values(ascending=False)}")
 
 
+def flag_outliers(df: pd.DataFrame) -> pd.DataFrame:
+    """Flag (not drop) outliers with the IQR rule per region and category."""
+    grouped = df.groupby(["region", "category"], observed=True)["spending"]
+    q1 = grouped.transform(lambda s: s.quantile(0.25))
+    q3 = grouped.transform(lambda s: s.quantile(0.75))
+    iqr = q3 - q1
+    df["is_outlier"] = (df["spending"] < q1 - 1.5 * iqr) | (df["spending"] > q3 + 1.5 * iqr)
+    print(f"Flagged {df['is_outlier'].sum()} outliers.")
+    return df
+
+
 def clean_spending() -> pd.DataFrame:
     """Run the cleaning steps in order."""
     df = read_spending()
-    df = drop_9999(df)
+    df = drop_unused(df)
     df = fix_dtypes(df)
     df = filter_years(df)
     check_spending(df)
+    df = flag_outliers(df)
     return df.sort_values(["date", "region", "category"]).reset_index(drop=True)
 
 

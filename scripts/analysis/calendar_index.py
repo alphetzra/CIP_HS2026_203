@@ -12,12 +12,12 @@ MONTH_LABELS = ["Jan", "Feb", "Mar", "Apr", "May", "Jun",
 def swiss_daily_total(df: pd.DataFrame) -> pd.DataFrame:
     """Sum the seven regions -> one national value per date and category."""
     return (df.groupby(["date", "category", "weekday", "month"], observed=True, as_index=False)
-              ["scaled_value"].sum())
+              ["spending"].sum())
 
 
 def spending_index(daily: pd.DataFrame, by: str) -> pd.DataFrame:
     """Average spending per category and weekday/month as an index (100 = average day)."""
-    mean = daily.groupby(["category", by], observed=True)["scaled_value"].mean().unstack(by)
+    mean = daily.groupby(["category", by], observed=True)["spending"].mean().unstack(by)
     return (mean.div(mean.mean(axis=1), axis=0) * 100).round(1)
 
 

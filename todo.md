@@ -23,7 +23,7 @@
   - partial holidays use the scraped canton share; "varies"/"n.a." = 0
 - build_df: merge spending + holiday share on date and region, no holiday = 0 &rarr; ok
 - enrich: year, month, weekday, is_weekend, is_holiday (share &ge; 0.5),
-  log_scaled_value &rarr; ok
+  log_spending &rarr; ok
 - output: data/processed/df_q2.parquet &rarr; ok
 
 ## Code structure

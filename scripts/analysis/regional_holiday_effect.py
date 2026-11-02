@@ -7,13 +7,11 @@ import pandas as pd
 from linearmodels.panel import PanelOLS
 from scripts import config
 
-TARGET = "log_scaled_value"
-
 
 def load_df() -> pd.DataFrame:
     """Read df_q2 and drop days without a log value (spending 0)."""
     df = pd.read_parquet(config.DF_Q2)
-    df = df.dropna(subset=[TARGET]).copy()
+    df = df.dropna(subset=[config.TARGET]).copy()
     df["region"] = df["region"].astype(str)     # panel index needs plain text, not category
     return df
 
@@ -22,7 +20,7 @@ def fit_category(cat_df: pd.DataFrame):
     """Panel regression for one category with region and date effects."""
     # PanelOLS needs a two-level index: (entity, time) = (region, date)
     panel = cat_df.set_index(["region", "date"])
-    model = PanelOLS(panel[TARGET], panel[["holiday_share"]],
+    model = PanelOLS(panel[config.TARGET], panel[["holiday_share"]],
                      entity_effects=True,     # region effect
                      time_effects=True)       # date effect
     return model.fit(cov_type="kernel")

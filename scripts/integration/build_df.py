@@ -3,7 +3,9 @@
 import numpy as np
 import pandas as pd
 from scripts import config
-
+df = pd.read_parquet(config.DF_Q2)
+print(df.columns.tolist())
+print(config.DF_Q2.resolve())
 
 def load_inputs() -> tuple[pd.DataFrame, pd.DataFrame]:
     """Read the cleaned spending and the region holiday share."""
@@ -14,6 +16,7 @@ def load_inputs() -> tuple[pd.DataFrame, pd.DataFrame]:
 
 def merge_holidays(spending: pd.DataFrame, share: pd.DataFrame) -> pd.DataFrame:
     """Attach the holiday share to every spending row."""
+    share["region"] = pd.Categorical(share["region"], categories=spending["region"].cat.categories)
     df = spending.merge(share, on=["date", "region"], how="left")
     df["holiday_share"] = df["holiday_share"].fillna(0.0)
     return df
@@ -32,14 +35,7 @@ def add_calendar(df: pd.DataFrame) -> pd.DataFrame:
 
 def add_log_value(df: pd.DataFrame) -> pd.DataFrame:
     """Log of spending, so regression coefficients read as percentage changes."""
-    df["log_scaled_value"] = np.log(df["scaled_value"].where(df["scaled_value"] > 0))
-    return df
-
-
-def set_categories(df: pd.DataFrame) -> pd.DataFrame:
-    """Grouping columns as categories."""
-    df["region"] = pd.Categorical(df["region"], categories=list(config.REGIONS))
-    df["category"] = df["category"].astype("category")
+    df["log_spending"] = np.log(df["spending"].where(df["spending"] > 0))
     return df
 
 
@@ -49,7 +45,6 @@ def build_df_q2() -> pd.DataFrame:
     df = merge_holidays(spending, share)
     df = add_calendar(df)
     df = add_log_value(df)
-    df = set_categories(df)
     return df.sort_values(["date", "region", "category"]).reset_index(drop=True)
 
 

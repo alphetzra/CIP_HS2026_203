@@ -85,7 +85,7 @@ def _(mo):
 
     9999 appears in both columns:
 
-    - Region 9999 = transactions in Liechtenstein and Campione d'Italia (documented in the source), not part of any Grossregion
+    - Region 9999 = transactions in Liechtenstein and Campione d'Italia, not part of any Grossregion
     - Category 9999 = not documented in the source, which lists only seven categories. It is different from the existing category "Other", so we treat it as unassigned.
 
     Both are dropped in `cleaning_spending.drop_9999`.

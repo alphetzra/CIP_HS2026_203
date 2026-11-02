@@ -78,9 +78,11 @@ SPENDING_COLUMNS = {
     "Date": "date",
     "Region": "region",
     "Merchant category": "category",
-    "Scaled Value": "scaled_value",
+    "Scaled Value": "spending",
     "Scaled Number of Transactions": "n_transactions",
 }
 WEEKDAYS = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"]
+
+TARGET = "log_spending"
 
 

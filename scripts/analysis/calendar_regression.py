@@ -1,7 +1,7 @@
 """How much of the daily variation in spending is explained by calendar effects?
 
 Method (one regression per merchant category, ordinary least squares):
-    log_scaled_value ~ region + weekday + month + year + COVID + holiday_share"""
+    log_spending ~ region + weekday + month + year + COVID + holiday_share"""
 
 import matplotlib.pyplot as plt
 import numpy as np
@@ -18,7 +18,6 @@ STEPS = {
     "COVID": "is_covid",
     "holiday": "holiday_share",
 }
-TARGET = "log_scaled_value"
 
 # ======================= data =======================
 
@@ -33,10 +32,10 @@ def add_covid_flag(df: pd.DataFrame) -> pd.DataFrame:
 def load_df() -> pd.DataFrame:
     """Read df_q2, remove days without a log value (spending 0) if any, add the COVID flag."""
     df = pd.read_parquet(config.DF_Q2)
-    n_missing = df[TARGET].isna().sum()
+    n_missing = df[config.TARGET].isna().sum()
     print(f"Days without log value: {n_missing}")
     if n_missing > 0:
-        df = df.dropna(subset=[TARGET]).copy()
+        df = df.dropna(subset=[config.TARGET]).copy()
     return add_covid_flag(df)
 
 # ======================= 1. explained variation =======================
@@ -47,7 +46,7 @@ def r2_groups(cat_df: pd.DataFrame) -> dict:
     parts = []
     for group, part in STEPS.items():
         parts.append(part)
-        formula = f"{TARGET} ~ " + " + ".join(parts)
+        formula = f"{config.TARGET} ~ " + " + ".join(parts)
         r2[group] = smf.ols(formula, data=cat_df).fit().rsquared
     return r2
 
@@ -101,7 +100,7 @@ def holiday_effect(model) -> dict:
 def full_formula(with_region: bool = True) -> str:
     """Formula with all variable groups (optionally without region)."""
     parts = list(STEPS.values()) if with_region else list(STEPS.values())[1:]
-    return f"{TARGET} ~ " + " + ".join(parts)
+    return f"{config.TARGET} ~ " + " + ".join(parts)
 
 
 def holiday_effect_by_category(df: pd.DataFrame) -> pd.DataFrame:
