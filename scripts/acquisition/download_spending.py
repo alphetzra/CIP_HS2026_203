@@ -1,4 +1,4 @@
-"""Download the daily card spending data of Monitoring Consumption Switzerland.
+"""Spending data acquisition - download from Monitoring Consumption Switzerland.
 
 Source: Monitoring Consumption Switzerland (debit/credit card transactions,
 daily, by region and spending category). The dataset is published as an open

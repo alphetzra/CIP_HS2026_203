@@ -1,4 +1,4 @@
-"""Holiday data acquisition - web scraping.
+"""Holiday data acquisition - web scraping from feiertagskalender.ch.
 
 1. Introduction
 
@@ -136,7 +136,7 @@ def scrape(page: Page) -> bool:
 
     for geo, label, year in todo:
         # geo = canton id on the website, jahr = year,
-        # klasse = holiday class, hl = language
+        # klasse = holiday classes 1 to 4, hl = language
         url = (f"https://www.feiertagskalender.ch/index.php"
                f"?geo={geo}&jahr={year}&klasse={config.CLASS}&hl={config.LANG}")
         print(f"Loading {label} {year}")

@@ -1,4 +1,4 @@
-"""Clean the daily card spending data by of Monitoring Consumption Switzerland.
+"""Spending data cleaning from Monitoring Consumption Switzerland.
 
 1. Introduction
 
