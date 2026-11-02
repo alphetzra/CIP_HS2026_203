@@ -60,13 +60,12 @@ def _(Path):
     url = ("https://drive.switch.ch/index.php/s/yLISs3KVE7ASE68/download?path=/2_ACQUIRING%20DATA&files=ACQ_POS_Grossregion_NOGA.csv")
 
     output_folder = Path("../../data/raw/raw_spending.parquet")
-
     return output_folder, url
 
 
 @app.cell
 def _(output_folder, pd, url):
-    #Using pandas and 
+    #Using pandas to read the csv and store it in raw_spending, which is subseqently converted into parquet format 
 
     raw_spening = pd.read_csv(url)
     raw_spening.to_parquet(output_folder, index=False)
