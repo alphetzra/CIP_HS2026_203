@@ -1,0 +1,98 @@
+                            OLS Regression Results                            
+==============================================================================
+Dep. Variable:           log_spending   R-squared:                       0.719
+Model:                            OLS   Adj. R-squared:                  0.719
+Method:                 Least Squares   F-statistic:                     4967.
+Date:                Tue, 03 Nov 2026   Prob (F-statistic):               0.00
+Time:                        21:00:27   Log-Likelihood:            -1.2636e+05
+No. Observations:              125293   AIC:                         2.529e+05
+Df Residuals:                  125220   BIC:                         2.536e+05
+Df Model:                          72                                         
+Covariance Type:                  HC1                                         
+===============================================================================================================================================
+                                                                                  coef    std err          z      P>|z|      [0.025      0.975]
+-----------------------------------------------------------------------------------------------------------------------------------------------
+Intercept                                                                    -335.6887      7.736    -43.390      0.000    -350.852    -320.525
+C(weekday)[T.1]                                                                 0.0306      0.006      5.072      0.000       0.019       0.042
+C(weekday)[T.2]                                                                 0.0834      0.006     13.914      0.000       0.072       0.095
+C(weekday)[T.3]                                                                 0.1311      0.006     21.807      0.000       0.119       0.143
+C(weekday)[T.4]                                                                 0.2970      0.006     48.322      0.000       0.285       0.309
+C(weekday)[T.5]                                                                 0.2823      0.006     44.308      0.000       0.270       0.295
+C(weekday)[T.6]                                                                -0.8176      0.009    -89.034      0.000      -0.836      -0.800
+C(month)[T.2]                                                                   0.0972      0.009     10.602      0.000       0.079       0.115
+C(month)[T.3]                                                               -4.186e-05      0.010     -0.004      0.997      -0.020       0.020
+C(month)[T.4]                                                                  -0.0888      0.012     -7.687      0.000      -0.111      -0.066
+C(month)[T.5]                                                                   0.0867      0.010      8.682      0.000       0.067       0.106
+C(month)[T.6]                                                                   0.2291      0.009     25.434      0.000       0.211       0.247
+C(month)[T.7]                                                                   0.2866      0.009     33.085      0.000       0.270       0.304
+C(month)[T.8]                                                                   0.3104      0.009     33.829      0.000       0.292       0.328
+C(month)[T.9]                                                                   0.2534      0.009     28.201      0.000       0.236       0.271
+C(month)[T.10]                                                                  0.2215      0.009     24.601      0.000       0.204       0.239
+C(month)[T.11]                                                                  0.1623      0.009     17.171      0.000       0.144       0.181
+C(month)[T.12]                                                                  0.3094      0.010     30.216      0.000       0.289       0.329
+covid_period[T.True]                                                           -0.1115      0.005    -23.921      0.000      -0.121      -0.102
+C(category)[T.Food and beverage services]                                       0.1603      0.018      8.881      0.000       0.125       0.196
+C(category)[T.Other]                                                            0.0208      0.015      1.350      0.177      -0.009       0.051
+C(category)[T.Retail: Food, beverage, tobacco]                                  1.6394      0.018     90.529      0.000       1.604       1.675
+C(category)[T.Retail: Fuel stations]                                            0.4688      0.016     29.718      0.000       0.438       0.500
+C(category)[T.Retail: Other goods]                                              1.3444      0.022     61.414      0.000       1.302       1.387
+C(category)[T.Transport services]                                              -0.5908      0.021    -28.034      0.000      -0.632      -0.550
+C(region)[T.Eastern]:C(category)[Accommodation]                                 0.2914      0.022     13.403      0.000       0.249       0.334
+C(region)[T.Espace Mittelland]:C(category)[Accommodation]                       0.2264      0.019     11.757      0.000       0.189       0.264
+C(region)[T.Lake Geneva]:C(category)[Accommodation]                             0.7699      0.019     39.865      0.000       0.732       0.808
+C(region)[T.Northwestern]:C(category)[Accommodation]                           -0.9375      0.018    -52.537      0.000      -0.972      -0.902
+C(region)[T.Ticino]:C(category)[Accommodation]                                 -0.8294      0.023    -35.667      0.000      -0.875      -0.784
+C(region)[T.Zurich]:C(category)[Accommodation]                                  0.0040      0.018      0.222      0.824      -0.032       0.040
+C(region)[T.Eastern]:C(category)[Food and beverage services]                    0.0888      0.017      5.238      0.000       0.056       0.122
+C(region)[T.Espace Mittelland]:C(category)[Food and beverage services]          0.5866      0.016     35.715      0.000       0.554       0.619
+C(region)[T.Lake Geneva]:C(category)[Food and beverage services]                1.0220      0.017     61.589      0.000       0.989       1.055
+C(region)[T.Northwestern]:C(category)[Food and beverage services]               0.1064      0.016      6.537      0.000       0.075       0.138
+C(region)[T.Ticino]:C(category)[Food and beverage services]                    -0.7921      0.019    -42.481      0.000      -0.829      -0.756
+C(region)[T.Zurich]:C(category)[Food and beverage services]                     1.1822      0.016     74.594      0.000       1.151       1.213
+C(region)[T.Eastern]:C(category)[Other]                                         0.1973      0.010     20.308      0.000       0.178       0.216
+C(region)[T.Espace Mittelland]:C(category)[Other]                               0.4762      0.011     44.960      0.000       0.455       0.497
+C(region)[T.Lake Geneva]:C(category)[Other]                                     0.9517      0.012     80.701      0.000       0.929       0.975
+C(region)[T.Northwestern]:C(category)[Other]                                    0.3212      0.010     32.200      0.000       0.302       0.341
+C(region)[T.Ticino]:C(category)[Other]                                         -0.3493      0.015    -23.722      0.000      -0.378      -0.320
+C(region)[T.Zurich]:C(category)[Other]                                          0.8799      0.010     84.226      0.000       0.859       0.900
+C(region)[T.Eastern]:C(category)[Retail: Food, beverage, tobacco]               0.2339      0.017     13.707      0.000       0.200       0.267
+C(region)[T.Espace Mittelland]:C(category)[Retail: Food, beverage, tobacco]     0.7072      0.016     45.009      0.000       0.676       0.738
+C(region)[T.Lake Geneva]:C(category)[Retail: Food, beverage, tobacco]           0.7103      0.015     46.647      0.000       0.680       0.740
+C(region)[T.Northwestern]:C(category)[Retail: Food, beverage, tobacco]          0.2158      0.016     13.359      0.000       0.184       0.247
+C(region)[T.Ticino]:C(category)[Retail: Food, beverage, tobacco]               -1.3560      0.019    -71.428      0.000      -1.393      -1.319
+C(region)[T.Zurich]:C(category)[Retail: Food, beverage, tobacco]                0.7379      0.015     47.731      0.000       0.708       0.768
+C(region)[T.Eastern]:C(category)[Retail: Fuel stations]                         0.3438      0.011     30.322      0.000       0.322       0.366
+C(region)[T.Espace Mittelland]:C(category)[Retail: Fuel stations]               0.7246      0.011     64.559      0.000       0.703       0.747
+C(region)[T.Lake Geneva]:C(category)[Retail: Fuel stations]                     0.6823      0.011     62.786      0.000       0.661       0.704
+C(region)[T.Northwestern]:C(category)[Retail: Fuel stations]                    0.1888      0.011     16.816      0.000       0.167       0.211
+C(region)[T.Ticino]:C(category)[Retail: Fuel stations]                         -0.5901      0.012    -49.602      0.000      -0.613      -0.567
+C(region)[T.Zurich]:C(category)[Retail: Fuel stations]                          0.2514      0.012     21.738      0.000       0.229       0.274
+C(region)[T.Eastern]:C(category)[Retail: Other goods]                           0.2227      0.022     10.259      0.000       0.180       0.265
+C(region)[T.Espace Mittelland]:C(category)[Retail: Other goods]                 0.6202      0.022     27.718      0.000       0.576       0.664
+C(region)[T.Lake Geneva]:C(category)[Retail: Other goods]                       0.8474      0.022     38.754      0.000       0.805       0.890
+C(region)[T.Northwestern]:C(category)[Retail: Other goods]                      0.0040      0.027      0.148      0.882      -0.049       0.057
+C(region)[T.Ticino]:C(category)[Retail: Other goods]                           -0.8072      0.022    -36.288      0.000      -0.851      -0.764
+C(region)[T.Zurich]:C(category)[Retail: Other goods]                            0.7126      0.022     32.510      0.000       0.670       0.756
+C(region)[T.Eastern]:C(category)[Transport services]                            0.3713      0.026     14.528      0.000       0.321       0.421
+C(region)[T.Espace Mittelland]:C(category)[Transport services]                  0.5906      0.026     23.044      0.000       0.540       0.641
+C(region)[T.Lake Geneva]:C(category)[Transport services]                        1.1114      0.023     47.349      0.000       1.065       1.157
+C(region)[T.Northwestern]:C(category)[Transport services]                      -0.0938      0.022     -4.190      0.000      -0.138      -0.050
+C(region)[T.Ticino]:C(category)[Transport services]                            -1.2204      0.027    -44.742      0.000      -1.274      -1.167
+C(region)[T.Zurich]:C(category)[Transport services]                             0.5014      0.024     20.593      0.000       0.454       0.549
+eur_chf_c                                                                       0.0107      0.001      8.795      0.000       0.008       0.013
+eur_chf_c:C(border_group, Treatment('Non-border'))[T.France]                    0.0084      0.001     11.399      0.000       0.007       0.010
+eur_chf_c:C(border_group, Treatment('Non-border'))[T.Germany]                   0.0020      0.001      3.167      0.002       0.001       0.003
+eur_chf_c:C(border_group, Treatment('Non-border'))[T.Italy]                     0.0013      0.001      1.384      0.166      -0.001       0.003
+year                                                                            0.1655      0.004     43.255      0.000       0.158       0.173
+holiday_share                                                                  -0.9153      0.022    -42.283      0.000      -0.958      -0.873
+==============================================================================
+Omnibus:                    34815.527   Durbin-Watson:                   1.739
+Prob(Omnibus):                  0.000   Jarque-Bera (JB):           161605.700
+Skew:                          -1.285   Prob(JB):                         0.00
+Kurtosis:                       7.935   Cond. No.                     6.61e+06
+==============================================================================
+
+Notes:
+[1] Standard Errors are heteroscedasticity robust (HC1)
+[2] The condition number is large, 6.61e+06. This might indicate that there are
+strong multicollinearity or other numerical problems.

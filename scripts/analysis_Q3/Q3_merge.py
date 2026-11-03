@@ -65,7 +65,6 @@ def _(exchange_file, holiday_file, pd, spending_file):
     spending = pd.read_parquet(spending_file)
     raw_exchange = pd.read_parquet(exchange_file)
     raw_holiday = pd.read_csv(holiday_file)
-
     return raw_exchange, raw_holiday, spending
 
 
@@ -96,7 +95,6 @@ def _(raw_exchange):
 
     #check for min/max
     print(f"- Minimum value: {raw_exchange['value'].min()}, Maximum value: {raw_exchange['value'].max()}")
-
     return
 
 
@@ -115,7 +113,6 @@ def _(pd, raw_exchange):
     exchange = exchange[["year", "month", "eur_chf"]]
  
     print(exchange.head())
-
     return (exchange,)
 
 
@@ -153,7 +150,7 @@ def _(pd, raw_holiday, spending):
 
     print(f"- Regions not found in spending: {unknown_regions}")
     print()
-                                  
+                              
     #creating a copy of raw_holiday (otherwise marimo gives an error as it doesn't allow us to re-define a variable previusly used)
     holiday = raw_holiday.copy()
 
@@ -190,6 +187,8 @@ def _(exchange, holiday, spending):
 
     #LEFT JOIN of exchange on the shallow copy of spending data (which was previusly joined with the exchange data)
     q3_merge = q3_merge.merge(holiday, on=["date", "region"], how="left")
+
+    q3_merge["holiday_share"] = q3_merge["holiday_share"].fillna(0)
 
     #we reconvert region to category type again
     q3_merge["region"] = q3_merge["region"].astype("category")
@@ -243,6 +242,8 @@ def _(mo):
 @app.cell
 def _(output_file, q3_merge):
     q3_merge.to_parquet(output_file, index=False)
+
+    print(f"Saved {len(q3_merge)} rows to {output_file.resolve()}")
     return
 
 
