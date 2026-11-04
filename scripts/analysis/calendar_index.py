@@ -1,44 +1,26 @@
 """Analysis Q2 - descriptive spending index by weekday and month.
 
-1. Introduction
+Descriptive overview of the calendar pattern in spending: for each merchant
+category, how spending on each weekday and in each month compares with the
+category's average (index, 100 = average day). Tables are saved to
+results/tables, heatmaps to results/figures.
 
-Descriptive overview of the calendar pattern in spending: for each
-merchant category, how spending on each weekday and in each month
-compares with the category's overall average.
-
-2. Data
-
------------------------------------------------------------------------------
-| Input                        | Output                                      |
-|------------------------------|---------------------------------------------|
-| data/processed/df_q2.parquet | results/tables/weekday_index.csv            |
-|                              | results/tables/month_index.csv              |
-|                              | results/figures/spending_index_weekday.png  |
-|                              | results/figures/spending_index_month.png    |
------------------------------------------------------------------------------
-
-3. Script description
-
-1. Sum the 7 regions per date and category -> one Swiss value per day.
-2. Average spending per category and weekday/month.
-3. Divide by the average over all weekdays/months of that category and
-   multiply by 100 -> index (100 = average).
-4. Save the tables and draw one heatmap each (category x weekday,
-   category x month).
-
-4. Notes
-
-- The spending values are scaled, not CHF, so only relative values are compared.
-- Indexing per category makes categories with very different spending
-  levels comparable in one figure.
-- Simple averages over all days: holidays and the COVID period are included, so
-  the weekday and month values partly reflect these other effects. They are
+Specifics:
+- The seven regions are summed per date and category, so the index
+  describes Switzerland as a whole.
+- The spending values are scaled, not CHF, so only relative values are
+  compared. Indexing per category makes categories with very different
+  spending levels comparable in one figure.
+- Simple averages over all days: holidays and the COVID period are included,
+  so the weekday and month values partly reflect these effects. They are
   separated in the regression (calendar_regression.py).
 """
 
 import matplotlib.pyplot as plt
 import pandas as pd
 import seaborn as sns
+
+from integration.build_df import get_build_df
 from scripts import config
 
 MONTH_LABELS = ["Jan", "Feb", "Mar", "Apr", "May", "Jun",
@@ -46,20 +28,41 @@ MONTH_LABELS = ["Jan", "Feb", "Mar", "Apr", "May", "Jun",
 
 
 def swiss_daily_total(df: pd.DataFrame) -> pd.DataFrame:
-    """Sum the seven regions -> one national value per date and category."""
+    """Sum the seven regions into one Swiss value per date and category.
+        Args:
+            df: Q2 table
+        Returns:
+            DataFrame with date, category, weekday, month and spending
+        """
+
     # weekday and month are in the groupby only to keep them as columns
     return (df.groupby(["date", "category", "weekday", "month"], observed=True, as_index=False)
               ["spending"].sum())
 
 
 def spending_index(daily: pd.DataFrame, by: str) -> pd.DataFrame:
-    """Average spending per category and weekday/month as an index (100 = average day)."""
+    """Compute the average spending per category and period as an index.
+        Args:
+            daily: Output of swiss_daily_total()
+            by: "weekday" or "month"
+        Returns:
+            DataFrame with categories as rows and periods as columns
+            (100 = average of that category)
+        """
+
     mean = daily.groupby(["category", by], observed=True)["spending"].mean().unstack(by)
     return (mean.div(mean.mean(axis=1), axis=0) * 100).round(1)
 
 
 def _plot_heatmap(index: pd.DataFrame, title: str, filename: str, cell_width: float) -> None:
-    """Heatmap of category x period."""
+    """Plot an index table as heatmap (category x period) and save it.
+        Args:
+            index: Output of spending_index()
+            title: Figure title, the period and years are added
+            filename: File name in config.FIGURES_DIR
+            cell_width: Width per column in inches
+        """
+
     n_rows, n_cols = index.shape
     fig, ax = plt.subplots(figsize=(3 + n_cols * cell_width, 1.5 + n_rows * 0.5))
     # diverging colors centred on 100: blue = below average, red = above;
@@ -76,19 +79,25 @@ def _plot_heatmap(index: pd.DataFrame, title: str, filename: str, cell_width: fl
 
 
 def plot_spending_index(weekday: pd.DataFrame, month: pd.DataFrame) -> None:
-    """Heatmaps: category x weekday and category x month."""
+    """Plot the weekday and the month index as heatmaps.
+            Args:
+                weekday: Weekday index from spending_index()
+                month: Month index from spending_index()
+            """
+
     _plot_heatmap(weekday, "Spending index by weekday", "spending_index_weekday.png",
                   cell_width=1.0)
     _plot_heatmap(month.set_axis(MONTH_LABELS, axis=1), "Spending index by month",
                   "spending_index_month.png", cell_width=0.8)
 
 
-def run() -> None:
+def run_calendar_index() -> None:
     """Compute the weekday and month spending index, save tables and figure."""
+
     config.FIGURES_DIR.mkdir(parents=True, exist_ok=True)
     config.TABLES_DIR.mkdir(parents=True, exist_ok=True)
 
-    daily = swiss_daily_total(pd.read_parquet(config.DF_Q2))
+    daily = swiss_daily_total(get_build_df())
     weekday = spending_index(daily, "weekday")
     month = spending_index(daily, "month")
 
@@ -97,6 +106,3 @@ def run() -> None:
     plot_spending_index(weekday, month)
     print(f"Spending index saved to {config.FIGURES_DIR}")
 
-
-if __name__ == "__main__":
-    run()

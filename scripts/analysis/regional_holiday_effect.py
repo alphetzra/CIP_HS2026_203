@@ -1,71 +1,58 @@
 """Analysis Q2 - effect of a regional holiday on spending, compared with regions where the
 same date is a normal working day.
 
-1. Introduction
-
-Answers the second part of Q2. Per merchant category, a panel regression
-with region and date fixed effects: log_spending ~ holiday_share + region effect + date effect
-The date effect compares the regions with each other on the same day.
-Everything that affects all regions equally on that day (weekday, season,
-COVID, national holidays, weather, ...) cancels out. The holiday effect
-is therefore measured only on days when some regions have a holiday and
-others do not.
-
-2. Data
-
--------------------------------------------------------------------------------------------
-| Input                                  | Output                                          |
-|----------------------------------------|-------------------------------------------------|
-| data/processed/df_q2.parquet           | results/tables/holiday_effect_regional_only.csv |
-| results/tables/holiday_effect_all.csv  | results/figures/holiday_effects.png             |
--------------------------------------------------------------------------------------------
-
-3. Script description
-
-1. Read df_q2 and convert region to text (the panel index cannot use a
-   categorical column).
-2. Per category: panel regression (PanelOLS) with region and date effects.
-3. Convert the holiday_share coefficient to a % change with 95% confidence
-   interval.
-4. Save the table and draw a coefficient plot comparing both estimates:
-   all holidays (calendar model) vs. regional holidays only.
-
-4. Notes
-
-- holiday_share goes from 0 to 1, so the coefficient is the effect of a full
-  holiday (whole region off). % change = (exp(b) - 1) * 100.
-- Standard errors: cov_type="kernel" (Driscoll-Kraay), robust to correlation
-  between regions on the same day and over time.
-- Only 7 regions: the estimate relies on relatively few regional holidays.
+Specifics:
+- The date effect absorbs everything that all regions share on a day,
+  including national holidays. The holiday effect is therefore only
+  estimated from regional holidays.
+- Kernel standard errors are used, because spending on one day is
+  correlated with nearby days and with other regions on the same day.
+- The plot compares this estimate with "all holidays" from calendar_regression.py.
 """
 
 import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
 from linearmodels.panel import PanelOLS
+
+from integration.build_df import get_build_df
 from scripts import config
 
 
 def load_df() -> pd.DataFrame:
-    """Read df_q2 and prepare the region column for the panel index."""
-    df = pd.read_parquet(config.DF_Q2)
+    """Load the Q2 table and prepare it for the panel index.
+        Returns:
+            Q2 table without missing log_spending, region as text
+        """
+    df = get_build_df()
     df = df.dropna(subset=[config.TARGET]).copy()
     df["region"] = df["region"].astype(str)
     return df
 
 
 def fit_category(cat_df: pd.DataFrame):
-    """Panel regression for one category with region and date effects."""
-    # PanelOLS needs a two-level index: (entity, time) = (region, date)
+    """Fit the panel regression with region and date effects for one category.
+        Args:
+            cat_df: Q2 table for one category
+        Returns:
+            Fitted PanelOLS result
+        """
+
     panel = cat_df.set_index(["region", "date"])
     model = PanelOLS(panel[config.TARGET], panel[["holiday_share"]],
-                     entity_effects=True,     # region effect: level differences between regions
-                     time_effects=True)       # date effect: : everything common to all regions on a day
+                     entity_effects=True,     # region effect: levels differences between regions
+                     time_effects=True)       # date effect: everything common to all regions on a day
     return model.fit(cov_type="kernel")
 
 
 def holiday_effect(result) -> dict:
-    """Coefficient of holiday_share as % change, with 95% confidence interval."""
+    """Read the holiday effect from a fitted model as % change.
+        Args:
+            result: Fitted PanelOLS result containing holiday_share
+        Returns:
+            Dict with effect_pct, ci_low, ci_high (95% interval), p_value and n_obs
+        """
+
     b = result.params["holiday_share"]
     low, high = result.conf_int().loc["holiday_share"]
     to_pct = lambda x: (np.exp(x) - 1) * 100        # log points -> % change
@@ -74,7 +61,13 @@ def holiday_effect(result) -> dict:
 
 
 def regional_effect_by_category(df: pd.DataFrame) -> pd.DataFrame:
-    """Holiday effect per category, estimated from regional holidays only."""
+    """Estimate the regional holiday effect for every category.
+        Args:
+            df: Q2 table
+        Returns:
+            DataFrame with one row per category, sorted by effect_pct
+        """
+
     rows = {}
     for category, cat_df in df.groupby("category", observed=True):
         rows[category] = holiday_effect(fit_category(cat_df))
@@ -83,7 +76,12 @@ def regional_effect_by_category(df: pd.DataFrame) -> pd.DataFrame:
 
 
 def plot_effects(regional: pd.DataFrame, all_holidays: pd.DataFrame) -> None:
-    """Coefficient plot: both estimates per category with 95% confidence intervals."""
+    """Plot both holiday effects per category with 95% intervals and save it.
+        Args:
+            regional: Output of regional_effect_by_category()
+            all_holidays: Holiday effect per category from calendar_regression.py
+        """
+
     order = regional.index
     y = np.arange(len(order))
     fig, ax = plt.subplots(figsize=(9, 5))
@@ -105,8 +103,8 @@ def plot_effects(regional: pd.DataFrame, all_holidays: pd.DataFrame) -> None:
     plt.close(fig)
 
 
-def run() -> None:
-    """Fit the panel models, save the table and the coefficient plot."""
+def run_regional_holiday_effect() -> None:
+    """Fit the panel models and save the table and the coefficient plot."""
     config.FIGURES_DIR.mkdir(parents=True, exist_ok=True)
     config.TABLES_DIR.mkdir(parents=True, exist_ok=True)
 
@@ -119,6 +117,3 @@ def run() -> None:
     plot_effects(regional, all_holidays)
     print(f"Figure saved to {config.FIGURES_DIR / 'holiday_effects.png'}")
 
-
-if __name__ == "__main__":
-    run()

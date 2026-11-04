@@ -1,51 +1,36 @@
-"""Data integration - build daily table for Q2.
+"""Data integration -  daily table for Q2.
 
-1. Introduction
+Combines the cleaned spending data with the regional holiday share. The result is
+the table used for the Q2 analysis, with one row per date, Grossregion and spending
+category.
 
-Combines the cleaned spending data with the regional holiday share and adds
-calendar variables. The result is the table used for the Q2 analysis:
-one row per date, Grossregion and spending category.
-
-2. Data
-
-------------------------------------------------------------------------------
-| Input                                    | Output                          |
-|------------------------------------------|---------------------------------|
-| data/processed/cleaned_spending.parquet  | data/processed/df_q2.parquet    |
-| data/processed/region_holiday_share.csv  |                                 |
------------------------------------------------------------------------------
-
-Added columns:
-- holiday_share: share of the region's population with a holiday (0-1)
-- year, month, weekday, is_weekend: derived from the date
-- is_holiday:    True if holiday_share >= 0.5, i.e. at least half of the
-                 region's population has the day off (config.HOLIDAY_THRESHOLD)
-- log_spending:  natural log of spending
-
-3. Script description
-
-1. Read the cleaned spending and the region holiday share.
-2. Left join the holiday share on date and region; days without any holiday
-   get holiday_share = 0.
-3. Add calendar columns from the date.
-4. Add the log of spending.
-5. Sort and save as parquet.
-
-4. Notes
-
-- Left join: all spending rows are kept.
-- Log spending is used so that differences can be read as percentage changes,
-  independent of the spending level of a category.
+Specifics:
+- Left join on date and region, so every spending row is kept. Days without
+  any holiday get holiday_share = 0.
+- is_holiday is True if at least half of the region's population has the
+  day off.
+- weekday is converted from 0-6 to the day name as an ordered category.
+- is_outlier, border_region and border_country are dropped because Q2 doesn't use them.
 """
 
-import numpy as np
 import pandas as pd
+
+from integration.population_holidays import get_population_holidays
 from scripts import config
+from spending.spending import get_spending
+
 
 def load_inputs() -> tuple[pd.DataFrame, pd.DataFrame]:
-    """Read the cleaned spending and the region holiday share."""
-    spending = pd.read_parquet(config.CLEANED_SPENDING)
-    share = pd.read_csv(config.REGION_HOLIDAY_SHARE, parse_dates=["date"])
+    """Read the cleaned spending and the region holiday share.
+        Returns:
+            (spending, share): Spending without the columns not used in Q2,
+            and the holiday share per date and region
+        """
+    spending = get_spending()
+    if spending is None:
+        raise FileNotFoundError("Cleaned spending missing, run the cleaning notebook first.")
+    spending = spending.drop(columns=["is_outlier", "border_region", "border_country"])
+    share = get_population_holidays()
     return spending, share
 
 
@@ -59,42 +44,36 @@ def merge_holidays(spending: pd.DataFrame, share: pd.DataFrame) -> pd.DataFrame:
 
 
 def add_calendar(df: pd.DataFrame) -> pd.DataFrame:
-    """Add calendar columns derived from the date."""
-    df["year"] = df["date"].dt.year
-    df["month"] = df["date"].dt.month
+    """Add the weekday name and the holiday flag.
+        Args:
+            df: Spending with holiday share; year, month, is_weekend and
+                log_spending already come from the cleaning notebook
+        Returns:
+            DataFrame with weekday as ordered category and is_holiday
+        """
+    # the notebook stores the weekday as 0-6
     df["weekday"] = pd.Categorical(df["date"].dt.day_name(),
                                    categories=config.WEEKDAYS, ordered=True)
-    df["is_weekend"] = df["date"].dt.day_of_week >= 5
     # holiday if at least half of the region's population has the day off
     df["is_holiday"] = df["holiday_share"] >= config.HOLIDAY_THRESHOLD
     return df
 
 
-def add_log_value(df: pd.DataFrame) -> pd.DataFrame:
-    """Log of spending, so regression coefficients read as percentage changes."""
-    df["log_spending"] = np.log(df["spending"])
-    return df
-
 
 def build_df_q2() -> pd.DataFrame:
-    """Run the steps in order: load -> merge -> calendar -> log."""
+    """Run the steps in order.
+        Returns:
+            Q2 table, sorted by date, region and category
+        """
     spending, share = load_inputs()
     df = merge_holidays(spending, share)
     df = add_calendar(df)
-    df = add_log_value(df)
     return df.sort_values(["date", "region", "category"]).reset_index(drop=True)
 
 
-def run() -> pd.DataFrame:
+def get_build_df() -> pd.DataFrame:
     """Build the Q2 table and save it to data/processed/df_q2.parquet."""
     df = build_df_q2()
-    output = config.DF_Q2
-    output.parent.mkdir(parents=True, exist_ok=True)
-    df.to_parquet(output, index=False)
-    print(f"{len(df)} rows saved to {output}")
     print(f"Holiday rows (share >= {config.HOLIDAY_THRESHOLD}): {df['is_holiday'].sum()}")
     return df
 
-
-if __name__ == "__main__":
-    run()

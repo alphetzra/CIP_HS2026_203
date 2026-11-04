@@ -1,51 +1,15 @@
-#TODO: read scrape.py first Change this and describe just what this file is doing and why it is here and it specifics
+"""Holiday data cleaning.
 
-"""Holiday data cleaning - parse the cached HTML pages into one table.
+The scraped holiday pages are turned into one table with one row per date,
+holiday and canton/CH.
 
-1. Introduction
-
-The scraped holiday pages (one HTML file per canton/national calendar and
-year) are turned into one tidy table with one row per date, holiday and
-canton/CH for the national calendar.
-
-2. Data
-
----------------------------------------------------------------------------------
-| Input                                   | Output                              |
-|-----------------------------------------|-------------------------------------|
-| data/raw/raw_holidays/html_cache/*.html | data/processed/cleaned_holidays.csv |
---------------------------------------------------------------------------------
-
-Output columns:
-- date, holiday:   date and English name of the holiday
-- holiday_class:   class shown on the website for full holidays (badge number);
-                   empty for partial holidays
-- is_partial:      True if the holiday only applies in part of the canton
-- canton:          canton abbreviation, or "CH" for the national calendar
-- canton_share:    share of the canton's population where the holiday applies
-                   (1.0 for full holidays, NaN if the website gives no number)
-- is_below:        True if the website gives the share as "< x %"
-                   (the stored value is then an upper bound)
-- share_note:      original text when no share is given ("varies", "n.a.")
-- level:           "national" or "canton"
-
-3. Script description
-
-1. Loop over all expected cache files (config.YEARS x national + cantons)
-   and report missing ones.
-2. Parse each table row with BeautifulSoup: date, holiday name and the
-   class column. Full holidays have a numbered badge; partial holidays show
-   a population share instead.
-3. Combine all rows, sort them and save as CSV.
-4. Check: list national holidays that are missing in a canton's calendar.
-
-4. Notes
-
-- No rows are dropped. Partial holidays without a number keep
-  canton_share = NaN and the original text in share_note, so this
-  information is not lost.
-- The parser depends on the current HTML structure of feiertagskalender.ch
-  (row selector in config.ROW_SELECTOR, class in the 5th column).
+Specifics:
+- Full holidays are valid in the whole canton and come with a legal class
+  (e.g. 2 = on a par with Sundays), so their canton_share is 1.0.
+- Partial holidays are only valid in part of a canton. canton_share is the
+  share of the population that has the day off. "< x %" is stored as x with
+  is_below=True. When the page gives no number, the share is NaN and the
+  original text is kept in share_note.
 """
 
 import re
@@ -54,14 +18,15 @@ import pandas as pd
 from bs4 import BeautifulSoup
 from scripts import config
 
-#TODO: GOOD Coment but this thing should not just be lying arount in this file make a extra file so it could be reused But i do not understand what group 1 or group 2 means??
-
 
 
 def cached_files():
-    # TODO method comment
-    """Generate (path, label) tuples for cached pages."""
-    # map website geo id to label (CH for national, else canton abbreviation)
+    """Yield every cached holiday page and report missing ones.
+    Yields:
+        (path, label): Path to the cached HTML file and its label
+        (CH/canton abbreviation).
+    """
+
     labels = {config.NATIONAL_GEO: "CH"}
     labels.update({geo: canton for canton, geo in config.CANTONS.items()})
     for year in config.YEARS:
@@ -74,10 +39,15 @@ def cached_files():
 
 
 def parse_percent(text: str) -> tuple[float | None, bool]:
-    # TODO method comment
-    """Converts percentages in floats, 'varies'/'n.a.' -> None.
-    Also returns whether the value was given as "< x %"."""
-    # matches e.g. "35 %", "12.5%" or "< 5 %"; group 1 = "<", group 2 = number
+    """Extract a population share from text like "35 %" or "< 5 %".
+        Args:
+            text: Text from the class column of partial holiday
+        Returns:
+            (share, is_below): Share as a fraction (0.35) or None if the text
+                has no number ("varies", "na"); is_below is True for "< x %"
+        """
+
+    # matches e.g. "35 %", "12.5%" or "< 5 %"
     percent_regex = re.compile(r"(<)?\s*([\d.]+)\s*%")
     percent_match = percent_regex.search(text)
     if percent_match is None:
@@ -88,55 +58,64 @@ def parse_percent(text: str) -> tuple[float | None, bool]:
 
 
 def parse_file(path: Path, canton: str) -> list[dict]:
-    # TODO method comment
-    """Parse one cached page into a list of holiday rows."""
+    """Parse one cached holiday page into a list of holiday rows.
+        Args:
+            path: Path to the cached HTML file
+            canton: Label
+        Returns:
+            List of dicts, one per holiday, with date, holiday, holiday_class,
+            is_partial, canton, canton_share, is_below and share_note
+        """
+
     soup = BeautifulSoup(path.read_text(encoding="utf-8"), "html.parser")
-    rows = []
+    rows_list = []
     for tr in soup.select(config.ROW_SELECTOR):
-        # TODO you call this variable cells even so you call them in the comments rows very weird. Describe here how cells/rows are build like cells[0] = date, cells[1] = .... or i would always have to search the whole code to find all the columns
-        cells = tr.find_all("td")
+        # One <tr> is one holiday. Its rows:
+        #   rows[0]: date (dd.mm.yyyy)
+        #   rows[1]: weekday ("Sa"), not used
+        #   rows[2]: holiday name, surrounded by tabs/line breaks in the HTML
+        #   rows[3]: calendar week, not used
+        #   rows[4]: class badge (full holiday) or population share ("7.5 %")
+        rows = tr.find_all("td")
         # skip rows that are not holiday rows
-        if len(cells) < 5:
+        if len(rows) < 5:
             continue
 
-        #TODO read todo at beginning of the for loop
-        # column 1: date, column 3: holiday name
-        date = pd.to_datetime(cells[0].get_text(strip=True), format="%d.%m.%Y")
-        # TODO do not explain one row i can ready the one row code comments are here to explain difficult things which are not seen insteandly and would make it easier to understand
-        # join the text parts and collapse multiple spaces/breaks
-        holiday = " ".join(cells[2].get_text(" ", strip=True).split())
-
-        # TODO read todo at beginning of the for loop
-        # column 5: badge with class number (full holiday)
-        # or population share as text (partial holiday)
-        badge = cells[4].select_one("span.badge")
+        date = pd.to_datetime(rows[0].get_text(strip=True), format="%d.%m.%Y")
+        holiday = " ".join(rows[2].get_text(" ", strip=True).split())
+        badge = rows[4].select_one("span.badge")
         share_note = None
         is_below = False
-        #TODO: Good comment but not enougth what does it mean full holiday with a class?
-        if badge is not None:  # full holiday with a class
+        if badge is not None:
+            # full holiday: valid in the whole canton
             holiday_class = int(badge.get_text(strip=True))
             is_partial = False
             canton_share = 1.0
         else:
+            # partial holiday
             holiday_class = None
             is_partial = True
-            class_text = cells[4].get_text(" ", strip=True)
+            class_text = rows[4].get_text(" ", strip=True)
             canton_share, is_below = parse_percent(class_text)
+
             if canton_share is None:
-                #TODO: Again i sea that you make it Nan but why you are doing it i have no glue
-                # no number: keep NaN and the original text
+                # website gives no number
                 canton_share = float("nan")
                 share_note = class_text
-        rows.append({"date": date, "holiday": holiday, "holiday_class": holiday_class,
+        rows_list.append({"date": date, "holiday": holiday, "holiday_class": holiday_class,
                      "is_partial": is_partial, "canton": canton,
                      "canton_share": canton_share, "is_below": is_below,
                      "share_note": share_note})
-    return rows
+    return rows_list
 
 
 def missing_national_dates(df: pd.DataFrame) -> pd.DataFrame:
-    # TODO method comment
-    """Consistency check: a full national holiday is expected on every cantonal page."""
+    """Consistency check: find full national holidays that are missing from a canton's calendar.
+    Args:
+        df: Cleaned holiday table with a "level" column (canton/national)
+    Returns:
+        DataFrame with date, holiday and canton for every missing entry
+    """
 
     national = df.loc[(df["level"] == "national") & (~df["is_partial"]),
                ["date", "holiday"]].drop_duplicates("date")
@@ -147,7 +126,12 @@ def missing_national_dates(df: pd.DataFrame) -> pd.DataFrame:
     return merged.loc[merged["_merge"] == "left_only"].drop(columns="_merge")
 
 
-def cleaning_holidays() -> pd.DataFrame:
+def get_preprocessed_cleaned_holidays() -> pd.DataFrame:
+    """Build the cleaned holiday table from all cached pages.
+        Returns:
+            DataFrame with one row per date, holiday and canton/CH, sorted by
+            date, holiday and canton; prints how many national dates are missing
+        """
     rows = []
     for path, canton in cached_files():
         for row in parse_file(path, canton):
@@ -156,6 +140,7 @@ def cleaning_holidays() -> pd.DataFrame:
                                      "canton", "canton_share", "is_below",
                                      "share_note"])
     df["holiday_class"] = df["holiday_class"].astype("Int64")
+    df["date"] = pd.to_datetime(df["date"])
     df["level"] = df["canton"].eq("CH").map({True: "national", False: "canton"})
     df = df.sort_values(["date", "holiday", "canton"]).reset_index(drop=True)
 

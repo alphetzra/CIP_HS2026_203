@@ -21,12 +21,12 @@ def _(mo):
     mo.md(r"""
     # Exploration of the spending data
 
-    Before writing `scripts/cleaning/cleaning_spending.py` we looked at the raw export of Monitoring Consumption Switzerland to decide which cleaning steps are needed. This notebook documents what we checked and what we found.
+    This notebook documents some of what was checked and found in spending data.
 
     1. Structure of the raw data
     2. Date range
     3. Code 9999 in region and category
-    4. Check of the final table `df_q2`
+    4. Check of the final table
     """)
     return
 
