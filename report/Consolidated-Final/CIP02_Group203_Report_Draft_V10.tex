@@ -1,0 +1,245 @@
+%==================================================
+% CIP02 -- Group 203 -- Final report, Draft V10 (submission version)
+% Six A4 pages in total (title block, five sections, references).
+% Compile twice: pdflatex CIP02_Group203_Report_Draft_V10.tex
+%
+% Page budget:   title + 1 = 1 page | 2 = 1.5 | 3 = 1.5 | 4 = 1.5 | 5 + references = 0.5
+%==================================================
+\documentclass[10pt]{article}
+
+\usepackage[a4paper,top=2.0cm,bottom=2.0cm,left=2.0cm,right=2.0cm,headsep=0.5cm]{geometry}
+\usepackage[T1]{fontenc}
+\usepackage{courier}      % scalable typewriter font (Courier)
+\usepackage{mathptmx}     % Times for text and maths
+\usepackage{amsmath}
+\usepackage{xcolor}
+\usepackage{titlesec}
+\usepackage{graphicx}
+\usepackage{caption}
+\usepackage{tcolorbox}
+\tcbuselibrary{skins}
+\usepackage{fancyhdr}
+\usepackage{enumitem}
+\usepackage[protrusion=true,expansion=false,letterspace=150]{microtype}
+\usepackage{hyperref}
+\usepackage{url}
+\usepackage{needspace}
+\usepackage{float}               % [H]: the Q3 figures are placed exactly where they are defined
+\usepackage{placeins}            % \FloatBarrier keeps the Q2 figures inside Section 3
+\renewcommand{\topfraction}{0.85} % allows both Q2 figures at the top of one page
+
+%---------------- colours (from the template) ----------------
+\definecolor{navy}{RGB}{0,51,102}
+\definecolor{charcoal}{RGB}{30,33,38}
+\definecolor{muted}{RGB}{90,105,125}
+\definecolor{bluerule}{RGB}{132,164,196}
+\definecolor{phbg}{RGB}{242,245,249}
+
+% Research question as a short framed line
+\newcommand{\researchquestion}[1]{%
+  \begin{tcolorbox}[blank,left=3.4mm,top=0.6mm,bottom=0.6mm,borderline west={1.8pt}{0pt}{bluerule}]
+  {\itshape\color{navy}#1}
+  \end{tcolorbox}}
+
+%---------------- layout ----------------
+\hypersetup{colorlinks=true,linkcolor=navy,citecolor=navy,urlcolor=navy,
+  pdftitle={Calendar, event and exchange-rate effects in Swiss retail card spending},pdfauthor={Group 203}}
+\urlstyle{same}
+\linespread{1.06}
+\setlength{\parskip}{2.5pt}
+\widowpenalty=10000 % no single line of a paragraph alone at the top of a page
+\clubpenalty=10000  % ... or at the bottom of a page
+\setlength{\parindent}{0pt}
+\setlist{nosep,leftmargin=1.4em}
+
+\pagestyle{fancy}
+\fancyhf{}
+\fancyhead[L]{\small\color{muted}CIP HS2026 -- Group 203 -- Swiss retail card spending}
+\fancyhead[R]{\small\color{muted}\thepage}
+\renewcommand{\headrulewidth}{0pt}
+
+\titleformat{\section}{\large\bfseries\color{navy}}{\thesection}{0.6em}{}
+\let\plainsection\section
+\renewcommand{\section}{\Needspace*{6\baselineskip}\plainsection}
+\titleformat{\subsection}{\normalsize\bfseries\color{navy}}{\thesubsection}{0.6em}{}
+\titlespacing*{\section}{0pt}{9pt}{3pt}
+\titlespacing*{\subsection}{0pt}{6pt}{1pt}
+
+\captionsetup{font=small,labelfont={bf,color=navy},labelsep=period,justification=justified,singlelinecheck=false}
+\setlength{\abovecaptionskip}{3pt}
+\setlength{\textfloatsep}{8pt plus 2pt minus 2pt}
+\setlength{\floatsep}{8pt plus 2pt minus 2pt}
+
+% References as a subsection of Section 5 (no extra main section)
+\renewcommand{\refname}{References}
+\makeatletter
+\renewenvironment{thebibliography}[1]
+  {\subsection*{\refname}\footnotesize
+   \list{\@biblabel{\@arabic\c@enumiv}}%
+        {\settowidth\labelwidth{\@biblabel{#1}}\leftmargin\labelwidth\advance\leftmargin\labelsep
+         \itemsep 1pt\parsep 0pt\usecounter{enumiv}\let\p@enumiv\@empty\renewcommand\theenumiv{\@arabic\c@enumiv}}%
+   \sloppy}
+  {\endlist}
+\makeatother
+
+\begin{document}
+\color{charcoal}
+\thispagestyle{empty}
+
+%==================================================
+% TITLE BLOCK (no separate title page; spacing increased in V10 by about 2.5 cm in total)
+%==================================================
+\vspace*{21.3pt}
+\begin{center}
+{\fontsize{19}{23}\selectfont\bfseries\color{navy} Calendar, event and exchange-rate effects\\[1pt] in Swiss retail card spending}\\[17.7pt]
+{\color{bluerule}\rule{0.18\textwidth}{0.8pt}}\\[16.7pt]
+{\normalsize Data Collection, Integration and Preprocessing (CIP), HSLU, HS2026}\\[6.6pt]
+{\normalsize \textbf{Group 203:} Laura Da Silva Cunha, Morteza Nejati, Salvatore Nicolosi}\\[6.6pt]
+{\small\color{muted} November 2026}
+\end{center}
+\vspace{10.5pt}
+{\color{bluerule}\rule{\textwidth}{0.4pt}}
+\vspace{6.8pt}
+
+%==================================================
+\section{Introduction}
+%==================================================
+This project uses daily card-payment data from Monitoring Consumption Switzerland (MCS)\,\cite{mcs} to study how spending in the seven Swiss Grossregionen relates to major public events, calendar effects and the EUR/CHF exchange rate in 2019--2025. MCS provides scaled transaction values rather than CHF totals; spending results therefore cannot be interpreted as absolute CHF amounts. We address three research questions:
+\begin{itemize}
+\item \textbf{Q1:} How do major events (\# of participants) in Canton Zürich affect daily POS spending across different merchant categories compared with similar non-event days?
+\item \textbf{Q2:} How much of the daily variation in spending by category is explained by calendar effects (weekday, month, public holidays)? Specifically, how does a regional public holiday change spending by category in regions where it applies, compared with regions where the same date is a normal working day?
+\item \textbf{Q3:} Is spending in border regions more strongly affected by a decrease in EUR/CHF exchange rate than spending in non-border regions, and does this effect differ between border regions?
+\end{itemize}
+
+\textbf{Data and preprocessing.} All three questions use the MCS data (daily scaled transaction values and numbers of transactions by Grossregion and merchant category, downloaded as a CSV file), checked with pandas for missing values, data types, value ranges and duplicates. For Q1, they were restricted to Zürich, 2019--2025 and three merchant categories and joined with event dates and attendance estimates for Street Parade and Züri Fäscht in windows around each event, with relative-day and event-day indicators. We scraped the event data from official and public web pages with \texttt{requests} and BeautifulSoup after checking each site's \texttt{robots.txt}, and stored each value with its source URL. For Q2, cantonal holidays were scraped from feiertagskalender.ch\,\cite{feiertage} with Playwright and BeautifulSoup and weighted by Federal Statistical Office (BFS) population\,\cite{bfs}; for Q3, monthly EUR/CHF rates were requested from the Swiss National Bank (SNB) REST API\,\cite{snb}.
+
+\textbf{Analytical approach.} Q1 compares event days with comparable non-event days (Section~\ref{sec:q1}), Q2 analyses calendar effects and compares regions on the same date (Section~\ref{sec:q2}), and Q3 compares border with non-border regions (Section~\ref{sec:q3}).
+
+%==================================================
+\section{Research Question 1: Major Events in Zürich}
+\label{sec:q1}
+%==================================================
+\researchquestion{How do major events (\# of participants) in Canton Zürich affect daily POS spending across different merchant categories compared with similar non-event days?}
+
+\subsection{Method}
+Street Parade (one day; 2019 and 2022--2025, with the 2020 and 2021 editions cancelled) and Züri Fäscht (three days; 2019 and 2023) give seven editions with eleven event days. For Accommodation, Transport services, and Food and beverage services in the Zürich Grossregion, each day within ±28 days of day~0 (the Street Parade day or the Saturday of Züri Fäscht) is compared with the median of the same weekday in this window, separately for scaled spending and the scaled number of transactions. The day itself, all recorded event dates, 1~August and Whit Monday are excluded from the control days; other festivals, concerts and school holidays are not. Results are percentage deviations from this baseline, shown for days $-14$ to $+14$. The periods highlighted in Figure~\ref{fig:sp} were selected from the plotted data: they are exploratory observation windows, not statistically established periods of event influence.
+
+\subsection{Results}
+\begin{figure}[t]
+\centering
+\includegraphics[width=\textwidth]{figures_V3/q1_street_parade_combined.pdf}
+\caption{Street Parade (2019, 2022--2025): daily deviation of scaled spending (top) and number of transactions (bottom) from the same-weekday median baseline.}
+\label{fig:sp}
+\end{figure}
+
+\textbf{Street Parade} (Figure~\ref{fig:sp}).
+
+\textit{Accommodation (days $-7$ to $0$).} In all five editions, spending and transaction counts were below their baselines a week before the parade (spending only marginally in 2023) and higher on the parade day. During this week, transaction-count deviations rose more than spending deviations in four editions; in 2019 both rose similarly. On the parade day, spending was above the baseline in every edition (mean $+9.8\%$), and both measures remained above it on the following Sunday.
+
+\textit{Transport services (days $-1$ to $+1$).} Spending was below the Saturday baseline on the parade day and above the Sunday baseline on the following day in all editions. Since each day is compared with its own weekday baseline, this means that the parade Saturday was weaker and the following Sunday stronger than usual for these weekdays, not that Sunday spending exceeded Saturday spending. Transaction counts showed a weaker contrast and varied around the baseline on the parade day.
+
+\textit{Food and beverage services (days $-7$ to $+1$).} Spending was clearly below the baseline a week before the parade and moved closer to it during the week. On the parade day it was again below the baseline in every edition, and on Sunday above it. Transaction counts followed the pre-event recovery but showed no comparable dip on the parade day. The size of the event-day spending deviation depends on the baseline window (mean $-10.2\%$ with ±28 days, $-2.1\%$ with ±14 days), so it should not be read as reduced consumption caused by the parade.
+
+\begin{figure}[t]
+\centering
+\includegraphics[width=\textwidth]{figures_V3/q1_zueri_faescht_combined.pdf}
+\caption{Züri Fäscht (2019, 2023): daily deviation of scaled spending (top) and number of transactions (bottom) from the same-weekday median baseline.}
+\label{fig:zf}
+\end{figure}
+
+\textbf{Züri Fäscht} (Figure~\ref{fig:zf}). Accommodation spending was above the baseline in both (three-day means $+15.1\%$ in 2019 and $+5.7\%$ in 2023), whereas Food and beverage and Transport spending were slightly below the baseline in 2019 and above it in 2023. Before the 2023 festival, Transport spending was 40--63\% above the baseline on days $-12$ to $-9$, and transaction counts rose mainly on days $-8$ to $-6$, when Caliente! and the Coldplay concerts took place. These events coincide with only part of the elevated period. With only two editions and overlapping events, the available data do not establish a consistent festival-specific pattern.
+
+\subsection{Discussion}
+\begin{itemize}
+\item \textbf{Event size and spending.} Organiser estimates put Street Parade at 0.80--0.92 million visitors on its single day and Züri Fäscht at 2.0--2.5 million over three days. Yet very large attendance does not correspond to consistently large increases in recorded card spending.
+\item \textbf{Street Parade.} Patterns recur across editions but differ by category: only Accommodation shows a clear positive event-day deviation (mean $+9.8\%$), while Food and beverage and Transport spending fall below their Saturday baselines on the parade day. Informal accommodation, self-supplied food, cash payments or street closures might contribute; the data cannot test this.
+\item \textbf{Züri Fäscht.} Across the three categories, the festival days are not consistently distinguishable from surrounding fluctuations, the two editions differ and nearby events overlap; the data do not establish a consistent festival pattern.
+\end{itemize}
+These are descriptive comparisons, not causal estimates; the attendance--spending relationship was not statistically tested.
+
+%==================================================
+\section{Research Question 2: Calendar and Public Holidays}
+\label{sec:q2}
+%==================================================
+\researchquestion{How much of the daily variation in spending by category is explained by calendar effects (weekday, month, public holidays)? Specifically, how does a regional public holiday change spending by category in regions where it applies, compared with regions where the same date is a normal working day?}
+
+\subsection{Method}
+Q2 uses the MCS data for all seven Grossregionen and seven merchant categories in 2019--2025. Holidays of all 26 cantons were scraped from feiertagskalender.ch with Playwright after checking \texttt{robots.txt} and the terms of use, cached as HTML and parsed with BeautifulSoup. Full holidays count as 1, half-holidays as 0.5 and partial holidays by their stated population share (0 if no coverage is stated); weighting the cantons by BFS population gives a daily holiday share between 0 and 1 per Grossregion. After removing code 9999, with IQR outliers and the COVID period (16~March 2020 to 31~December 2022) flagged rather than deleted, the panel has 125{,}293 observations (2{,}557 days $\times$ 7 regions $\times$ 7 categories).
+
+Two models were estimated per category. First, log spending was regressed (OLS) on region and then sequentially on weekday, month, year, COVID and holiday share; each group's $R^2$ gain is expressed as a share of the within-region variation. Second, a panel model with region and date fixed effects (Driscoll--Kraay standard errors) compares regions on the same date, so its holiday effect is identified only from the 301 dates on which holidays differ between regions. Effects are reported as the percentage change on a full holiday.
+
+\subsection{Results}
+\begin{figure}[t]
+\centering
+\includegraphics[width=0.88\textwidth]{figures_Q2/r2_by_category.png}
+\caption{Share of within-region daily variation in log spending explained by calendar variables, added sequentially in the order weekday, month, year, COVID, holiday (OLS per category, 2019--2025). Grey: not explained.}
+\label{fig:r2}
+\end{figure}
+\begin{figure}[t]
+\centering
+\includegraphics[width=0.85\textwidth]{figures_Q2/holiday_effects.png}
+\caption{Change in daily scaled spending on a full public holiday, 2019--2025 (95\% confidence intervals). Blue: all holidays (OLS with region, weekday, month, year and COVID controls). Red: regional holidays only (region and date fixed effects, same-date comparison).}
+\label{fig:holidays}
+\end{figure}
+
+\textbf{Explained variation} (Figure~\ref{fig:r2}). Calendar variables explain 91\% of the within-region variation in Retail: Food, beverage, tobacco and 78\% in Retail: Other goods, but only 60\% in Food and beverage services and 48\% in Accommodation. In the two retail categories the weekday alone accounts for 65--74\%, consistent with shops closing on Sundays. Year effects dominate in Transport services and Fuel stations, possibly reflecting level shifts during and after COVID. Holidays add 10--11 percentage points in the two retail categories and Other, and less than one point elsewhere. Because the groups are added in a fixed order, the segments are sequential $R^2$ gains, not independent or causal contributions.
+
+\textbf{Regional holidays} (Figure~\ref{fig:holidays}). On the same date, spending on a full regional holiday is 78\% lower in Retail: Food, beverage, tobacco, 73\% in Retail: Other goods, 65\% in Other and 52\% in Transport services, but only 12\% lower in Food and beverage services and 7\% at Fuel stations. For Accommodation, the same-date estimate ($-7\%$, 95\%~CI~$-16\%$~to~$+3\%$) is not significant, whereas the all-holiday estimate is $+22\%$. In retail, the same-date estimates are 10--16 percentage points smaller in magnitude than the all-holiday estimates; this compares two model specifications and is not a measured behavioural mechanism.
+
+\subsection{Discussion}
+Weekday patterns account for most of the variation in retail spending, while hospitality depends much less on the calendar. Regional holidays coincide with large drops in recorded retail spending, consistent with shop-closing rules under which a holiday resembles a Sunday, whereas hospitality responds much less. The smaller same-date retail estimates may reflect shopping in neighbouring regions or purchases moved to adjacent days, but these mechanisms were not tested. For Accommodation, the same-date comparison changes the interpretation: the positive all-holiday estimate disappears once nationwide date-specific influences are controlled for, possibly because national holidays coincide with long weekends and tourism.
+
+\textbf{Limitations.} Aggregating cantonal holidays to Grossregionen dilutes local effects, full-holiday effects are extrapolated from days on which only part of a region was off, sequential $R^2$ gains depend on the order of the variable groups, and local events on regional holidays may remain in the same-date estimates. The analysis is observational and does not establish causal effects.
+
+\FloatBarrier
+%==================================================
+\section{Research Question 3: EUR/CHF and Border Regions}
+\label{sec:q3}
+%==================================================
+\researchquestion{Is spending in border regions more strongly affected by a decrease in EUR/CHF exchange rate than spending in non-border regions, and does this effect differ between border regions?}
+
+\subsection{Method}
+Q3 combines the MCS panel with monthly average EUR/CHF rates for 2019--2025 (84 months), requested from the SNB data portal through its REST API with \texttt{requests}\,\cite{snb}; the JSON response was parsed with pandas and stored as Parquet. The MCS data were prepared as in Section~\ref{sec:q2} (code 9999 removed, 2019--2025, outliers and COVID period flagged), and spending was log-transformed. The exchange rates were joined by year and month and the Q2 holiday shares by date and region, with a share of 0 on non-holiday dates. A Grossregion counts as a border region if it contains a canton with a main cross-border shopping area: Lake Geneva (France), Northwestern and Eastern Switzerland (Germany) and Ticino (Italy).
+
+Log spending was regressed (OLS, HC1 standard errors) on the centred EUR/CHF rate and its interaction with the border indicator. Controls are region $\times$ category, weekday, month, a linear year trend, the COVID flag and the holiday share. A second model replaces the border indicator with the neighbouring country, and the main model was re-estimated without the COVID period. Results are expressed as the additional percentage change in border-region spending for the 2019--2025 decline of EUR/CHF (about 17.5 rappen) and interpreted as associations, not causal effects.
+
+\subsection{Results}
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.75\textwidth]{figures_Q3/fig2_spending_gap_border_vs_nonborder.pdf}
+\caption{Spending in border relative to non-border regions in grocery retail (solid) and all categories (dashed), change since 2019 (12-month moving average, \%), and monthly average EUR/CHF rate, 2019--2025. Grey: COVID period.}
+\label{fig:gap}
+\end{figure}
+
+\textbf{Spending gap} (Figure~\ref{fig:gap}). In grocery retail, spending in border regions rose to about 4\% above its 2019 relation to non-border regions during the COVID period, then declined and fell below it from 2023, reaching about $-2\%$ in 2025, while EUR/CHF fell below parity in 2022. All categories together show the same rise and decline but stay above zero until late 2025. The figure is descriptive and does not establish causation.
+
+\textbf{Border vs.\ non-border regions.} For the 2019--2025 decline of EUR/CHF, border-region spending changed by an additional $-5.8\%$ (95\%~CI~$-7.5\%$~to~$-4.1\%$) relative to non-border regions. Without the COVID period, the estimate shrinks to $-1.6\%$ (95\%~CI~$-3.6\%$~to~$+0.5\%$, $p = 0.13$) and is no longer statistically significant.
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.75\textwidth]{figures_Q3/fig3_extra_effect_by_border_region.pdf}
+\caption{Additional change in daily scaled spending in each group of border regions relative to non-border regions (dashed line) for the 2019--2025 change of EUR/CHF (\% change, 95\% confidence intervals). OLS with region $\times$ category, weekday, month, year-trend, COVID and holiday controls.}
+\label{fig:border}
+\end{figure}
+
+\textbf{Border regions compared} (Figure~\ref{fig:border}). The additional change is largest around Lake Geneva ($-13.7\%$), smaller in Northwestern and Eastern Switzerland ($-3.5\%$) and not significant in Ticino ($-2.2\%$).
+
+\subsection{Discussion}
+The full-period association is consistent with residents shopping more in neighbouring euro countries when the franc is stronger, particularly around Lake Geneva, but cross-border shopping is not measured directly. The result is sensitive to the COVID period and cannot be clearly separated from pandemic restrictions and subsequent normalisation.
+
+\textbf{Limitations.} The Grossregion-level border definition dilutes local effects (Lake Geneva also includes Vaud and Valais), the exchange rate overlaps strongly with the time trend, and HC1 standard errors do not account for serial correlation, so the confidence intervals may be too narrow.
+
+%==================================================
+\section{Conclusion}
+%==================================================
+Combining card-spending data with scraped event and holiday data, population weights and exchange rates in Python allowed us to compare three influences on Swiss retail spending. Very large events did not coincide with proportionally large spending increases: Street Parade showed recurring category-specific patterns, most clearly in Accommodation, whereas Züri Fäscht showed no consistent festival signal. The weekday explained much of the variation in retail spending, and regional holidays coincided with substantial retail reductions. The border-region association with EUR/CHF was strongest around Lake Geneva but not significant without the COVID period. All findings are observational associations, not causal effects; canton-level data and more event editions would allow more precise comparisons.
+
+\begin{thebibliography}{9}
+\bibitem{mcs} \raggedright Monitoring Consumption Switzerland (University of St.\,Gallen, University of Lausanne -- E4S, Novalytica). Dataset \texttt{ACQ\_POS\_Grossregion\_NOGA.csv}; downloaded file covers 1~January 2019 to 25~October 2026; README change log dated 7~February 2024. \url{https://monitoringconsumption.com}
+\bibitem{feiertage} \raggedright feiertagskalender.ch: public holidays of the 26 Swiss cantons, 2019--2025.
+\bibitem{bfs} \raggedright Federal Statistical Office (BFS): permanent resident population by canton. \url{https://www.bfs.admin.ch}
+\bibitem{snb} \raggedright Swiss National Bank (SNB): data portal, monthly average EUR/CHF exchange rate, retrieved via REST API. \url{https://data.snb.ch}
+\end{thebibliography}
+
+\end{document}
