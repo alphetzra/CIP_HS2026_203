@@ -1,7 +1,7 @@
 %==================================================
-% CIP02 -- Group 203 -- Final report, Draft V10 (submission version)
+% CIP02 -- Group 203 -- Final report, Draft V11 (submission version)
 % Six A4 pages in total (title block, five sections, references).
-% Compile twice: pdflatex CIP02_Group203_Report_Draft_V10.tex
+% Compile twice: pdflatex CIP02_Group203_Report_Draft_V11.tex
 %
 % Page budget:   title + 1 = 1 page | 2 = 1.5 | 3 = 1.5 | 4 = 1.5 | 5 + references = 0.5
 %==================================================
@@ -164,27 +164,29 @@ These are descriptive comparisons, not causal estimates; the attendance--spendin
 \researchquestion{How much of the daily variation in spending by category is explained by calendar effects (weekday, month, public holidays)? Specifically, how does a regional public holiday change spending by category in regions where it applies, compared with regions where the same date is a normal working day?}
 
 \subsection{Method}
-Q2 uses the MCS data for all seven Grossregionen and seven merchant categories in 2019--2025. Holidays of all 26 cantons were scraped from feiertagskalender.ch with Playwright after checking \texttt{robots.txt} and the terms of use, cached as HTML and parsed with BeautifulSoup. Full holidays count as 1, half-holidays as 0.5 and partial holidays by their stated population share (0 if no coverage is stated); weighting the cantons by BFS population gives a daily holiday share between 0 and 1 per Grossregion. After removing code 9999, with IQR outliers and the COVID period (16~March 2020 to 31~December 2022) flagged rather than deleted, the panel has 125{,}293 observations (2{,}557 days $\times$ 7 regions $\times$ 7 categories).
+Q2 uses the MCS data for all seven Grossregionen and seven merchant categories in 2019--2025. Holidays of all 26 cantons were scraped from feiertagskalender.ch with Playwright after checking \texttt{robots.txt} and the terms of use, cached as HTML and parsed with BeautifulSoup. Full holidays count as 1, half-holidays as 0.5 and partial holidays by their stated population share (0 if no coverage is stated); weighting the cantons by BFS population gives a daily holiday share between 0 and 1 per Grossregion. The panel has 125{,}293 observations (2{,}557 days $\times$ 7 regions $\times$ 7 categories).
 
 Two models were estimated per category. First, log spending was regressed (OLS) on region and then sequentially on weekday, month, year, COVID and holiday share; each group's $R^2$ gain is expressed as a share of the within-region variation. Second, a panel model with region and date fixed effects (Driscoll--Kraay standard errors) compares regions on the same date, so its holiday effect is identified only from the 301 dates on which holidays differ between regions. Effects are reported as the percentage change on a full holiday.
 
 \subsection{Results}
-\begin{figure}[t]
+
+\textbf{Explained variation} (Figure~\ref{fig:r2}). Calendar variables explain 91\% of the within-region variation in Retail: Food, beverage, tobacco and 78\% in Retail: Other goods, but only 60\% in Food and beverage services and 48\% in Accommodation. In the two retail categories the weekday alone accounts for 65--74\%, consistent with shops closing on Sundays. Year effects dominate in Transport services and Fuel stations, possibly reflecting level shifts during and after COVID. Holidays add 10--11 percentage points in the two retail categories and Other, and less than one point elsewhere. Because the groups are added in a fixed order, the segments are sequential $R^2$ gains, not independent or causal contributions.
+
+\begin{figure}[H]
 \centering
 \includegraphics[width=0.88\textwidth]{figures_Q2/r2_by_category.png}
 \caption{Share of within-region daily variation in log spending explained by calendar variables, added sequentially in the order weekday, month, year, COVID, holiday (OLS per category, 2019--2025). Grey: not explained.}
 \label{fig:r2}
 \end{figure}
-\begin{figure}[t]
+
+\textbf{Regional holidays} (Figure~\ref{fig:holidays}). On the same date, spending on a full regional holiday is 78\% lower in Retail: Food, beverage, tobacco, 73\% in Retail: Other goods, 65\% in Other and 52\% in Transport services, but only 12\% lower in Food and beverage services and 7\% at Fuel stations. For Accommodation, the same-date estimate ($-7\%$, 95\%~CI~$-16\%$~to~$+3\%$) is not significant, whereas the all-holiday estimate is $+22\%$. In retail, the same-date estimates are 10--16 percentage points smaller in magnitude than the all-holiday estimates; this compares two model specifications and is not a measured behavioural mechanism.
+
+\begin{figure}[H]
 \centering
 \includegraphics[width=0.85\textwidth]{figures_Q2/holiday_effects.png}
 \caption{Change in daily scaled spending on a full public holiday, 2019--2025 (95\% confidence intervals). Blue: all holidays (OLS with region, weekday, month, year and COVID controls). Red: regional holidays only (region and date fixed effects, same-date comparison).}
 \label{fig:holidays}
 \end{figure}
-
-\textbf{Explained variation} (Figure~\ref{fig:r2}). Calendar variables explain 91\% of the within-region variation in Retail: Food, beverage, tobacco and 78\% in Retail: Other goods, but only 60\% in Food and beverage services and 48\% in Accommodation. In the two retail categories the weekday alone accounts for 65--74\%, consistent with shops closing on Sundays. Year effects dominate in Transport services and Fuel stations, possibly reflecting level shifts during and after COVID. Holidays add 10--11 percentage points in the two retail categories and Other, and less than one point elsewhere. Because the groups are added in a fixed order, the segments are sequential $R^2$ gains, not independent or causal contributions.
-
-\textbf{Regional holidays} (Figure~\ref{fig:holidays}). On the same date, spending on a full regional holiday is 78\% lower in Retail: Food, beverage, tobacco, 73\% in Retail: Other goods, 65\% in Other and 52\% in Transport services, but only 12\% lower in Food and beverage services and 7\% at Fuel stations. For Accommodation, the same-date estimate ($-7\%$, 95\%~CI~$-16\%$~to~$+3\%$) is not significant, whereas the all-holiday estimate is $+22\%$. In retail, the same-date estimates are 10--16 percentage points smaller in magnitude than the all-holiday estimates; this compares two model specifications and is not a measured behavioural mechanism.
 
 \subsection{Discussion}
 Weekday patterns account for most of the variation in retail spending, while hospitality depends much less on the calendar. Regional holidays coincide with large drops in recorded retail spending, consistent with shop-closing rules under which a holiday resembles a Sunday, whereas hospitality responds much less. The smaller same-date retail estimates may reflect shopping in neighbouring regions or purchases moved to adjacent days, but these mechanisms were not tested. For Accommodation, the same-date comparison changes the interpretation: the positive all-holiday estimate disappears once nationwide date-specific influences are controlled for, possibly because national holidays coincide with long weekends and tourism.
@@ -199,7 +201,7 @@ Weekday patterns account for most of the variation in retail spending, while hos
 \researchquestion{Is spending in border regions more strongly affected by a decrease in EUR/CHF exchange rate than spending in non-border regions, and does this effect differ between border regions?}
 
 \subsection{Method}
-Q3 combines the MCS panel with monthly average EUR/CHF rates for 2019--2025 (84 months), requested from the SNB data portal through its REST API with \texttt{requests}\,\cite{snb}; the JSON response was parsed with pandas and stored as Parquet. The MCS data were prepared as in Section~\ref{sec:q2} (code 9999 removed, 2019--2025, outliers and COVID period flagged), and spending was log-transformed. The exchange rates were joined by year and month and the Q2 holiday shares by date and region, with a share of 0 on non-holiday dates. A Grossregion counts as a border region if it contains a canton with a main cross-border shopping area: Lake Geneva (France), Northwestern and Eastern Switzerland (Germany) and Ticino (Italy).
+Q3 combines the MCS panel with monthly average EUR/CHF rates for 2019--2025 (84 months), requested from the SNB data portal through its REST API with \texttt{requests}\,\cite{snb}; the JSON response was parsed with pandas and stored as Parquet. For the MCS data, code 9999 was removed, the period restricted to 2019--2025, outliers and the COVID period flagged, and spending log-transformed. The exchange rates were joined by year and month and the Q2 holiday shares by date and region, with a share of 0 on non-holiday dates. A Grossregion counts as a border region if it contains a canton with a main cross-border shopping area: Lake Geneva (France), Northwestern and Eastern Switzerland (Germany) and Ticino (Italy).
 
 Log spending was regressed (OLS, HC1 standard errors) on the centred EUR/CHF rate and its interaction with the border indicator. Controls are region $\times$ category, weekday, month, a linear year trend, the COVID flag and the holiday share. A second model replaces the border indicator with the neighbouring country, and the main model was re-estimated without the COVID period. Results are expressed as the additional percentage change in border-region spending for the 2019--2025 decline of EUR/CHF (about 17.5 rappen) and interpreted as associations, not causal effects.
 
