@@ -1,0 +1,6 @@
+variable,vif
+eur_chf_c,12.5
+eur_chf_c:border_region[T.True],2.33
+year,10.46
+covid_period[T.True],1.23
+holiday_share,1.03

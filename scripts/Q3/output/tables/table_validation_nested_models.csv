@@ -1,0 +1,6 @@
+model,r_squared,aic,interaction_coef,interaction_p_value
+M1: exchange rate x border only,0.062,403964.0176,0.0034,0.0008
+M2: + category,0.423,343090.1326,0.0034,0.0
+"M3: + calendar (weekday, month, year)",0.5122,322104.672,0.0034,0.0
+M4: + COVID and holidays,0.529,317710.8352,0.0034,0.0
+M5: region x category,0.7193,252918.6269,0.0034,0.0

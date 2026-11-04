@@ -44,7 +44,6 @@ def slider_datarange(mo):
         label="Select the data range",
     )
 
-
     return (date_range,)
 
 
@@ -58,7 +57,7 @@ def _(date_range):
 def _(date_range, pd, requests):
     from_date, to_date = date_range.value
 
-    x = requests.get(f'https://data.snb.ch/api/cube/devkua/data/json/en?dimSel=D1(EUR1)&fromDate={from_date}&toDate={to_date}')
+    x = requests.get(f'https://data.snb.ch/api/cube/devkum/data/json/en?dimSel=D0(M0),D1(EUR1)&fromDate={from_date}-01&toDate={to_date}-12')
     print(x.status_code)
 
     #parse answer
@@ -68,7 +67,6 @@ def _(date_range, pd, requests):
     raw_exchange_pd = pd.DataFrame(raw_exchange_json["timeseries"][0]["values"])
     print(type(raw_exchange_pd))
     print(raw_exchange_pd)
-
 
 
 
