@@ -1,0 +1,50 @@
+region,category,effect_pct,ci_low,ci_high,p_value,n_obs
+Central,Accommodation,27.709,13.38,43.849,0.0,2557
+Central,Food and beverage services,-16.304,-27.867,-2.886,0.019,2557
+Central,Other,-71.688,-75.557,-67.208,0.0,2557
+Central,"Retail: Food, beverage, tobacco",-87.831,-90.453,-84.488,0.0,2557
+Central,Retail: Fuel stations,-2.91,-8.69,3.237,0.346,2557
+Central,Retail: Other goods,-90.712,-93.216,-87.284,0.0,2557
+Central,Transport services,-28.975,-39.147,-17.103,0.0,2557
+Eastern,Accommodation,82.313,50.541,120.79,0.0,2557
+Eastern,Food and beverage services,12.798,-3.898,32.393,0.141,2557
+Eastern,Other,-66.952,-71.844,-61.211,0.0,2557
+Eastern,"Retail: Food, beverage, tobacco",-88.853,-91.341,-85.652,0.0,2557
+Eastern,Retail: Fuel stations,-4.003,-10.585,3.064,0.26,2557
+Eastern,Retail: Other goods,-86.555,-89.6,-82.618,0.0,2557
+Eastern,Transport services,-3.6,-25.011,23.924,0.775,2557
+Espace Mittelland,Accommodation,53.08,29.316,81.21,0.0,2557
+Espace Mittelland,Food and beverage services,-17.832,-31.829,-0.961,0.039,2557
+Espace Mittelland,Other,-78.913,-82.582,-74.472,0.0,2557
+Espace Mittelland,"Retail: Food, beverage, tobacco",-87.465,-89.811,-84.58,0.0,2557
+Espace Mittelland,Retail: Fuel stations,-3.94,-10.369,2.95,0.255,2557
+Espace Mittelland,Retail: Other goods,-87.899,-90.832,-84.029,0.0,2557
+Espace Mittelland,Transport services,-39.728,-50.482,-26.639,0.0,2557
+Lake Geneva,Accommodation,33.29,13.464,56.581,0.0,2557
+Lake Geneva,Food and beverage services,-16.922,-28.422,-3.574,0.015,2557
+Lake Geneva,Other,-79.219,-82.551,-75.252,0.0,2557
+Lake Geneva,"Retail: Food, beverage, tobacco",-78.551,-81.942,-74.523,0.0,2557
+Lake Geneva,Retail: Fuel stations,-6.904,-12.1,-1.401,0.015,2557
+Lake Geneva,Retail: Other goods,-82.461,-85.896,-78.189,0.0,2557
+Lake Geneva,Transport services,-45.361,-54.739,-34.039,0.0,2557
+Northwestern,Accommodation,-25.108,-37.3,-10.546,0.001,2557
+Northwestern,Food and beverage services,-39.24,-49.435,-26.99,0.0,2557
+Northwestern,Other,-77.25,-81.494,-72.033,0.0,2557
+Northwestern,"Retail: Food, beverage, tobacco",-90.762,-93.112,-87.612,0.0,2557
+Northwestern,Retail: Fuel stations,-8.989,-16.478,-0.829,0.032,2557
+Northwestern,Retail: Other goods,-97.245,-98.075,-96.056,0.0,2557
+Northwestern,Transport services,-71.946,-76.633,-66.319,0.0,2557
+Ticino,Accommodation,27.814,10.753,47.503,0.001,2557
+Ticino,Food and beverage services,-6.623,-18.415,6.872,0.32,2557
+Ticino,Other,-76.759,-80.589,-72.173,0.0,2557
+Ticino,"Retail: Food, beverage, tobacco",-86.972,-89.939,-83.13,0.0,2557
+Ticino,Retail: Fuel stations,-15.012,-20.676,-8.944,0.0,2557
+Ticino,Retail: Other goods,-81.864,-87.226,-74.25,0.0,2557
+Ticino,Transport services,-65.982,-71.724,-59.074,0.0,2557
+Zurich,Accommodation,-10.334,-19.585,-0.018,0.05,2557
+Zurich,Food and beverage services,-37.196,-45.876,-27.126,0.0,2557
+Zurich,Other,-76.278,-79.757,-72.201,0.0,2557
+Zurich,"Retail: Food, beverage, tobacco",-86.213,-88.87,-82.923,0.0,2557
+Zurich,Retail: Fuel stations,-2.156,-9.133,5.357,0.564,2557
+Zurich,Retail: Other goods,-90.627,-92.555,-88.198,0.0,2557
+Zurich,Transport services,-61.679,-66.962,-55.551,0.0,2557
