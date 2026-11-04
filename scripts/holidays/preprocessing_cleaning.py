@@ -1,3 +1,5 @@
+#TODO: read scrape.py first Change this and describe just what this file is doing and why it is here and it specifics
+
 """Holiday data cleaning - parse the cached HTML pages into one table.
 
 1. Introduction
@@ -52,10 +54,12 @@ import pandas as pd
 from bs4 import BeautifulSoup
 from scripts import config
 
-# matches e.g. "35 %", "12.5%" or "< 5 %"; group 1 = "<", group 2 = number
-PERCENT_RE = re.compile(r"(<)?\s*([\d.]+)\s*%")
+#TODO: GOOD Coment but this thing should not just be lying arount in this file make a extra file so it could be reused But i do not understand what group 1 or group 2 means??
+
+
 
 def cached_files():
+    # TODO method comment
     """Generate (path, label) tuples for cached pages."""
     # map website geo id to label (CH for national, else canton abbreviation)
     labels = {config.NATIONAL_GEO: "CH"}
@@ -70,9 +74,12 @@ def cached_files():
 
 
 def parse_percent(text: str) -> tuple[float | None, bool]:
+    # TODO method comment
     """Converts percentages in floats, 'varies'/'n.a.' -> None.
     Also returns whether the value was given as "< x %"."""
-    percent_match = PERCENT_RE.search(text)
+    # matches e.g. "35 %", "12.5%" or "< 5 %"; group 1 = "<", group 2 = number
+    percent_regex = re.compile(r"(<)?\s*([\d.]+)\s*%")
+    percent_match = percent_regex.search(text)
     if percent_match is None:
         return None, False
     is_below = percent_match.group(1) is not None
@@ -81,25 +88,31 @@ def parse_percent(text: str) -> tuple[float | None, bool]:
 
 
 def parse_file(path: Path, canton: str) -> list[dict]:
+    # TODO method comment
     """Parse one cached page into a list of holiday rows."""
     soup = BeautifulSoup(path.read_text(encoding="utf-8"), "html.parser")
     rows = []
     for tr in soup.select(config.ROW_SELECTOR):
+        # TODO you call this variable cells even so you call them in the comments rows very weird. Describe here how cells/rows are build like cells[0] = date, cells[1] = .... or i would always have to search the whole code to find all the columns
         cells = tr.find_all("td")
         # skip rows that are not holiday rows
         if len(cells) < 5:
             continue
 
+        #TODO read todo at beginning of the for loop
         # column 1: date, column 3: holiday name
         date = pd.to_datetime(cells[0].get_text(strip=True), format="%d.%m.%Y")
+        # TODO do not explain one row i can ready the one row code comments are here to explain difficult things which are not seen insteandly and would make it easier to understand
         # join the text parts and collapse multiple spaces/breaks
         holiday = " ".join(cells[2].get_text(" ", strip=True).split())
 
+        # TODO read todo at beginning of the for loop
         # column 5: badge with class number (full holiday)
         # or population share as text (partial holiday)
         badge = cells[4].select_one("span.badge")
         share_note = None
         is_below = False
+        #TODO: Good comment but not enougth what does it mean full holiday with a class?
         if badge is not None:  # full holiday with a class
             holiday_class = int(badge.get_text(strip=True))
             is_partial = False
@@ -110,6 +123,7 @@ def parse_file(path: Path, canton: str) -> list[dict]:
             class_text = cells[4].get_text(" ", strip=True)
             canton_share, is_below = parse_percent(class_text)
             if canton_share is None:
+                #TODO: Again i sea that you make it Nan but why you are doing it i have no glue
                 # no number: keep NaN and the original text
                 canton_share = float("nan")
                 share_note = class_text
@@ -120,21 +134,8 @@ def parse_file(path: Path, canton: str) -> list[dict]:
     return rows
 
 
-def parse_holidays() -> pd.DataFrame:
-    """One row per date, holiday, canton/national."""
-    rows = []
-    for path, canton in cached_files():
-        for row in parse_file(path, canton):
-            rows.append(row)
-    df = pd.DataFrame(rows, columns=["date", "holiday", "holiday_class", "is_partial",
-                                     "canton", "canton_share", "is_below",
-                                     "share_note"])
-    df["holiday_class"] = df["holiday_class"].astype("Int64")
-    df["level"] = df["canton"].eq("CH").map({True: "national", False: "canton"})
-    return df.sort_values(["date", "holiday", "canton"]).reset_index(drop=True)
-
-
 def missing_national_dates(df: pd.DataFrame) -> pd.DataFrame:
+    # TODO method comment
     """Consistency check: a full national holiday is expected on every cantonal page."""
 
     national = df.loc[(df["level"] == "national") & (~df["is_partial"]),
@@ -146,18 +147,18 @@ def missing_national_dates(df: pd.DataFrame) -> pd.DataFrame:
     return merged.loc[merged["_merge"] == "left_only"].drop(columns="_merge")
 
 
-def run() -> pd.DataFrame:
-    df = parse_holidays()
-    print(f"\n{len(df)} rows")
-
-    output = config.CLEANED_HOLIDAYS
-    output.parent.mkdir(parents=True, exist_ok=True)
-    df.to_csv(output, index=False)
-    print(f"Saved to {output}")
+def cleaning_holidays() -> pd.DataFrame:
+    rows = []
+    for path, canton in cached_files():
+        for row in parse_file(path, canton):
+            rows.append(row)
+    df = pd.DataFrame(rows, columns=["date", "holiday", "holiday_class", "is_partial",
+                                     "canton", "canton_share", "is_below",
+                                     "share_note"])
+    df["holiday_class"] = df["holiday_class"].astype("Int64")
+    df["level"] = df["canton"].eq("CH").map({True: "national", False: "canton"})
+    df = df.sort_values(["date", "holiday", "canton"]).reset_index(drop=True)
 
     missing = missing_national_dates(df)
     print(f"\n{len(missing)} national dates missing in canton level.")
     return df
-
-if __name__ == "__main__":
-    run()

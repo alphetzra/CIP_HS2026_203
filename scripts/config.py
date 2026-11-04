@@ -1,10 +1,9 @@
-"""Shared settings for all pipeline scripts: paths, study period, regions
- and analysis choices."""
+"""Shared settings for all scripts."""
 
 from pathlib import Path
 
 # ======================= paths =======================
-ROOT = Path(__file__).resolve().parents[1]           # repository root (parent of scripts/)
+ROOT = Path(__file__).resolve().parents[1]
 RAW_DIR = ROOT / "data" / "raw"
 PROCESSED_DIR = ROOT / "data" / "processed"
 RESULTS_DIR = ROOT / "results"
@@ -12,27 +11,26 @@ FIGURES_DIR = RESULTS_DIR / "figures"
 TABLES_DIR = RESULTS_DIR / "tables"
 
 # raw data
-HTML_CACHE_DIR = RAW_DIR / "raw_holidays" / "html_cache"   # raw HTML of feiertagskalender.ch
-POP_FILE = RAW_DIR / "raw_population.csv"                  # manual download from BFS
-RAW_SPENDING = RAW_DIR / "raw_spending.parquet"            # Monitoring Consumption Switzerland
+HTML_CACHE_DIR = RAW_DIR / "raw_holidays" / "html_cache"
+POP_FILE = RAW_DIR / "raw_population.csv"
+RAW_SPENDING = RAW_DIR / "raw_spending.parquet"
 
 # processed data
-CLEANED_HOLIDAYS = PROCESSED_DIR / "cleaned_holidays.csv"
-CLEANED_POPULATION = PROCESSED_DIR / "cleaned_population.csv"
-CLEANED_SPENDING = PROCESSED_DIR / "cleaned_spending.parquet"
-REGION_HOLIDAY_SHARE = PROCESSED_DIR / "region_holiday_share.csv"
+CLEAN_SPENDING = ROOT / "data" / "interim" / "clean_spending.parquet"
 DF_Q2 = PROCESSED_DIR / "df_q2.parquet"
 
 # ======================= study period and regions =======================
-YEARS = range(2019, 2026)   # 2019 to 2025 inclusive
+YEARS = range(2019, 2026)
 
-CANTON_NO = {       # canton numbers used by BFS (column KANT in the population export)
+CANTON_NO = {
+    # canton numbers used by BFS
     1: "ZH",  2: "BE",  3: "LU",  4: "UR",  5: "SZ",  6: "OW",  7: "NW",
     8: "GL",  9: "ZG", 10: "FR", 11: "SO", 12: "BS", 13: "BL", 14: "SH",
     15: "AR", 16: "AI", 17: "SG", 18: "GR", 19: "AG", 20: "TG", 21: "TI",
     22: "VD", 23: "VS", 24: "NE", 25: "GE", 26: "JU",
 }
-REGIONS = {         # Grossregionen of Monitoring Consumption Switzerland (west to east)
+REGIONS = {
+    # Grossregionen of Monitoring Consumption Switzerland (west to east)
     "Lake Geneva":       ["GE", "VD", "VS"],
     "Espace Mittelland": ["BE", "FR", "JU", "NE", "SO"],
     "Northwestern":      ["AG", "BL", "BS"],
@@ -41,7 +39,8 @@ REGIONS = {         # Grossregionen of Monitoring Consumption Switzerland (west 
     "Eastern":           ["AI", "AR", "GL", "GR", "SG", "SH", "TG"],
     "Ticino":            ["TI"],
 }
-CANTON_TO_REGION = {}   # canton -> region (inverse of REGIONS)
+CANTON_TO_REGION = {}
+    # map many cantons to one region
 for region, cantons_in_region in REGIONS.items():
     for canton in cantons_in_region:
         CANTON_TO_REGION[canton] = region
@@ -65,14 +64,9 @@ SPENDING_URL = ("https://drive.switch.ch/index.php/s/yLISs3KVE7ASE68/download"
                 "?path=/2_ACQUIRING%20DATA&files=ACQ_POS_Grossregion_NOGA.csv")
 
 # ======================= cleaning =======================
-SPENDING_COLUMNS = {
-    "Date": "date",
-    "Region": "region",
-    "Merchant category": "category",
-    "Scaled Value": "spending",
-    "Scaled Number of Transactions": "n_transactions",
-}
-CLASS_LABELS = {            # holiday classes of feiertagskalender.ch
+
+CLASS_LABELS = {
+    # holiday classes of feiertagskalender.ch
     1: "official holiday",
     2: "public holiday on a par with Sundays",
     3: "half-holiday",
@@ -82,25 +76,18 @@ CLASS_LABELS = {            # holiday classes of feiertagskalender.ch
 }
 
 # ======================= integration =======================
-HOLIDAY_WEIGHTS = {1: 1.0, 2: 1.0, 3: 0.5}  # share of people off per class (3 = half day)
-EXCLUDED_CLASS = [4]                         # legally not recognized -> normal working day
-UNKNOWN_PARTIAL_SHARE = 0.0                  # partial holidays with "varies"/"n.a." -> nobody off
-HOLIDAY_THRESHOLD = 0.5                      # is_holiday = at least half of the region off
+HOLIDAY_WEIGHTS = {1: 1.0, 2: 1.0, 3: 0.5}
+EXCLUDED_CLASS = [4]
+UNKNOWN_PARTIAL_SHARE = 0.0
+HOLIDAY_THRESHOLD = 0.5
 WEEKDAYS = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"]
 
 # ======================= analysis =======================
-TARGET = "log_spending"                      # dependent variable of the regressions
-
-# COVID-19 period, flagged instead of deleted (controlled for in the regression).
-# Defined from the weekly laboratory-confirmed SARS-CoV-2 cases reported to the
-# FOPH (BAG): weeks with more than 50 cases per 100,000 inhabitants, extended
-# slightly before and after, because consumer behaviour already changes before
-# measures start and needs time to return to normal afterwards.
-# Source: FOPH, https://www.idd.bag.admin.ch/en/diseases/covid/statistic
-COVID_PERIOD = [("2020-03-16", "2022-12-31")]
-
+TARGET = "log_spending"
 
 # ======================= helper =======================
 def cache_path(geo, year):
     """Where the raw HTML of one holiday page is stored."""
     return HTML_CACHE_DIR / f"{geo}_{year}_{CLASS}_{LANG}.html"
+
+
