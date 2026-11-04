@@ -1,0 +1,9 @@
+model,coefficient,effect_%,ci_low_%,ci_high_%,p_value
+Main,eur_chf_c,1.0713,0.8316,1.3116,0.0
+Main,eur_chf_c:border_region[T.True],0.3438,0.2394,0.4483,0.0
+By country,eur_chf_c,1.0713,0.8316,1.3117,0.0
+By country,"eur_chf_c:C(border_group, Treatment('Non-border'))[T.France]",0.8457,0.6997,0.9918,0.0
+By country,"eur_chf_c:C(border_group, Treatment('Non-border'))[T.Germany]",0.2025,0.0771,0.3281,0.0015
+By country,"eur_chf_c:C(border_group, Treatment('Non-border'))[T.Italy]",0.1262,-0.0525,0.3052,0.1665
+Without COVID,eur_chf_c,-2.7892,-3.0697,-2.5079,0.0
+Without COVID,eur_chf_c:border_region[T.True],0.0923,-0.0271,0.2119,0.1299

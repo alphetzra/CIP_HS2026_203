@@ -1,0 +1,221 @@
+%==================================================
+% CIP02 -- Group 203 -- Final report, Draft V5
+% Six A4 pages in total (title block, five sections, references).
+% Compile twice: pdflatex CIP02_Group203_Report_Draft_V5.tex
+%
+% Placeholders:  \ph{...}            grey italic text, must be gone in the final version
+%                \placeholderbox{height}{title}{what goes here}
+%                                     reserves real space for Q2, Q3 and the conclusion;
+%                                     replace a box by text/figures of about the same height.
+% Page budget:   title + 1 = 1 page | 2 = 1.5 | 3 = 1.5 | 4 = 1.5 | 5 + references = 0.5
+%==================================================
+\documentclass[10pt]{article}
+
+\usepackage[a4paper,top=2.0cm,bottom=2.0cm,left=2.0cm,right=2.0cm,headsep=0.5cm]{geometry}
+\usepackage[T1]{fontenc}
+\usepackage{courier}      % scalable typewriter font (Courier)
+\usepackage{mathptmx}     % Times for text and maths
+\usepackage{amsmath}
+\usepackage{xcolor}
+\usepackage{titlesec}
+\usepackage{graphicx}
+\usepackage{caption}
+\usepackage{tcolorbox}
+\tcbuselibrary{skins}
+\usepackage{fancyhdr}
+\usepackage{enumitem}
+\usepackage[protrusion=true,expansion=false,letterspace=150]{microtype}
+\usepackage{hyperref}
+\usepackage{url}
+\usepackage{needspace}
+
+%---------------- colours (from the template) ----------------
+\definecolor{navy}{RGB}{0,51,102}
+\definecolor{charcoal}{RGB}{30,33,38}
+\definecolor{muted}{RGB}{90,105,125}
+\definecolor{bluerule}{RGB}{132,164,196}
+\definecolor{phbg}{RGB}{242,245,249}
+
+%---------------- placeholders ----------------
+% Short placeholder text inside a paragraph
+\newcommand{\ph}[1]{\textit{\color{muted}[#1]}}
+% Reserved block: #1 height, #2 title, #3 what will go here
+\newcommand{\placeholderbox}[3]{%
+  \begin{tcolorbox}[colback=phbg,colframe=muted,boxrule=0.5pt,sharp corners,
+    height=#1,halign=center,valign=center,left=4mm,right=4mm,top=1mm,bottom=1mm]
+    {\bfseries\color{navy}#2}\\[3pt]
+    {\small\color{muted}\itshape #3}
+  \end{tcolorbox}}
+
+% Research question as a short framed line
+\newcommand{\researchquestion}[1]{%
+  \begin{tcolorbox}[blank,left=3.4mm,top=0.6mm,bottom=0.6mm,borderline west={1.8pt}{0pt}{bluerule}]
+  {\itshape\color{navy}#1}
+  \end{tcolorbox}}
+
+%---------------- layout ----------------
+\hypersetup{colorlinks=true,linkcolor=navy,citecolor=navy,urlcolor=navy,
+  pdftitle={Calendar, exchange-rate and news effects in Swiss retail card spending},pdfauthor={Group 203}}
+\urlstyle{same}
+\linespread{1.06}
+\setlength{\parskip}{2.5pt}
+\setlength{\parindent}{0pt}
+\setlist{nosep,leftmargin=1.4em}
+
+\pagestyle{fancy}
+\fancyhf{}
+\fancyhead[L]{\small\color{muted}CIP HS2026 -- Group 203 -- Swiss retail card spending}
+\fancyhead[R]{\small\color{muted}\thepage}
+\renewcommand{\headrulewidth}{0pt}
+
+\titleformat{\section}{\large\bfseries\color{navy}}{\thesection}{0.6em}{}
+\let\plainsection\section
+\renewcommand{\section}{\Needspace*{6\baselineskip}\plainsection}
+\titleformat{\subsection}{\normalsize\bfseries\color{navy}}{\thesubsection}{0.6em}{}
+\titlespacing*{\section}{0pt}{9pt}{3pt}
+\titlespacing*{\subsection}{0pt}{6pt}{1pt}
+
+\captionsetup{font=small,labelfont={bf,color=navy},labelsep=period,justification=justified,singlelinecheck=false}
+\setlength{\abovecaptionskip}{3pt}
+\setlength{\textfloatsep}{8pt plus 2pt minus 2pt}
+\setlength{\floatsep}{8pt plus 2pt minus 2pt}
+
+% References as a subsection of Section 5 (no extra main section)
+\renewcommand{\refname}{References}
+\makeatletter
+\renewenvironment{thebibliography}[1]
+  {\subsection*{\refname}\footnotesize
+   \list{\@biblabel{\@arabic\c@enumiv}}%
+        {\settowidth\labelwidth{\@biblabel{#1}}\leftmargin\labelwidth\advance\leftmargin\labelsep
+         \itemsep 1pt\parsep 0pt\usecounter{enumiv}\let\p@enumiv\@empty\renewcommand\theenumiv{\@arabic\c@enumiv}}%
+   \sloppy}
+  {\endlist}
+\makeatother
+
+\begin{document}
+\color{charcoal}
+\thispagestyle{empty}
+
+%==================================================
+% TITLE BLOCK (no separate title page)
+%==================================================
+\begin{center}
+{\fontsize{19}{23}\selectfont\bfseries\color{navy} Calendar, exchange-rate and news effects\\[1pt] in Swiss retail card spending}\\[7pt]
+{\color{bluerule}\rule{0.18\textwidth}{0.8pt}}\\[6pt]
+{\normalsize Data Collection, Integration and Preprocessing (CIP), HSLU, HS2026}\\[3pt]
+{\normalsize \textbf{Group 203:} Laura Da Silva Cunha, Morteza Nejati, Salvatore Nicolosi}\\[3pt]
+{\small\color{muted} November 2026}
+\end{center}
+\vspace{2pt}
+{\color{bluerule}\rule{\textwidth}{0.4pt}}
+\vspace{-6pt}
+
+%==================================================
+\section{Introduction}
+%==================================================
+This project uses daily card-payment data from Monitoring Consumption Switzerland (MCS)\,\cite{mcs} to study how spending in the seven Swiss Grossregionen relates to major public events, calendar effects and the EUR/CHF exchange rate in 2019--2025. MCS provides scaled transaction values rather than CHF totals; spending results therefore cannot be interpreted as absolute CHF amounts. We address three research questions:
+\begin{itemize}
+\item \textbf{Q1:} How do major events (\# of participants) in Canton Zürich affect daily POS spending across different merchant categories compared with similar non-event days?
+\item \textbf{Q2:} How much of the daily variation in spending by category is explained by calendar effects (weekday, month, public holidays)? Specifically, how does a regional public holiday change spending by category in regions where it applies, compared with regions where the same date is a normal working day?
+\item \textbf{Q3:} Is spending in border regions more strongly affected by a decrease in EUR/CHF exchange rate than spending in non-border regions, and does this effect differ between border regions?
+\end{itemize}
+
+\textbf{Data and preprocessing.} For Q1, the MCS data (daily scaled transaction values and numbers of transactions by Grossregion and merchant category, downloaded as a CSV file) were combined with event dates and attendance estimates for Street Parade and Züri Fäscht. We collected the event data by scraping official and public web pages with \texttt{requests} and BeautifulSoup after checking each site's \texttt{robots.txt}, and stored each value with its source URL. With pandas, the spending data were checked for missing values, data types, value ranges and duplicates, restricted to Zürich, 2019--2025 and three merchant categories, joined with the event dates in windows around each event and enriched with relative-day and event-day indicators. For Q2 and Q3, the feasibility study plans EUR/CHF rates from the SNB data portal (API), cantonal holidays from feiertagskalender.ch (Selenium, BeautifulSoup) and population data from the Federal Statistical Office; these sources are provisional.
+
+\textbf{Analytical approach.} Q1 compares event days with comparable non-event days (Section~\ref{sec:q1}). Q2 and Q3 are planned as statistical models of daily spending with calendar controls; their final specifications are still open (Sections~\ref{sec:q2} and~\ref{sec:q3}).
+
+%==================================================
+\section{Research Question 1: Major Events in Zürich}
+\label{sec:q1}
+%==================================================
+\researchquestion{How do major events (\# of participants) in Canton Zürich affect daily POS spending across different merchant categories compared with similar non-event days?}
+
+\subsection{Method}
+Street Parade (one day; 2019 and 2022--2025, with the 2020 and 2021 editions cancelled) and Züri Fäscht (three days; 2019 and 2023) give seven editions with eleven event days. For Accommodation, Transport services, and Food and beverage services in the Zürich Grossregion, each day within ±28 days of day~0 (the Street Parade day or the Saturday of Züri Fäscht) is compared with the median of the same weekday in this window, separately for scaled spending and the scaled number of transactions. The day itself, all recorded event dates, 1~August and Whit Monday are excluded from the control days; other festivals, concerts and school holidays are not. Results are percentage deviations from this baseline, shown for days $-14$ to $+14$. The periods highlighted in Figure~\ref{fig:sp} were selected from the plotted data: they are exploratory observation windows, not statistically established periods of event influence.
+
+\subsection{Results}
+\begin{figure}[t]
+\centering
+\includegraphics[width=\textwidth]{figures_V3/q1_street_parade_combined.pdf}
+\caption{Street Parade (2019, 2022--2025): daily deviation of scaled spending (top) and number of transactions (bottom) from the same-weekday median baseline.}
+\label{fig:sp}
+\end{figure}
+
+\textbf{Street Parade} (Figure~\ref{fig:sp}).
+
+\textit{Accommodation (days $-7$ to $0$).} In all five editions, spending and transaction counts were below their baselines a week before the parade (spending only marginally in 2023) and higher on the parade day. During this week, transaction-count deviations rose more than spending deviations in four editions; in 2019 both rose similarly. On the parade day, spending was above the baseline in every edition (mean $+9.8\%$), and both measures remained above it on the following Sunday.
+
+\textit{Transport services (days $-1$ to $+1$).} Spending was below the Saturday baseline on the parade day and above the Sunday baseline on the following day in all editions. Since each day is compared with its own weekday baseline, this means that the parade Saturday was weaker and the following Sunday stronger than usual for these weekdays, not that Sunday spending exceeded Saturday spending. Transaction counts showed a weaker contrast and varied around the baseline on the parade day.
+
+\textit{Food and beverage services (days $-7$ to $+1$).} Spending was clearly below the baseline a week before the parade and moved closer to it during the week. On the parade day it was again below the baseline in every edition, and on Sunday above it. Transaction counts followed the pre-event recovery but showed no comparable dip on the parade day. The size of the event-day spending deviation depends on the baseline window (mean $-10.2\%$ with ±28 days, $-2.1\%$ with ±14 days), so it should not be read as reduced consumption caused by the parade.
+
+\begin{figure}[t]
+\centering
+\includegraphics[width=\textwidth]{figures_V3/q1_zueri_faescht_combined.pdf}
+\caption{Züri Fäscht (2019, 2023): daily deviation of scaled spending (top) and number of transactions (bottom) from the same-weekday median baseline.}
+\label{fig:zf}
+\end{figure}
+
+\textbf{Züri Fäscht} (Figure~\ref{fig:zf}). Accommodation spending was above the baseline in both (three-day means $+15.1\%$ in 2019 and $+5.7\%$ in 2023), whereas Food and beverage and Transport spending were slightly below the baseline in 2019 and above it in 2023. Before the 2023 festival, Transport spending was 40--63\% above the baseline on days $-12$ to $-9$, and transaction counts rose mainly on days $-8$ to $-6$, when Caliente! and the Coldplay concerts took place. These events coincide with only part of the elevated period. With only two editions and overlapping events, the available data do not establish a consistent festival-specific pattern.
+
+\subsection{Discussion}
+\begin{itemize}
+\item \textbf{Event size and spending.} Organiser estimates put Street Parade at 0.80--0.92 million visitors on its single day and Züri Fäscht at 2.0--2.5 million over three days. Yet very large attendance does not correspond to consistently large increases in recorded card spending.
+\item \textbf{Street Parade.} Patterns recur across editions but differ by category: only Accommodation shows a clear positive event-day deviation (mean $+9.8\%$), while Food and beverage and Transport spending fall below their Saturday baselines on the parade day. Informal accommodation, self-supplied food, cash payments or street closures might contribute; the data cannot test this.
+\item \textbf{Züri Fäscht.} Across the three categories, the festival days are not consistently distinguishable from surrounding fluctuations, the two editions differ and nearby events overlap; the data do not establish a consistent festival pattern.
+\end{itemize}
+These are descriptive comparisons, not causal estimates; the attendance--spending relationship was not statistically tested.
+
+%==================================================
+\section{Research Question 2: Calendar and Public Holidays}
+\label{sec:q2}
+%==================================================
+\researchquestion{How much of the daily variation in spending by category is explained by calendar effects (weekday, month, public holidays)? Specifically, how does a regional public holiday change spending by category in regions where it applies, compared with regions where the same date is a normal working day?}
+
+\subsection{Method}
+\placeholderbox{5.0cm}{Q2 method (about 150--180 words)}{Data used and how they were acquired (e.g.\ public holidays), preparation and merging with the spending data, and the analysis method actually applied.
+Feasibility-study plan, provisional: a statistical model with calendar and holiday variables.}
+
+\subsection{Results}
+\placeholderbox{4.2cm}{Q2 main findings (about 150--180 words)}{Main results with units (relative or percentage changes), differences between categories and regions.
+Only results produced by the Q2 notebook.}
+\placeholderbox{11.5cm}{Figure 3 -- Q2 main visualization}{Type to be decided by the Q2 analysis (e.g.\ heatmap, coefficient plot or time series).
+Full text width with caption; labels readable at print size.}
+\placeholderbox{5.0cm}{Table 1 or second visualization -- optional}{Key estimates or summary statistics, or a second figure; can also be replaced by text.}
+
+\subsection{Discussion and limitations}
+\placeholderbox{7.0cm}{Q2 interpretation and limitations (about 200 words)}{What the results mean, robustness checks and data limitations.}
+
+%==================================================
+\section{Research Question 3: EUR/CHF and Border Regions}
+\label{sec:q3}
+%==================================================
+\researchquestion{Is spending in border regions more strongly affected by a decrease in EUR/CHF exchange rate than spending in non-border regions, and does this effect differ between border regions?}
+
+\subsection{Method}
+\placeholderbox{5.0cm}{Q3 method (about 150--180 words)}{Exchange-rate data and how they were acquired, definition of border regions, preparation and merging, and the analysis method actually applied.
+Feasibility-study plan, provisional: a model of spending on the EUR/CHF rate with a border-region comparison and calendar controls.}
+
+\subsection{Results}
+\placeholderbox{4.2cm}{Q3 main findings (about 150--180 words)}{Main results for border and non-border regions and differences between border regions, with their uncertainty.
+Only results produced by the Q3 notebook.}
+\placeholderbox{11.5cm}{Figure 4 -- Q3 main visualization}{Type to be decided by the Q3 analysis (e.g.\ time series of EUR/CHF and spending, or estimates by region).
+Full text width with caption; labels readable at print size.}
+\placeholderbox{5.0cm}{Table 2 or second visualization -- optional}{Key estimates or summary statistics, or a second figure; can also be replaced by text.}
+
+\subsection{Discussion and limitations}
+\placeholderbox{6.0cm}{Q3 interpretation and limitations (about 180 words)}{What the results mean, robustness checks and limitations.}
+
+%==================================================
+\section{Conclusion}
+%==================================================
+\placeholderbox{4.6cm}{Conclusion (about 200 words, written when Q2 and Q3 are complete)}{Main findings across the three research questions, important limitations, possible improvements,
+and what was learned from the Python workflow (data acquisition, preparation and analysis).}
+
+\textit{Provisional Q1 finding (to be merged into the final conclusion):} Street Parade shows recurring category-specific patterns across five editions, including higher Accommodation spending on all five parade days (mean $+9.8\%$); the two Züri Fäscht editions do not support an equally clear interpretation.
+
+\begin{thebibliography}{9}
+\bibitem{mcs} \raggedright Monitoring Consumption Switzerland (University of St.\,Gallen, University of Lausanne -- E4S, Novalytica). Dataset \texttt{ACQ\_POS\_Grossregion\_NOGA.csv}; downloaded file covers 1~January 2019 to 25~October 2026; README change log dated 7~February 2024. \url{https://monitoringconsumption.com}
+\end{thebibliography}
+
+\end{document}
