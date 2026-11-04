@@ -52,6 +52,48 @@ CIP_HS2026_203/
 ```
 
 
+```
+CIP_HS2026_203/
+├── README.md
+├── requirements.txt               # Python dependencies
+│
+├── data/
+│   ├── raw/                       # Unchanged downloads, API answers and scraped data
+│   │   ├── raw_spending.parquet   
+│   │   └── raw_exchange.parquet   
+│   └── processed/                   # Cleaned single sources
+│       └── clean_spending.parquet
+│       └── Q3_spending.parquet
+│
+├── scripts/
+│   └── Q1/               # Download, API and scraping scripts
+│       └── Q1_scarping.py
+│       └── Q1_preprocessing.py
+│       └── Q1_data_analysis.py
+│       └── output/
+│           ├── figures/           # Figures used in the report
+│           └── tables/            # Regression and diagnostic tables
+│   └── Q2/                  # Cleaning of each source
+│       └── output/
+│           ├── figures/           # Figures used in the report
+│           └── tables/            # Regression and diagnostic tables
+│   └── Q3/               # Holiday share and merging into analysis panels
+│       └── spending
+│               └── download_spending.py
+│               └── preprocessing_spending.py
+│       └── spending_snb.py             #Output: data/raw/raw_snb.parquet
+│       └── Q3_download_spending.py
+│       └── Q3_preprocessing.py
+│       └── Q3_merging.py
+│       └── Q1_data_analysis.py
+│       └── output/
+│           ├── figures/           # Figures used in the report
+│           └── tables/            # Regression and diagnostic tables
+│
+└── report/                        # Final documentation (LaTeX) and feasibility study
+```
+
+
 ---
 
 ## Setup
@@ -73,7 +115,7 @@ pip install -r requirements.txt
 ### Q2 pipeline
  
 ```bash
-python main.py
+python main.py  #CHANGED TO UPDATE
 ```
  
 ### Q3 pipeline
@@ -107,7 +149,7 @@ To open a notebook interactively (e.g. to use the year slider in `api_SNB.py`), 
 | Member | Research question | Code |
 |---|---|---|
 | **Morteza Nejati** | Q1: major events in Zürich | *to be completed* |
-| **Laura Da Silva Cunha** | Q2: calendar and public holidays | `main.py`, `scripts/config.py`, `scripts/acquisition/scrape_holidays.py`, `scripts/acquisition/download_spending.py`, `scripts/cleaning/cleaning_holidays.py`, `scripts/cleaning/cleaning_population.py`, `scripts/cleaning/cleaning_spending.py`, `scripts/integration/holiday_share.py`, `scripts/integration/build_df.py`, `scripts/analysis/calendar_index.py`, `scripts/analysis/calendar_regression.py`, `scripts/analysis/regional_holiday_effect.py` |
+| **Laura Da Silva Cunha** | Q2: population and public holidays + README.md | `main.py`, `scripts/config.py`, `scripts/acquisition/scrape_holidays.py`, `scripts/acquisition/download_spending.py`, `scripts/cleaning/cleaning_holidays.py`, `scripts/cleaning/cleaning_population.py`, `scripts/cleaning/cleaning_spending.py`, `scripts/integration/holiday_share.py`, `scripts/integration/build_df.py`, `scripts/analysis/calendar_index.py`, `scripts/analysis/calendar_regression.py`, `scripts/analysis/regional_holiday_effect.py` |
 | **Salvatore Nicolosi** | Q3: EUR/CHF and border regions + Git |
 
 
@@ -116,7 +158,7 @@ To open a notebook interactively (e.g. to use the year slider in `api_SNB.py`), 
 | | Used for | Checked / decided by the team |
 |---|---|---|
 | Q1 | *to be completed* | *to be completed* |
-| Q2 | *to be completed* | *to be completed* |
+| Q2 | *to be completed* | *to be completed* | 
 | Q3 | Suggestions to improve and debug visualizations with matplotlib | Debugging tips the marimo notebooks whenever necessary (e.g. shallow copy); clarifying `statsmodels` syntax for HC1 standard errors and VIF; polishing the English of the Q3 report to match style and repository structure section and the README.md | Collecting ideas for order-region classification, robustness check without COVID debug; every AI suggestion was reviewed by manually searching libraries and tested before committing |
  
 All research questions, methodological choices, analyses and conclusions were developed and checked by the team.
