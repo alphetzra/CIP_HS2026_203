@@ -1,0 +1,8 @@
+,effect_pct,ci_low,ci_high,p_value,n_obs
+"Retail: Food, beverage, tobacco",-77.544,-82.303,-71.505,0.0,17899.0
+Retail: Other goods,-73.04,-79.693,-64.207,0.0,17899.0
+Other,-65.152,-69.47,-60.223,0.0,17899.0
+Transport services,-51.929,-59.258,-43.281,0.0,17899.0
+Food and beverage services,-11.548,-17.394,-5.289,0.0,17899.0
+Retail: Fuel stations,-6.893,-10.927,-2.676,0.002,17899.0
+Accommodation,-6.747,-15.59,3.022,0.169,17899.0

@@ -73,5 +73,10 @@ def _(output_folder, pd, url):
     return
 
 
+@app.cell
+def _():
+    return
+
+
 if __name__ == "__main__":
     app.run()

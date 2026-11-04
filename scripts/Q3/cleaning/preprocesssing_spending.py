@@ -20,6 +20,7 @@ def _():
 @app.cell(hide_code=True)
 def _(mo):
     mo.md(r"""
+ 
     """)
     return
 
@@ -35,6 +36,7 @@ def _(Path, pd):
 @app.cell(hide_code=True)
 def _(mo):
     mo.md(r"""
+ 
     """)
     return
 
@@ -178,6 +180,7 @@ def _(pd, spending):
 @app.cell(hide_code=True)
 def _(mo):
     mo.md(r"""
+ 
     """)
     return
 
@@ -256,8 +259,6 @@ def _(spending_filtered):
     spending_filtered["border_country"] = spending_filtered["region"].astype(str).map(border_countries)
 
 
-
-
     return
 
 
@@ -333,7 +334,6 @@ def _(Path, spending_clean):
     output_file = Path("../../data/interim/clean_spending.parquet")
 
     spending_clean.to_parquet(output_file, index=False)
-
     return
 
 

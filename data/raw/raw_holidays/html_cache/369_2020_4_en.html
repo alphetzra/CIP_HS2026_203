@@ -1,0 +1,873 @@
+<!DOCTYPE html><html lang="en"><head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+<title>Public holidays Canton Bern 2020 (Statutory + non-recognised public holidays)</title>
+
+	<meta name="googlebot" content="index, follow">
+	<meta name="robots" content="index, follow">	
+	<meta name="description" content="The data source for public holidays and school holidays, since 2003">
+	<meta name="author" content="psc Informatik, CH-Arch">
+	<meta name="publisher" content="psc Informatik, CH-Arch">
+	<meta name="revisit-after" content="14 days"> 
+	<link rel="apple-touch-icon" sizes="180x180" href="/favicon/apple-touch-icon.png">
+	<link rel="icon" type="image/png" sizes="32x32" href="/favicon/favicon-32x32.png">
+	<link rel="icon" type="image/png" sizes="16x16" href="/favicon/favicon-16x16.png">
+    <link rel="icon" type="image/png" sizes="192x192" href="/favicon/android-chrome-192x192.png">
+	<link rel="manifest" href="/favicon/site.webmanifest">	
+    <meta name="theme-color" content="#ffffff">
+	    <link href="tpl/assets/css/bootstrap.css" rel="stylesheet" type="text/css">
+	<link href="tpl/assets/fontawesome-free-6.7.2-web/css/all.min.css" rel="stylesheet" type="text/css">
+    <link href="tpl/assets/css/fcal_2025.css" rel="stylesheet" type="text/css">
+	
+	</head>
+
+<body>
+	
+
+
+
+<div id="header">
+    <div class="container">
+        <div class="row align-items-center">
+            <!-- Logo -->
+            <div class="col-xs-4 col-sm-2 logo-container">
+                <a href="/index.php?geo=369&amp;jahr=2020&amp;klasse=4&amp;hl=en">
+                    <img id="logo" src="/gfx/logos/fcal_logo_2026_m_slogan.jpg" alt="Feiertagskalender.ch" class="img-responsive">
+                </a>
+            </div>
+			
+
+            <!-- Suchfeld -->
+            <div class="col-xs-12 col-sm-6 search-container">
+                <form id="main-suche" name="suchform" method="post" action="/suchen.php" class="form-inline">
+                    <div class="input-group">
+                        <input type="text" class="form-control search-input" placeholder="Suchen..." name="term">
+                        <span class="input-group-btn">
+                            <button class="btn search-btn" type="submit" title="Suchen">
+                                <i class="fa-solid fa-search" style="color:white"></i>
+                            </button>
+                        </span>
+                    </div>
+                    <input name="geo" type="hidden" value="369">
+                    <input name="jahr" type="hidden" value="2020">
+                    <input name="klasse" type="hidden" value="4">		
+                    <input name="hl" type="hidden" value="en">		
+                                    </form>
+            </div>
+
+            <!-- API-Button -->
+            <div class="col-xs-6 col-sm-4 hidden-print text-right">
+                <a href="/api/documentation_d/index.php?hl=en" class="btn api-btn">API</a>
+            </div>
+        </div>
+
+        <!-- Navigation -->
+        <nav class="navbar navbar-default">
+            <div class="container-fluid">
+                <div class="navbar-header">
+                    <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar">
+                        <span class="sr-only">Navigation ein-/ausblenden</span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                    </button>
+                </div>
+                <div id="navbar" class="navbar-collapse collapse">
+                    <ul class="nav navbar-nav">
+                        <!-- Feiertage -->
+                        <li class="dropdown">
+                            <a href="#" class="dropdown-toggle" data-toggle="dropdown">Public holidays <i class="fa fa-caret-down"></i></a>
+                            <ul class="dropdown-menu">
+                                <li><a href="/index.php?geo=369&amp;jahr=2020&amp;klasse=4&amp;hl=en"><span><i class="fa-solid fa-map fa-fw"></i> by country</span></a></li>
+                                <li><a href="/a-z.php?hl=en"><span><i class="fa-solid fa-book fa-fw"></i> Public holidays A-Z</span></a></li>
+                                <li><a href="/welttage.php?geo=369&amp;jahr=2020&amp;klasse=4&amp;hl=en&amp;hidepast=0"><span><i class="fa-solid fa-globe fa-fw"></i> International days</span></a></li>
+								<li class="divider"></li> 
+								<li><a href="/banktage.php?geo=369&amp;jahr=2020&amp;klasse=4&amp;hl=en"><span><i class="fa-solid fa-building-columns fa-fw" style="color:#1f4fa3;"></i> Swiss banking days</span></a></li>
+								<li class="divider"></li> 
+								
+                                <li><a href="/evangelische.php?geo=369&amp;jahr=2020&amp;klasse=4&amp;hl=en"><span><i class="fa-solid fa-cross fa-fw"></i> Protestant memorial days</span></a></li>                           <li><a href="/islamic.php?geo=369&amp;jahr=2020&amp;klasse=4&amp;hl=en"><span><i class="fa-solid fa-moon fa-fw"></i> Islamic Holidays</span></a></li>
+                                <li><a href="/hebrew.php?geo=369&amp;jahr=2020&amp;klasse=4&amp;hl=en"><span><i class="fa-solid fa-star-of-david fa-fw"></i> Jewish Holidays</span></a></li>
+								<li><a href="/katholische.php?geo=369&amp;jahr=2020&amp;klasse=4&amp;hl=en"><span><i class="fa-solid fa-church fa-fw"></i> Catholic Memorial Days</span></a></li> 
+								<li><a href="/orthodoxe.php?geo=369&amp;jahr=2020&amp;klasse=4&amp;hl=en"><span><i class="fa-solid fa-hands-praying fa-fw"></i> Orthodox memorial days</span></a></li>
+                            </ul>
+                        </li>
+
+                         <li><a href="/ferien.php?geo=369&amp;jahr=2020&amp;klasse=4&amp;hl=en">School holidays</a></li>
+                         <li><a href="/export.php?geo=369&amp;jahr=2020&amp;klasse=4&amp;hl=en">Export data</a></li>
+                         <li><a href="/shop.php?geo=369&amp;jahr=2020&amp;klasse=4&amp;hl=en">Online-Store</a></li>
+                         <li><a href="/news.php?geo=369&amp;jahr=2020&amp;klasse=4&amp;hl=en">News</a></li>
+
+                        <!-- Informationen -->
+                        <li class="dropdown">
+                            <a href="#" class="dropdown-toggle" data-toggle="dropdown">Information <i class="fa fa-caret-down"></i></a>
+                            <ul class="dropdown-menu">
+                                <li><a href="/help.php?geo=369&amp;jahr=2020&amp;klasse=4&amp;hl=en"><span><i class="fa-solid fa-life-ring fa-fw"></i> Help</span></a></li>
+									<li><a href="/informationen.php?geo=369&amp;jahr=2020&amp;klasse=4&amp;hl=en"><span><i class="fa-fw fa-solid fa-info-circle"></i> All about...</span></a></li>
+                                    <li><a href="/datenstamm.php?geo=369&amp;jahr=2020&amp;klasse=4&amp;hl=en"><span><i class="fa-solid fa-fw fa-database"></i> Data stock</span></a></li>
+                                    <li><a href="/api/documentation_d/index.php"><span><i class="fa-solid fa-bookmark fa-fw"></i> API documentation</span></a></li>
+                                    <li><a href="/faq.php?geo=369&amp;jahr=2020&amp;klasse=4&amp;hl=en"><span><i class="fa-fw fa-solid fa-circle-question"></i> Frequently asked questions</span></a></li>
+									<li><a href="/antrag_wissenschaft.php?geo=369&amp;jahr=2020&amp;klasse=4&amp;hl=en"><span><i class="fa-fw fa-solid fa-graduation-cap"></i> Use of scientific data</span></a></li>
+                                    <li><a href="/kontakt.php?geo=369&amp;jahr=2020&amp;klasse=4&amp;hl=en"><span><i class="fa-fw fa-solid fa-envelope"></i> Contact</span></a></li>
+                            </ul>
+                        </li>
+
+                        <!-- Sprachauswahl -->
+                        <li class="dropdown">
+                            <a href="#" class="dropdown-toggle" data-toggle="dropdown">en <i class="fa fa-caret-down"></i></a>
+                            <ul class="dropdown-menu">
+                                <li><a href="/index.php?geo=369&amp;jahr=2020&amp;klasse=4&amp;hl=de"><span>Deutsch</span></a></li>
+				 					<li><a href="/index.php?geo=369&amp;jahr=2020&amp;klasse=4&amp;hl=en"><span>English</span></a></li>
+									<li><a href="/index.php?geo=369&amp;jahr=2020&amp;klasse=4&amp;hl=fr"><span>Français</span></a></li>
+									<li><a href="/index.php?geo=369&amp;jahr=2020&amp;klasse=4&amp;hl=it"><span>Italiano</span></a></li>
+                            </ul>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </nav>
+		<div id="geoFindMe_output"></div>
+    </div>
+</div>
+
+
+    <!-- Page Content -->
+    <div class="container" id="page-content">
+		<div class="well margintop20" id="div_fcal_data">	
+			
+        <div class="row">
+            <div class="col-md-8 col-md-offset-2">
+            	<div class="well" id="div_config">
+					<div id="geobalken" class="hidden-print geo-container" style="margin-top: 10px; margin-bottom:10px">
+		   <i class="fa fa-globe"></i> <a href="/index.php?jahr=2020&amp;geo=0&amp;klasse=4&amp;hl=en&amp;hidepast=1">Countries</a> <i class="fa fa-angle-right geobalken-dist"></i> <img src="https://flagcdn.com/20x15/ch.png" srcset="https://flagcdn.com/40x30/ch.png 2x,
+				  https://flagcdn.com/60x45/ch.png 3x" width="16" height="12" alt="CH"> <a href="/index.php?jahr=2020&amp;geo=3056&amp;klasse=4&amp;hl=en&amp;hidepast=1"> Switzerland</a> <i class="fa fa-angle-right geobalken-dist"></i> <i class="fa fa-folder-open-o"></i> <strong>Canton Bern</strong></div>
+	<div class="geo-buttons">
+	<a href="/map.php?geo=369&amp;jahr=2020&amp;klasse=4&amp;hl=en" class="btn btn-default btn-sm" title="Map"><i class="fa-solid fa-map"></i></a>			
+	<button id="geo-find-me" onclick="geoFindMe()" class="btn btn-default btn-sm" title="Determine my position"> <i class="fa-solid fa-map-marker"></i></button>		
+	</div>
+
+<div id="geo-list-entries" class="well hidden-print">
+				<p><span class="region-alert"><i class="fas fa-map-marker-alt"></i> please select a region</span></p>
+    	<div class="col-sm-6 col-md-4">
+          <i class="fa-solid fa-map-marked-alt fa-fw" title="directory"></i> <a href="/index.php?geo=409&amp;jahr=2020&amp;klasse=4&amp;hl=en">Bern-Mittelland</a><br>
+<i class="fa-solid fa-map-marked-alt fa-fw" title="directory"></i> <a href="/index.php?geo=423&amp;jahr=2020&amp;klasse=4&amp;hl=en">Biel/Bienne</a><br>
+<i class="fa-solid fa-map-marked-alt fa-fw" title="directory"></i> <a href="/index.php?geo=3532&amp;jahr=2020&amp;klasse=4&amp;hl=en">Emmental</a><br>
+<i class="fa-solid fa-map-marked-alt fa-fw" title="directory"></i> <a href="/index.php?geo=526&amp;jahr=2020&amp;klasse=4&amp;hl=en">Frutigen-Niedersimmental</a><br>
+    </div>
+	<div class="col-sm-6 col-md-4">
+          <i class="fa-solid fa-map-marked-alt fa-fw" title="directory"></i> <a href="/index.php?geo=534&amp;jahr=2020&amp;klasse=4&amp;hl=en">Interlaken-Oberhasli</a><br>
+<i class="fa-solid fa-map-marked-alt fa-fw" title="directory"></i> <a href="/index.php?geo=3529&amp;jahr=2020&amp;klasse=4&amp;hl=en">Jura bernois</a><br>
+<i class="fa-solid fa-map-marked-alt fa-fw" title="directory"></i> <a href="/index.php?geo=3531&amp;jahr=2020&amp;klasse=4&amp;hl=en">Oberaargau</a><br>
+<i class="fa-solid fa-map-marked-alt fa-fw" title="directory"></i> <a href="/index.php?geo=678&amp;jahr=2020&amp;klasse=4&amp;hl=en">Obersimmental-Saanen</a><br>
+         
+        
+    </div>
+	<div class="col-sm-6 col-md-4">
+          <i class="fa-solid fa-map-marked-alt fa-fw" title="directory"></i> <a href="/index.php?geo=3530&amp;jahr=2020&amp;klasse=4&amp;hl=en">Seeland</a><br>
+<i class="fa-solid fa-map-marked-alt fa-fw" title="directory"></i> <a href="/index.php?geo=730&amp;jahr=2020&amp;klasse=4&amp;hl=en">Thun</a><br>
+         
+        
+    </div>	
+	
+
+	<div class="clearfix"></div>
+</div>
+
+                     
+				</div>
+
+
+					
+
+                    <!--Jahre -->
+                    						
+																										
+					
+                    <div class="clearfix"></div>
+                
+                
+                <div class="clearfix"></div>
+
+                <div class="well">
+					<!-- title -->					
+						<h1> Canton Bern</h1>
+					
+					<!-- ENDS title -->
+					
+					
+<ul class="nav nav-tabs marginbot10">
+	<!-- Jahr Dropdown -->
+	<li class="dropdown">
+		<a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">
+			<span>2020 <i class="fa-solid fa-caret-down"></i></span>
+		</a>
+
+		<ul class="dropdown-menu">
+							<li class="active">
+					<a href="/index.php?geo=369&amp;jahr=2020&amp;klasse=4&amp;hl=en">					
+						2020					</a>
+				</li>
+							<li>
+					<a href="/index.php?geo=369&amp;jahr=2021&amp;klasse=4&amp;hl=en">					
+						2021					</a>
+				</li>
+							<li>
+					<a href="/index.php?geo=369&amp;jahr=2022&amp;klasse=4&amp;hl=en">					
+						2022					</a>
+				</li>
+							<li>
+					<a href="/index.php?geo=369&amp;jahr=2023&amp;klasse=4&amp;hl=en">					
+						2023					</a>
+				</li>
+							<li>
+					<a href="/index.php?geo=369&amp;jahr=2024&amp;klasse=4&amp;hl=en">					
+						2024					</a>
+				</li>
+							<li>
+					<a href="/index.php?geo=369&amp;jahr=2025&amp;klasse=4&amp;hl=en">					
+						2025					</a>
+				</li>
+							<li>
+					<a href="/index.php?geo=369&amp;jahr=2026&amp;klasse=4&amp;hl=en">					
+						2026					</a>
+				</li>
+							<li>
+					<a href="/index.php?geo=369&amp;jahr=2027&amp;klasse=4&amp;hl=en">					
+						2027					</a>
+				</li>
+							<li>
+					<a href="/index.php?geo=369&amp;jahr=2028&amp;klasse=4&amp;hl=en">					
+						2028					</a>
+				</li>
+							<li>
+					<a href="/index.php?geo=369&amp;jahr=2029&amp;klasse=4&amp;hl=en">					
+						2029					</a>
+				</li>
+							<li>
+					<a href="/index.php?geo=369&amp;jahr=2030&amp;klasse=4&amp;hl=en">					
+						2030					</a>
+				</li>
+							<li>
+					<a href="/index.php?geo=369&amp;jahr=2031&amp;klasse=4&amp;hl=en">					
+						2031					</a>
+				</li>
+							<li>
+					<a href="/index.php?geo=369&amp;jahr=2032&amp;klasse=4&amp;hl=en">					
+						2032					</a>
+				</li>
+							<li>
+					<a href="/index.php?geo=369&amp;jahr=2033&amp;klasse=4&amp;hl=en">					
+						2033					</a>
+				</li>
+							<li>
+					<a href="/index.php?geo=369&amp;jahr=2034&amp;klasse=4&amp;hl=en">					
+						2034					</a>
+				</li>
+							<li>
+					<a href="/index.php?geo=369&amp;jahr=2035&amp;klasse=4&amp;hl=en">					
+						2035					</a>
+				</li>
+							<li>
+					<a href="/index.php?geo=369&amp;jahr=2036&amp;klasse=4&amp;hl=en">					
+						2036					</a>
+				</li>
+					</ul>
+	</li>
+	<!-- LISTEN Dropdown -->
+	<li class="dropdown active">
+		<a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">
+			<i class="fa-solid fa-list-ul"></i> Lists <span class="caret"></span>
+		</a>
+
+		<ul class="dropdown-menu">
+			<li>
+				<a href="index.php?geo=369&amp;jahr=2020&amp;klasse=5&amp;hl=en">
+					<i class="fa-solid fa-list-ul"></i> Events and public holidays				</a>
+			</li>
+
+			<li class="active">
+				<a href="index.php?geo=369&amp;jahr=2020&amp;klasse=4&amp;hl=en">
+					<i class="fa-solid fa-star"></i> Public holidays				</a>
+			</li>
+
+			<li>
+				<a href="index.php?geo=369&amp;jahr=2020&amp;klasse=3&amp;hl=en">
+					<i class="fa-solid fa-scale-balanced"></i> Legally recognized holidays				</a>
+			</li>
+
+			<li class="divider"></li>
+
+			<li>
+				<a href="ferien.php?geo=369&amp;jahr=2020&amp;klasse=4&amp;hl=en">
+					<i class="fa-solid fa-umbrella-beach"></i> School holidays				</a>
+			</li>
+		</ul>
+	</li>
+
+	<!-- KALENDER Dropdown -->
+	<li class="dropdown">
+		<a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">
+			<i class="fa-solid fa-calendar"></i> Calendar <span class="caret"></span>
+		</a>
+
+		<ul class="dropdown-menu">
+			<li>
+				<a href="cal.php?geo=369&amp;jahr=2020&amp;klasse=5&amp;hl=en">
+					<i class="fa-solid fa-list-ul"></i> Events and public holidays				</a>
+			</li>
+
+			<li>
+				<a href="cal.php?geo=369&amp;jahr=2020&amp;klasse=4&amp;hl=en">
+					<i class="fa-solid fa-star"></i> Public holidays				</a>
+			</li>
+
+			<li>
+				<a href="cal.php?geo=369&amp;jahr=2020&amp;klasse=3&amp;hl=en">
+					<i class="fa-solid fa-scale-balanced"></i> Legally recognized holidays				</a>
+			</li>
+
+			<li class="divider"></li>
+
+			<li>
+				<a href="cal.php?geo=369&amp;jahr=2020&amp;klasse=0&amp;hl=en">
+					<i class="fa-solid fa-umbrella-beach"></i> School holidays				</a>
+			</li>
+		</ul>
+	</li>
+
+	
+</ul>
+
+
+					
+					
+							<h2>Archive -  Public holidays 2020</h2>
+								
+					
+    
+    
+                    <div class="alert alert-info"><i class="fa-solid fa-circle-info"></i> This list includes official public holidays as well as traditional and religious holidays that are generally observed as holidays and during which businesses, schools, banks, or public administrations may be closed.</div>	
+					
+
+
+				
+								
+			
+				
+				
+					<div>
+    					
+
+						
+						
+                       <div class="btn-group margintop10 marginbot10"> 
+						   <span id="but_toggle_legende">
+					 		<button id="but_show_legende" class="btn btn-info-soft"><span>Legend (holiday categories) <i class="fa-solid fa-info-circle"></i></span></button>
+						   </span>
+						   
+												</div>
+													<div id="legende" style="display:none">
+								<div class="well margintop10">
+									<div class="col-xs-2 marginbot10"><span class="badge badge-danger">1</span></div>
+									<div class="col-xs-10">official holiday</div>
+									<div class="clearfix"></div>
+									<div class="col-xs-2 marginbot10"><span class="badge badge-danger">2</span></div>
+									<div class="col-xs-10">Public holiday on a par with Sundays</div>
+									<div class="clearfix"></div>
+									<div class="col-xs-2 marginbot10"><span class="badge badge-half-danger">3</span></div>
+									<div class="col-xs-10">half-holiday</div>
+									<div class="clearfix"></div>
+	
+									<div class="col-xs-2 marginbot10"><span class="badge badge-warning">4</span></div>
+									<div class="col-xs-10">legally not recognized holiday</div>
+									<div class="clearfix"></div>
+	
+									<div class="col-xs-2 marginbot10"><span class="badge badge-info">5</span></div>
+									<div class="col-xs-10">Event day</div>
+									<div class="clearfix"></div>
+									
+									<div class="margintop10"><a href="legende.php?geo=369" class="btn btn-light">Details</a></div>
+									
+                                </div>
+								
+							</div>
+                                	
+					</div>
+						
+						
+						
+						
+						
+                        <div class="table-responsive">
+						<table class="table table-striped">
+							<thead>
+								<tr>
+									<th>Date</th>
+									<th class="hidden-xs">Day</th>
+									<th>Public holiday</th>									
+									<th class="hidden-xs">CW</th>
+									<th>Class</th>
+								</tr>
+							</thead>
+							<tbody>
+									
+								<tr class=" month-header">
+									<td colspan="5">January 2020									</td>
+								</tr>
+								
+								<tr class="">
+									<td><span class="dark">01.01.2020</span></td>
+									<td class="hidden-xs">We</td>									
+									<td>										<a href="feiertag.php?geo=369&amp;klasse=4&amp;hl=en&amp;ft_id=1" title="Public holiday on a par with Sundays">
+																				New Year´s Day</a></td>
+
+									<td class="hidden-xs">01</td>
+									<td><a href="legende.php?geo=369&amp;klasse=4&amp;hl=en"><span class="badge badge-feiertagsklasse badge-danger" title="Public holiday on a par with Sundays">2</span></a></td>
+								</tr>						
+								
+								<tr class="">
+									<td><span class="dark">02.01.2020</span></td>
+									<td class="hidden-xs">Th</td>									
+									<td>										<a href="feiertag.php?geo=369&amp;klasse=4&amp;hl=en&amp;ft_id=3" title="Public holiday on a par with Sundays">
+																				Saint Berchtold</a></td>
+
+									<td class="hidden-xs">01</td>
+									<td><a href="legende.php?geo=369&amp;klasse=4&amp;hl=en"><span class="badge badge-feiertagsklasse badge-danger" title="Public holiday on a par with Sundays">2</span></a></td>
+								</tr>						
+								<tr class=" month-header">
+									<td colspan="5">April 2020									</td>
+								</tr>
+								
+								<tr class="">
+									<td><span class="dark">10.04.2020</span></td>
+									<td class="hidden-xs">Fr</td>									
+									<td>										<a href="feiertag.php?geo=369&amp;klasse=4&amp;hl=en&amp;ft_id=17" title="Public holiday on a par with Sundays">
+																				Good Friday</a></td>
+
+									<td class="hidden-xs">15</td>
+									<td><a href="legende.php?geo=369&amp;klasse=4&amp;hl=en"><span class="badge badge-feiertagsklasse badge-danger" title="Public holiday on a par with Sundays">2</span></a></td>
+								</tr>						
+								
+								<tr class="">
+									<td><span class="dark">12.04.2020</span></td>
+									<td class="hidden-xs">Su</td>									
+									<td>										<a href="feiertag.php?geo=369&amp;klasse=4&amp;hl=en&amp;ft_id=18" title="legally not recognized holiday  (business, schools, administrations usually closed), bank holiday; in the sense of the European Convention on the Calculation of terms, this day is treated as a public holiday (Art. 5).">
+																				Easter</a></td>
+
+									<td class="hidden-xs">15</td>
+									<td><a href="legende.php?geo=369&amp;klasse=4&amp;hl=en"><span class="badge badge-feiertagsklasse badge-warning" title="legally not recognized holiday  (business, schools, administrations usually closed), bank holiday; in the sense of the European Convention on the Calculation of terms, this day is treated as a public holiday (Art. 5).">4</span></a></td>
+								</tr>						
+								
+								<tr class="">
+									<td><span class="dark">13.04.2020</span></td>
+									<td class="hidden-xs">Mo</td>									
+									<td>										<a href="feiertag.php?geo=369&amp;klasse=4&amp;hl=en&amp;ft_id=19" title="Public holiday on a par with Sundays">
+																				Easter Monday</a></td>
+
+									<td class="hidden-xs">16</td>
+									<td><a href="legende.php?geo=369&amp;klasse=4&amp;hl=en"><span class="badge badge-feiertagsklasse badge-danger" title="Public holiday on a par with Sundays">2</span></a></td>
+								</tr>						
+								<tr class=" month-header">
+									<td colspan="5">May 2020									</td>
+								</tr>
+								
+								<tr class="">
+									<td><span class="dark">21.05.2020</span></td>
+									<td class="hidden-xs">Th</td>									
+									<td>										<a href="feiertag.php?geo=369&amp;klasse=4&amp;hl=en&amp;ft_id=31" title="Public holiday on a par with Sundays">
+																				Ascension Day</a></td>
+
+									<td class="hidden-xs">21</td>
+									<td><a href="legende.php?geo=369&amp;klasse=4&amp;hl=en"><span class="badge badge-feiertagsklasse badge-danger" title="Public holiday on a par with Sundays">2</span></a></td>
+								</tr>						
+								
+								<tr class="">
+									<td><span class="dark">31.05.2020</span></td>
+									<td class="hidden-xs">Su</td>									
+									<td>										<a href="feiertag.php?geo=369&amp;klasse=4&amp;hl=en&amp;ft_id=30" title="legally not recognized holiday  (business, schools, administrations usually closed), bank holiday; in the sense of the European Convention on the Calculation of terms, this day is treated as a public holiday (Art. 5).">
+																				Whitsun</a></td>
+
+									<td class="hidden-xs">22</td>
+									<td><a href="legende.php?geo=369&amp;klasse=4&amp;hl=en"><span class="badge badge-feiertagsklasse badge-warning" title="legally not recognized holiday  (business, schools, administrations usually closed), bank holiday; in the sense of the European Convention on the Calculation of terms, this day is treated as a public holiday (Art. 5).">4</span></a></td>
+								</tr>						
+								<tr class=" month-header">
+									<td colspan="5">June 2020									</td>
+								</tr>
+								
+								<tr class="">
+									<td><span class="dark">01.06.2020</span></td>
+									<td class="hidden-xs">Mo</td>									
+									<td>										<a href="feiertag.php?geo=369&amp;klasse=4&amp;hl=en&amp;ft_id=35" title="Public holiday on a par with Sundays">
+																				Whit Monday</a></td>
+
+									<td class="hidden-xs">23</td>
+									<td><a href="legende.php?geo=369&amp;klasse=4&amp;hl=en"><span class="badge badge-feiertagsklasse badge-danger" title="Public holiday on a par with Sundays">2</span></a></td>
+								</tr>						
+								<tr class=" month-header">
+									<td colspan="5">August 2020									</td>
+								</tr>
+								
+								<tr class="">
+									<td><span class="dark">01.08.2020</span></td>
+									<td class="hidden-xs">Sa</td>									
+									<td>										<a href="feiertag.php?geo=369&amp;klasse=4&amp;hl=en&amp;ft_id=12" title="Public holiday on a par with Sundays">
+																				Swiss National Holiday</a></td>
+
+									<td class="hidden-xs">31</td>
+									<td><a href="legende.php?geo=369&amp;klasse=4&amp;hl=en"><span class="badge badge-feiertagsklasse badge-danger" title="Public holiday on a par with Sundays">2</span></a></td>
+								</tr>						
+								<tr class=" month-header">
+									<td colspan="5">September 2020									</td>
+								</tr>
+								
+								<tr class="">
+									<td><span class="dark">21.09.2020</span></td>
+									<td class="hidden-xs">Mo</td>									
+									<td>										<a href="feiertag.php?geo=369&amp;klasse=4&amp;hl=en&amp;ft_id=269" title="partially valid">
+																				Thuner Ausschiesset</a></td>
+
+									<td class="hidden-xs">39</td>
+									<td>4.1 %</td>
+								</tr>						
+								<tr class=" month-header">
+									<td colspan="5">December 2020									</td>
+								</tr>
+								
+								<tr class="">
+									<td><span class="dark">25.12.2020</span></td>
+									<td class="hidden-xs">Fr</td>									
+									<td>										<a href="feiertag.php?geo=369&amp;klasse=4&amp;hl=en&amp;ft_id=23" title="Public holiday on a par with Sundays">
+																				Christmas</a></td>
+
+									<td class="hidden-xs">52</td>
+									<td><a href="legende.php?geo=369&amp;klasse=4&amp;hl=en"><span class="badge badge-feiertagsklasse badge-danger" title="Public holiday on a par with Sundays">2</span></a></td>
+								</tr>						
+								
+								<tr class="">
+									<td><span class="dark">26.12.2020</span></td>
+									<td class="hidden-xs">Sa</td>									
+									<td>										<a href="feiertag.php?geo=369&amp;klasse=4&amp;hl=en&amp;ft_id=37" title="Public holiday on a par with Sundays">
+																				St. Stephen´s Day</a></td>
+
+									<td class="hidden-xs">52</td>
+									<td><a href="legende.php?geo=369&amp;klasse=4&amp;hl=en"><span class="badge badge-feiertagsklasse badge-danger" title="Public holiday on a par with Sundays">2</span></a></td>
+								</tr>						
+							</tbody>
+						</table>                            
+                        </div>
+					
+					<div class="col-12 margintop20 marginbot20">
+                    <a href="/index.php?geo=369&amp;jahr=2019&amp;klasse=4&amp;hl=en" class="btn btn-default btn-year">2019</a> 
+                    <a href="/index.php?geo=369&amp;jahr=2021&amp;klasse=4&amp;hl=en" class="btn btn-default btn-year">2021</a>
+                    </div>
+                        
+                        						
+
+  
+
+					
+					<p><span class="text-muted small">Errors excepted. No guarantee for the correctness of the data.</span>
+						
+						<br>
+					<span class="text-muted small">You have found an error? <a href="kontakt.php?geo=369&amp;jahr=2020&amp;klasse=4&amp;hl=en">Please let us know</a>.</span></p>                            			
+  
+					
+					<div class="clearfix"></div>
+				</div>
+                    <div class="clearfix"></div>
+					
+                </div>
+            </div>
+    </div>
+</div>
+	
+<style>
+/* Footer 2026 – bewusst auf #footer begrenzt, damit der Rest der Website unberührt bleibt. */
+#footer {
+    padding-top: 26px;
+    padding-bottom: 24px;
+}
+
+#footer .footer-column {
+	padding-top: 10px;
+    margin-bottom: 10px;
+}
+
+#footer .footer-heading {
+    margin: 0 0 12px 0;
+    font-size: 12px;
+    line-height: 1.3;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: .35px;
+    color: #424b57;
+}
+
+#footer .footer-heading i {
+    width: 18px;
+    text-align: center;
+    color: #315a8a;
+}
+
+#footer .footer-brand {
+    margin: -2px 0 12px 0;
+    font-size: 19px;
+    line-height: 1.3;
+    font-weight: 500;
+    color: #202833;
+}
+
+#footer .footer-brand i {
+    margin-right: 5px;
+    color: #315a8a;
+}
+
+#footer .footer-links {
+    margin-bottom: 0;
+}
+
+#footer .footer-links li {
+    margin-bottom: 5px;
+}
+
+#footer .footer-links i {
+    width: 18px;
+    margin-right: 2px;
+    text-align: center;
+    color: #315a8a !important;
+}
+
+#footer .footer-more {
+    margin-top: 22px;
+}
+
+#footer .footer-description {
+    max-width: 470px;
+    font-size: 14px;
+    line-height: 1.55;
+}
+
+#footer .footer-description p {
+    margin-bottom: 10px;
+}
+
+#footer .footer-support {
+    padding: 0 12px;
+    text-align: center;
+}
+
+#footer .footer-support .footer-heading i {
+    color: #c00;
+}
+
+#footer .footer-support-text {
+    max-width: 330px;
+    margin: 0 auto 14px auto;
+    font-size: 13px;
+    line-height: 1.5;
+    color: #505862;
+}
+
+#footer .footer-support-btn {
+    display: inline-block;
+    width: auto;
+    padding: 9px 18px;
+    font-size: 15px;
+    line-height: 1.3;
+    white-space: normal;
+}
+
+#footer .footer-support-btn i {
+    margin-right: 5px;
+}
+
+@media (max-width: 991px) {
+    #footer .footer-support {
+		padding:0;
+        text-align: left;
+    }
+
+    #footer .footer-support-text {
+        max-width: none;
+        margin-left: 0;
+        margin-right: 0;
+    }
+}
+
+@media (max-width: 767px) {
+    #footer {
+        padding-top: 20px;
+    }
+
+    #footer .footer-column {
+        margin-bottom: 28px;
+    }
+
+    #footer .footer-support {
+        margin-bottom: 4px;
+    }
+}
+</style>
+
+<div class="container-fluid" id="footer">
+    <div class="container">
+        <div class="row">
+
+            <!-- Spalte 1: Seiten / weitere psc-Projekte -->
+            <div class="col-md-3 col-sm-4 footer-column">
+                <h6 class="footer-heading">
+                    <i class="fa-solid fa-link"></i> Pages                </h6>
+                <ul class="footer-links">
+                    <li><a href="/impressum.php?geo=369&amp;hl=en"><i class="fa-solid fa-file-alt"></i> Imprint</a></li>
+                    <li><a href="/kontakt.php?geo=369&amp;hl=en"><i class="fa-solid fa-envelope"></i> Contact</a></li>
+                    <li><a href="/pdf/General_terms_and_conditions_Feiertagskalender.pdf" target="_blank" rel="noopener"><i class="fa-solid fa-file-pdf"></i> General terms (EN)</a></li>
+						
+                    <li><a href="/info_datenschutz.php?geo=369&amp;hl=en"><i class="fa-solid fa-user-shield"></i> Data protection regulations</a></li>
+                </ul>
+
+                <h6 class="footer-heading footer-more">
+                    <i class="fa-solid fa-earth"></i> more from psc Informatik                </h6>
+                <ul class="footer-links">
+                    <li><a href="https://duftboerse.ch" target="_blank" rel="noopener"><i class="fa-solid fa-spray-can-sparkles"></i> Schweizer Duftbörse</a></li>
+                    <li><a href="https://zertcheck.ch" target="_blank" rel="noopener"><i class="fa-solid fa-certificate"></i> ZertCheck</a></li>
+                    <li><a href="https://psc.ch" target="_blank" rel="noopener"><i class="fa-solid fa-globe"></i> psc.ch Homepage</a></li>
+                </ul>
+            </div>
+
+            <!-- Spalte 2: Kurzinfo über Feiertagskalender -->
+            <div class="col-md-5 col-sm-4 footer-column">
+                <h4 class="footer-brand"><i class="fa-solid fa-calendar-day"></i> Feiertagskalender.ch</h4>
+                <div class="footer-description">
+                    <p><strong>has researched and published holidays and vacations since 2003. All collected data is publicly available for free.</strong></p>
+                    <div class="margintop10">For companies, we provide a REST API, data exports and individually prepared datasets.</div>
+                </div>
+            </div>
+
+            <!-- Spalte 3: Projekt unterstützen -->
+            <div class="col-md-4 col-sm-4 footer-column footer-support">
+                <h6 class="footer-heading">
+                    <i class="fa-solid fa-heart"></i> Support public holiday calendar                </h6>
+
+                <p class="footer-support-text">Feiertagskalender.ch has been free to use since 2003. A voluntary contribution helps fund research and data maintenance.</p>
+
+                <a href="https://fcal.payrexx.com/en/pay?cid=5202bc61" class="btn btn-success footer-support-btn" target="_blank" rel="noopener">
+                    <i class="fa-solid fa-hand-holding-heart"></i> Support the project                </a>
+            </div>
+
+        </div>
+    </div>
+</div>
+
+<!-- Copyright & Bottom Text -->
+<div class="container-fluid bg-dark text-light text-center py-2">
+    <small>© 2003 - 2026 <a href="https://www.psc.ch" class="text-light">psc Peter Schütz Informatik Dienstleistungen, CH-Arch</a></small>
+</div>
+
+	<script src="/tpl/assets/js/jquery/jquery-2.1.0.min.js"></script>
+    <script src="/tpl/assets/js/bootstrap/bootstrap.min.js"></script>
+    <script src="/tpl/assets/js/psc_OLA.js"></script>  
+    <script src="/tpl/assets/js/jquery.cookie.js"></script>  
+
+
+
+
+
+<!-- Google Analytics -->
+<!-- Google tag (gtag.js) -->
+<script async="" src="https://www.googletagmanager.com/gtag/js?id=UA-233364-1" type="text/plain" data-cookie-consent="tracking"></script>
+<script type="text/plain" data-cookie-consent="tracking">
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+  gtag('config', 'G-5JWJDWN7GB');
+</script>
+<!-- end of Google Analytics-->
+
+
+	<script>
+			function geoFindMe() {
+			  var output = document.getElementById("geoFindMe_output");			
+			  if (!navigator.geolocation){
+			  output.innerHTML = "<div class='alert alert-danger margintop10'><i class='fa fa-ban text-danger'></i> Geolocation is not supported by your browser</div>";
+				return;
+			  }			
+			  function success(position) {
+				var latitude  = position.coords.latitude;
+				var longitude = position.coords.longitude;
+
+			  window.location.href = "index.php?"+$.param({'hl': 'en','geo': '369','jahr': '2020','klasse': '4','lat': latitude,'lon':longitude})			
+			  output.innerHTML = "<div class='alert alert-success margintop10'><i class='fa fa-check text-success'></i> Locating</div>";
+			  };			
+			  function error() {
+			  output.innerHTML = "<div class='alert alert-danger margintop10'><i class='fa fa-ban text-danger'></i> Unable to retrieve your location</div>";
+			  };			
+			  output.innerHTML = "<div class='alert alert-info margintop10'><i class='fa fa-spinner fa-pulse'></i> Locating</div>";
+			  navigator.geolocation.getCurrentPosition(success, error);
+			}		
+	</script>      
+<script type="text/javascript">
+    jQuery('table').on('copy', function() {
+				console.log('Copy');
+				if (jQuery('#copyalert').length  == 0) {
+					jQuery('body').append('' +
+						'<div id="copyalert" style="position: fixed; width: 100%; height: 100%; background: rgba(1,1,1,0.5); z-index: 1000; top:0; bottom:0; left:0; right:0">' +
+							'<div id="copyalert-content" style="background:white; width: 500px; height: 240px; position: absolute; top: 50%; left:50%; margin-top: -225px; margin-left: -250px; color:black;"><div id="copyalert-header"><span id="copyalert-close" style="cursor: pointer; padding: 5px 10px; font-size: 75%; float: right"><i class="fa fa-times fa-lg"></i></span><br style="clear:right"/></div><h3 style="color:#cc0000; text-align: center;">Fair use</h3>' +
+							'<div style="padding: 10px; text-align: center;">You have found useful contents? We are happy about that.<br><br>We ask you in return to support our project,<br>that we can continue to offer you data.</div></div></div>');
+
+					if (typeof ga != 'undefined') {
+						ga('send', 'event', 'CopyAlert', 'show');
+					}
+
+					jQuery('#copyalert-content').click(function(e) {
+						event.stopPropagation();
+					});
+
+					jQuery('#copyalert-close').click(function() {
+
+						jQuery('#copyalert').remove();
+
+						if (typeof ga != 'undefined') {
+							ga('send', 'event', 'CopyAlert', 'close');
+						}
+
+					});
+
+					jQuery('#copyalert').click(function() {
+
+						jQuery(this).remove();
+						if (typeof ga != 'undefined') {
+							ga('send', 'event', 'CopyAlert', 'close');
+						}
+					});
+
+				}
+
+			});
+    </script>  
+<script>
+(function($){
+  if(!window.jQuery) return;
+
+  // Sobald ein Dropdown aufgeht: Backdrop entfernen (iOS/Touch Bug)
+  $(document).on('shown.bs.dropdown', '.dropdown', function () {
+    $('.dropdown-backdrop').remove();
+  });
+
+  // Extra: Touch innerhalb Menü nicht als "outside tap" werten
+  $(document).on('touchstart', '.dropdown-menu', function(e){
+    e.stopPropagation();
+  });
+})(jQuery);
+</script>
+<script>
+		$('.hide_past').hide(); 		
+		$('#but_show_fullyear').click(function() {	
+			$('.hide_past').show('slow');
+			$('#but_show_fullyear').hide();
+			return false;
+		});	
+</script>
+
+
+</body></html>
