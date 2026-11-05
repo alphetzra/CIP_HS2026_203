@@ -1,10 +1,9 @@
 import argparse
+import os
 import subprocess
 import sys
 from pathlib import Path
-
 import pandas as pd
-
 from scripts.Q2.analysis.calendar_regression import run_calendar_regression
 from scripts.Q2.analysis.regional_holiday_effect import run_regional_holiday_effect
 from scripts import config
@@ -19,10 +18,11 @@ from scripts.Q3.exchange.api_SNB import app as acquire_exchange_app
 from scripts.Q2.spending.spending import get_raw_spending, get_spending
 from scripts.Q2.exchange.exchange import get_raw_exchange
 from scripts.Q2.events.events import get_events, get_raw_events
-
 from scripts.Q2.exploration.explore_spending import app as explore_spending_app
-
 from scripts.Q3.Q3_merge import app as q3_merge_app
+
+ROOT = Path(__file__).resolve().parent
+
 
 # raw
 def raw_population(args):
@@ -65,10 +65,13 @@ def scrape_exchange(args):
     acquire_exchange_app.run()
 
 def scrape_events(args):
-    nb = Path("scripts/Q1/code/01_event_web_scraping.ipynb")
+    nb = ROOT / "scripts/Q1/code/01_event_web_scraping.ipynb"
+    env = os.environ.copy()
+    env["PYTHONPATH"] = str(ROOT) + os.pathsep + env.get("PYTHONPATH", "")
     subprocess.run(
         [sys.executable, "-m", "IPython", nb.name],
         cwd=nb.parent,
+        env=env,
         check=True,
     )
 
@@ -106,7 +109,7 @@ def regional_holiday_effect(args):
 def q3(args):
     q3_analysis_app.run()
 
-def q1(args): # TODO: Morteza please test it after the other fixes
+def q1(args):
     nb = Path("scripts/Q1/code/03_data_analysis_visualization.ipynb")
     subprocess.run(
         [sys.executable, "-m", "IPython", nb.name],

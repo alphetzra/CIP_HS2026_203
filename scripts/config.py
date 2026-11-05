@@ -6,7 +6,7 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parents[1]
 RAW_DIR = ROOT / "data" / "raw"
 PROCESSED_DIR = ROOT / "data" / "processed"
-RESULTS_DIR = ROOT / "results"
+RESULTS_DIR = ROOT / "scripts" / "Q2" / "output"
 FIGURES_DIR = RESULTS_DIR / "figures"
 TABLES_DIR = RESULTS_DIR / "tables"
 
@@ -16,6 +16,8 @@ POP_FILE = RAW_DIR / "raw_population.csv"
 RAW_SPENDING = RAW_DIR / "raw_spending.parquet"
 RAW_EXCHANGE = RAW_DIR / "raw_exchange.parquet"
 RAW_EVENTS = PROCESSED_DIR / "zurich_event_days.csv"
+
+SPENDING_FILE_MORTEZA = RAW_DIR / "ACQ_POS_Grossregion_NOGA.csv"
 
 # processed data
 CLEAN_SPENDING = PROCESSED_DIR / "clean_spending.parquet"
