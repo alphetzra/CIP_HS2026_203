@@ -14,8 +14,9 @@ def _():
     from matplotlib.patches import Patch  #used for the COVID period in the legend
     from pathlib import Path  #https://docs.python.org/3/library/pathlib.html
     import pyarrow #used to read the parquet file
+    from scripts import config
 
-    return Patch, Path, mo, np, pd, plt, smf
+    return Patch, config, mo, np, pd, plt, smf
 
 
 @app.cell(hide_code=True)
@@ -87,8 +88,8 @@ def _(plt):
 
 
 @app.cell
-def _(Path, mo):
-    input_file = Path("../../data/processed/q3_data.parquet")
+def _(config, mo):
+    input_file = config.DF_Q3
  
     #output folders inside the analysis_Q3 folder
     #output folders inside the analysis_Q3 folder, built from the location of this notebook,
@@ -316,7 +317,7 @@ def _(pd, q3_data, smf, tables_folder):
                 "M4: + COVID and holidays": "log_spending ~ eur_chf_c * border_region + C(category) + C(weekday) + C(month) + year + covid_period + holiday_share",
                 "M5: region x category": "log_spending ~ eur_chf_c + eur_chf_c:border_region + C(region):C(category) + C(weekday) + C(month) + year + covid_period + holiday_share",
             }
-     
+ 
         nested_results = []
         for model_name, formula in nested_formulas.items():
             model = smf.ols(formula, data=q3_data).fit(cov_type="HC1")
@@ -326,7 +327,7 @@ def _(pd, q3_data, smf, tables_folder):
                 "aic": model.aic,
                 "interaction_coef": model.params["eur_chf_c:border_region[T.True]"],
                 "interaction_p_value": model.pvalues["eur_chf_c:border_region[T.True]"],})
-     
+ 
         nested_table = pd.DataFrame(nested_results).round(4)
 
         nested_table.to_csv(tables_folder / "table_validation_nested_models.csv", index=False)

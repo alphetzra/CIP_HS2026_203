@@ -258,7 +258,6 @@ def _(spending_filtered):
     spending_filtered["border_region"] = spending_filtered["region"].isin(border_countries.keys())
     spending_filtered["border_country"] = spending_filtered["region"].astype(str).map(border_countries)
 
-
     return
 
 

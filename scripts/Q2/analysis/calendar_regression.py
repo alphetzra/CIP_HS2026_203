@@ -1,9 +1,5 @@
 """Analysis Q2 - how much of the daily variation in spending do calendar effects explain?
 
-Answers the first part of Q2 with linear regressions (OLS), one per category:
-log_spending ~ region + weekday + month + year + COVID + holiday_share
-and estimates the holiday effect, per category and per region x category.
-
 Specifics:
 - Explained variation: the variable groups are added one by one, and the
   increase in R² is the part explained by that group. Region comes first and
@@ -24,7 +20,7 @@ import pandas as pd
 import seaborn as sns
 import statsmodels.formula.api as smf
 
-from integration.build_df import get_build_df
+from scripts.Q2.integration.build_df import get_build_df
 from scripts import config
 
 # variable groups in the order they are added to the model;
@@ -124,7 +120,7 @@ def plot_r2(shares: pd.DataFrame) -> None:
 def holiday_effect(model) -> dict:
     """Read coefficient of holiday_share as % change.
         Args:
-            model: Fitted statsmodels OLS model containing holiday_share
+            model: Fitted statsmodels OLS or linearmodels PanelOLS result containing holiday_share
         Returns:
             Dict with effect_pct, ci_low, ci_high (95% interval), p_value and n_obs"""
 

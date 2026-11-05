@@ -49,17 +49,18 @@ def _():
     import pandas as pd  #https://pandas.pydata.org/docs/user_guide/index.html#user-guide
     from pathlib import Path  #https://docs.python.org/3/library/pathlib.html
     import pyarrow #used to generate the parquet file
+    from scripts import config
 
-    return Path, pd
+    return config, pd
 
 
 @app.cell
-def _(Path):
+def _(config):
     #Setting global variables
 
     url = ("https://drive.switch.ch/index.php/s/yLISs3KVE7ASE68/download?path=/2_ACQUIRING%20DATA&files=ACQ_POS_Grossregion_NOGA.csv")
 
-    output_folder = Path("../../data/raw/raw_spending.parquet")
+    output_folder = config.RAW_SPENDING
     return output_folder, url
 
 

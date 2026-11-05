@@ -1,7 +1,7 @@
 """Population data acquisition from BFS (STATPOP)"""
 
 import pandas as pd
-import config
+from scripts import config
 
 
 def acquire_population():

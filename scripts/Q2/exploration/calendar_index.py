@@ -20,7 +20,7 @@ import matplotlib.pyplot as plt
 import pandas as pd
 import seaborn as sns
 
-from integration.build_df import get_build_df
+from scripts.Q2.integration.build_df import get_build_df
 from scripts import config
 
 MONTH_LABELS = ["Jan", "Feb", "Mar", "Apr", "May", "Jun",
@@ -54,7 +54,7 @@ def spending_index(daily: pd.DataFrame, by: str) -> pd.DataFrame:
     return (mean.div(mean.mean(axis=1), axis=0) * 100).round(1)
 
 
-def _plot_heatmap(index: pd.DataFrame, title: str, filename: str, cell_width: float) -> None:
+def plot_heatmap(index: pd.DataFrame, title: str, filename: str, cell_width: float) -> None:
     """Plot an index table as heatmap (category x period) and save it.
         Args:
             index: Output of spending_index()
@@ -85,9 +85,9 @@ def plot_spending_index(weekday: pd.DataFrame, month: pd.DataFrame) -> None:
                 month: Month index from spending_index()
             """
 
-    _plot_heatmap(weekday, "Spending index by weekday", "spending_index_weekday.png",
+    plot_heatmap(weekday, "Spending index by weekday", "spending_index_weekday.png",
                   cell_width=1.0)
-    _plot_heatmap(month.set_axis(MONTH_LABELS, axis=1), "Spending index by month",
+    plot_heatmap(month.set_axis(MONTH_LABELS, axis=1), "Spending index by month",
                   "spending_index_month.png", cell_width=0.8)
 
 

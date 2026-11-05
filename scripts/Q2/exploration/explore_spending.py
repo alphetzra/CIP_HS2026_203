@@ -10,7 +10,7 @@ def _():
     import marimo as mo
     import pandas as pd
 
-    sys.path.insert(0, str(mo.notebook_dir().parent))
+    sys.path.insert(0, str(mo.notebook_dir().parents[2]))
     from scripts import config
 
     return config, mo, pd

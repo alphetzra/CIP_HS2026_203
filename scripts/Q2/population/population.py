@@ -1,7 +1,7 @@
 import pandas as pd
 
-from .acquire import acquire_population
-from .cleaning import cleaning_population
+from scripts.Q2.population.acquire import acquire_population
+from scripts.Q2.population.cleaning import cleaning_population
 from scripts import config
 
 

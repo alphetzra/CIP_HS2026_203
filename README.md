@@ -115,7 +115,7 @@ pip install -r requirements.txt
 ### Q2 pipeline
  
 ```bash
-python main.py  #CHANGED TO UPDATE
+python main.py
 ```
  
 ### Q3 pipeline
@@ -149,7 +149,7 @@ To open a notebook interactively (e.g. to use the year slider in `api_SNB.py`), 
 | Member | Research question | Code |
 |---|---|---|
 | **Morteza Nejati** | Q1: major events in Zürich | 01_event_web_scraping.ipynb, 02_data_cleaning_transformation_integration.ipynb, 03_data_analysis_visualization.ipynb |
-| **Laura Da Silva Cunha** | Q2: population and public holidays + README.md | `main.py`, `scripts/config.py`, `scripts/acquisition/scrape_holidays.py`, `scripts/acquisition/download_spending.py`, `scripts/cleaning/cleaning_holidays.py`, `scripts/cleaning/cleaning_population.py`, `scripts/cleaning/cleaning_spending.py`, `scripts/integration/holiday_share.py`, `scripts/integration/build_df.py`, `scripts/analysis/calendar_index.py`, `scripts/analysis/calendar_regression.py`, `scripts/analysis/regional_holiday_effect.py` |
+| **Laura Da Silva Cunha** | Q2: population and public holidays + README.md | data/raw/raw_holidays, data/raw/raw_population.csv, scripts/Q2, report/Q2, main.py
 | **Salvatore Nicolosi** | Q3: EUR/CHF and border regions + Git |
 
 
@@ -158,7 +158,7 @@ To open a notebook interactively (e.g. to use the year slider in `api_SNB.py`), 
 | | Used for | Checked / decided by the team |
 |---|---|---|
 | Q1 | Improving and debugging Python code, refining data processing and visualizations, writing and improving Markdown documentation, and assisting with drafting, structuring, and polishing the project report. | checking the report and visual for accuracy and readibility |
-| Q2 | *to be completed* | *to be completed* | 
+| Q2 | Debugging the Playwright scraper; clarifying the syntax of both models (`statsmodels` OLS with HC1 standard errors and `linearmodels` PanelOLS with region and date effects); improving English wording on the report.| AI output was checked against documentation and tested |
 | Q3 | Suggestions to improve and debug visualizations with matplotlib | Debugging tips the marimo notebooks whenever necessary (e.g. shallow copy); clarifying `statsmodels` syntax for HC1 standard errors and VIF; polishing the English of the Q3 report to match style and repository structure section and the README.md | Collecting ideas for order-region classification, robustness check without COVID debug; every AI suggestion was reviewed by manually searching libraries and tested before committing |
  
 All research questions, methodological choices, analyses and conclusions were developed and checked by the team.

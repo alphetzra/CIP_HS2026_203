@@ -11,8 +11,9 @@ def _():
     import json
     import pandas as pd #https://pandas.pydata.org/docs/user_guide/index.html#user-guide
     from pathlib import Path  #https://docs.python.org/3/library/pathlib.html
+    from scripts import config
 
-    return Path, mo, pd, requests
+    return config, mo, pd, requests
 
 
 @app.cell(hide_code=True)
@@ -43,7 +44,6 @@ def slider_datarange(mo):
         value=[2019, 2025],
         label="Select the data range",
     )
-
     return (date_range,)
 
 
@@ -70,13 +70,12 @@ def _(date_range, pd, requests):
 
 
 
-
     return (raw_exchange_pd,)
 
 
 @app.cell
-def _(Path, raw_exchange_pd):
-    output_folder = Path("../../data/raw/raw_exchange.parquet")
+def _(config, raw_exchange_pd):
+    output_folder = config.RAW_EXCHANGE
 
     raw_exchange_pd.to_parquet(output_folder, index=False)
     return

@@ -10,8 +10,10 @@ def _():
     import pandas as pd  #https://pandas.pydata.org/docs/user_guide/index.html#user-guide
     from pathlib import Path #https://docs.python.org/3/library/pathlib.html
     import pyarrow #used to read and write the parquet files
+    from scripts import config
+    from scripts.Q2.integration.build_df import get_build_df
 
-    return Path, mo, pd
+    return config, get_build_df, mo, pd
 
 
 @app.cell(hide_code=True)
@@ -45,26 +47,24 @@ def _(mo):
 
 
 @app.cell
-def _(Path):
+def _(config):
     #Setting global variables
  
-    spending_file = Path("../../data/interim/clean_spending.parquet")
+    spending_file = config.CLEAN_SPENDING
 
-    exchange_file = Path("../../data/raw/raw_exchange.parquet")
+    exchange_file = config.RAW_EXCHANGE
 
-    holiday_file = Path("../../data/interim/region_holiday_share(in).csv")
-
-    output_file = Path("../../data/processed/q3_data.parquet")
-    return exchange_file, holiday_file, output_file, spending_file
+    output_file = config.DF_Q3
+    return exchange_file, output_file, spending_file
 
 
 @app.cell
-def _(exchange_file, holiday_file, pd, spending_file):
+def _(exchange_file, get_build_df, pd, spending_file):
     #Now we load the all the data using pandas, respectively for csv and parquet, the csv file is fruit of a different retrieval and cleaning pipeline part of Q2 
 
     spending = pd.read_parquet(spending_file)
     raw_exchange = pd.read_parquet(exchange_file)
-    raw_holiday = pd.read_csv(holiday_file)
+    raw_holiday = get_build_df()
     return raw_exchange, raw_holiday, spending
 
 
@@ -150,7 +150,7 @@ def _(pd, raw_holiday, spending):
 
     print(f"- Regions not found in spending: {unknown_regions}")
     print()
-                              
+                          
     #creating a copy of raw_holiday (otherwise marimo gives an error as it doesn't allow us to re-define a variable previusly used)
     holiday = raw_holiday.copy()
 
