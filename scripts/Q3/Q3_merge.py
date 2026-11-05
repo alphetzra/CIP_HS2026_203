@@ -4,18 +4,6 @@ __generated_with = "0.25.2"
 app = marimo.App()
 
 
-@app.cell
-def _():
-    import marimo as mo
-    import pandas as pd  #https://pandas.pydata.org/docs/user_guide/index.html#user-guide
-    from pathlib import Path #https://docs.python.org/3/library/pathlib.html
-    import pyarrow #used to read and write the parquet files
-    from scripts import config
-    from scripts.Q2.integration.build_df import get_build_df
-
-    return config, get_build_df, mo, pd
-
-
 @app.cell(hide_code=True)
 def _(mo):
     mo.md(r"""
@@ -44,6 +32,26 @@ def _(mo):
     5. **Validate** the merged dataset and save it into `data/processed/`
     """)
     return
+
+
+@app.cell
+def _():
+    import marimo as mo
+    import sys
+    import pandas as pd  #https://pandas.pydata.org/docs/user_guide/index.html#user-guide
+    from pathlib import Path #https://docs.python.org/3/library/pathlib.html
+    import pyarrow #used to read and write the parquet files
+
+    #add the repo root (the folder that contains scripts/config.py) to the Python path,
+    #so that the imports below find our own scripts folder and not a pip package
+    _root = next(p for p in Path(__file__).resolve().parents if (p / "scripts" / "config.py").exists())
+    if str(_root) not in sys.path:
+        sys.path.insert(0, str(_root))
+
+    from scripts import config
+    from scripts.Q2.integration.build_df import get_build_df
+
+    return config, get_build_df, mo, pd
 
 
 @app.cell
@@ -133,30 +141,29 @@ def _(pd, raw_holiday, spending):
     print("CHECKING HOLIDAYS:")
     print()
 
+    #get_build_df() returns the full Q2 dataset, so we keep only the columns needed for Q3,
+    #otherwise columns like year, month or spending are duplicated in the merge (year_x / year_y)
+    holiday = raw_holiday[["date", "region", "holiday_share"]].copy()
+
+    holiday["date"] = pd.to_datetime(holiday["date"])
+    holiday["region"] = holiday["region"].astype(str)
+
+    #the Q2 data has one row per category, but the holiday share is the same for all categories of a date and region
+    print(f"- Number of duplicated rows (date, region): {holiday.duplicated(subset=['date', 'region']).sum()}")
+    holiday = holiday.drop_duplicates(subset=["date", "region"])
+
     #check for NAs
-    print(f"- Number of NaN: {raw_holiday['holiday_share'].isna().sum()}")
+    print(f"- Number of NaN: {holiday['holiday_share'].isna().sum()}")
 
     #check for min/max
-    print(f"- Minimum value: {raw_holiday['holiday_share'].min()}, / Maximum value: {raw_holiday['holiday_share'].max()}")
+    print(f"- Minimum value: {holiday['holiday_share'].min()}, / Maximum value: {holiday['holiday_share'].max()}")
 
-    #check for duplicated rows
-    print(f"- Number of duplicated rows: {raw_holiday.duplicated(subset=['date', 'region']).sum()}")
- 
-    #region names that are in the holiday file but not in the spending data (should end up printing an empty set "set()")
-
-    #Creating a set of regions from each dataframe, its a list of unique values and let me subtract, since unordered position does not matter in this operation. 
-
-    unknown_regions = set(raw_holiday["region"]) - set(spending["region"])
-
+    #region names that are in the holiday file but not in the spending data (should print an empty set "set()")
+    unknown_regions = set(holiday["region"]) - set(spending["region"].astype(str))
     print(f"- Regions not found in spending: {unknown_regions}")
     print()
 
-    #creating a copy of raw_holiday (otherwise marimo gives an error as it doesn't allow us to re-define a variable previusly used)
-    holiday = raw_holiday.copy()
-
-    holiday["date"] = pd.to_datetime(holiday["date"])
-
-    #we print the total range wich should be included from 01.01.2019 to 31.12.2025
+    #we print the total range which should go from 01.01.2019 to 31.12.2025
     print(f"- Total period: {holiday['date'].min().date()} to {holiday['date'].max().date()}")
     return (holiday,)
 

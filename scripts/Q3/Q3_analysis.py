@@ -4,21 +4,6 @@ __generated_with = "0.25.2"
 app = marimo.App()
 
 
-@app.cell
-def _():
-    import marimo as mo
-    import pandas as pd  #https://pandas.pydata.org/docs/user_guide/index.html#user-guide
-    import numpy as np  #https://numpy.org/doc/stable/user/index.html
-    import matplotlib.pyplot as plt  #https://matplotlib.org/stable/users/index.html
-    import statsmodels.formula.api as smf  #https://www.statsmodels.org/stable/example_formulas.html
-    from matplotlib.patches import Patch  #used for the COVID period in the legend
-    from pathlib import Path  #https://docs.python.org/3/library/pathlib.html
-    import pyarrow #used to read the parquet file
-    from scripts import config
-
-    return Patch, config, mo, np, pd, plt, smf
-
-
 @app.cell(hide_code=True)
 def _(mo):
     mo.md(r"""
@@ -46,6 +31,29 @@ def _(mo):
     - The spending values are scaled, so only relative changes are interpreted.
     """)
     return
+
+
+@app.cell
+def _():
+    import marimo as mo
+    import sys
+    import pandas as pd  #https://pandas.pydata.org/docs/user_guide/index.html#user-guide
+    import numpy as np  #https://numpy.org/doc/stable/user/index.html
+    import matplotlib.pyplot as plt  #https://matplotlib.org/stable/users/index.html
+    import statsmodels.formula.api as smf  #https://www.statsmodels.org/stable/example_formulas.html
+    from matplotlib.patches import Patch  #used for the COVID period in the legend
+    from pathlib import Path  #https://docs.python.org/3/library/pathlib.html
+    import pyarrow #used to read the parquet file
+
+    #add the repo root (the folder that contains scripts/config.py) to the Python path,
+    #so that the import below finds our own scripts folder and not a pip package  <- cloude fix
+    _root = next(p for p in Path(__file__).resolve().parents if (p / "scripts" / "config.py").exists())
+    if str(_root) not in sys.path:
+        sys.path.insert(0, str(_root))
+
+    from scripts import config
+
+    return Patch, config, mo, np, pd, plt, smf
 
 
 @app.cell

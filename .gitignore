@@ -204,3 +204,6 @@ __marimo__/
 .Rproj.user/
 *.Rproj
 
+# Holiday scraping cache (HTML)
+data/raw/raw_holidays/
+

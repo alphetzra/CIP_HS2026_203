@@ -46,9 +46,17 @@ def _(mo):
 def _():
     #Importing modules, this is used as a reference for which modules are exaclty used in this script
 
+    import sys
     import pandas as pd  #https://pandas.pydata.org/docs/user_guide/index.html#user-guide
     from pathlib import Path  #https://docs.python.org/3/library/pathlib.html
     import pyarrow #used to generate the parquet file
+
+    #add the repo root (the folder that contains scripts/config.py) to the Python path,
+    #so that the import below finds our own scripts folder and not a pip package
+    _root = next(p for p in Path(__file__).resolve().parents if (p / "scripts" / "config.py").exists())
+    if str(_root) not in sys.path:
+        sys.path.insert(0, str(_root))
+
     from scripts import config
 
     return config, pd

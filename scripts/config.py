@@ -21,7 +21,7 @@ SPENDING_FILE_MORTEZA = RAW_DIR / "ACQ_POS_Grossregion_NOGA.csv"
 
 # processed data
 CLEAN_SPENDING = PROCESSED_DIR / "clean_spending.parquet"
-INTERIM_HOLIDAY = PROCESSED_DIR / "region_holiday_share(in).csv"
+INTERIM_HOLIDAY = PROCESSED_DIR / "region_holiday_share.csv"
 CLEAN_EVENTS = PROCESSED_DIR / "q1_spending_zurich_clean.csv"
 DF_Q2 = PROCESSED_DIR / "df_q2.parquet"
 DF_Q3 = PROCESSED_DIR / "q3_data.parquet"

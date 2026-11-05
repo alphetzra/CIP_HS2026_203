@@ -7,10 +7,18 @@ app = marimo.App()
 @app.cell
 def _():
     import marimo as mo
+    import sys
     import requests
     import json
     import pandas as pd #https://pandas.pydata.org/docs/user_guide/index.html#user-guide
     from pathlib import Path  #https://docs.python.org/3/library/pathlib.html
+
+    #add the repo root (the folder that contains scripts/config.py) to the Python path,
+    #so that the import below finds our own scripts folder and not a pip package
+    _root = next(p for p in Path(__file__).resolve().parents if (p / "scripts" / "config.py").exists())
+    if str(_root) not in sys.path:
+        sys.path.insert(0, str(_root))
+
     from scripts import config
 
     return config, mo, pd, requests
@@ -67,7 +75,6 @@ def _(date_range, pd, requests):
     raw_exchange_pd = pd.DataFrame(raw_exchange_json["timeseries"][0]["values"])
     print(type(raw_exchange_pd))
     print(raw_exchange_pd)
-
 
 
     return (raw_exchange_pd,)
