@@ -1,6 +1,6 @@
 import pandas as pd
 
-from scripts.holidays.preprocessing_cleaning import get_preprocessed_cleaned_holidays
+from scripts.Q2.holidays.preprocessing_cleaning import get_preprocessed_cleaned_holidays
 
 
 def get_holidays() -> pd.DataFrame | None:

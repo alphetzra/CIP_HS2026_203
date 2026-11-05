@@ -1,10 +1,13 @@
 beautifulsoup4==4.15.0
+linearmodels==7.1
 marimo==0.25.2
 matplotlib==3.11.2
 narwhals==2.27.1
 numpy==2.5.4
 pandas==3.1.0
 pyarrow==26.0.0
+playwright==1.64.1
+python-dotenv==1.2.4
 requests==2.34.2
 seaborn==0.13.2
 statsmodels==0.15.0

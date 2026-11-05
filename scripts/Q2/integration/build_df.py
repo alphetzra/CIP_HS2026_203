@@ -15,9 +15,9 @@ Specifics:
 
 import pandas as pd
 
-from integration.population_holidays import get_population_holidays
+from scripts.Q2.integration.population_holidays import get_population_holidays
 from scripts import config
-from spending.spending import get_spending
+from scripts.Q2.spending.spending import get_spending
 
 
 def load_inputs() -> tuple[pd.DataFrame, pd.DataFrame]:

@@ -4,6 +4,18 @@ __generated_with = "0.25.2"
 app = marimo.App()
 
 
+@app.cell
+def _():
+    import marimo as mo
+    import requests
+    import json
+    import pandas as pd #https://pandas.pydata.org/docs/user_guide/index.html#user-guide
+    from pathlib import Path  #https://docs.python.org/3/library/pathlib.html
+    from scripts import config
+
+    return config, mo, pd, requests
+
+
 @app.cell(hide_code=True)
 def _(mo):
     mo.md(r"""
@@ -21,17 +33,6 @@ def _(mo):
     DISCLAMER: it is not necessary to save such file as a parquet due to the limited amout of rows and simplicity of the data, but we kept parquet to being aligned across the different datasets
     """)
     return
-
-
-@app.cell
-def _():
-    import marimo as mo
-    import requests
-    import json
-    import pandas as pd #https://pandas.pydata.org/docs/user_guide/index.html#user-guide
-    from pathlib import Path  #https://docs.python.org/3/library/pathlib.html
-
-    return Path, mo, pd, requests
 
 
 @app.cell(hide_code=True)
@@ -73,8 +74,8 @@ def _(date_range, pd, requests):
 
 
 @app.cell
-def _(Path, raw_exchange_pd):
-    output_folder = Path("../../../data/raw/raw_exchange.parquet")
+def _(config, raw_exchange_pd):
+    output_folder = config.RAW_EXCHANGE
 
     raw_exchange_pd.to_parquet(output_folder, index=False)
     return

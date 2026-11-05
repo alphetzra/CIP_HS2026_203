@@ -19,7 +19,6 @@ from bs4 import BeautifulSoup
 from scripts import config
 
 
-
 def cached_files():
     """Yield every cached holiday page and report missing ones.
     Yields:

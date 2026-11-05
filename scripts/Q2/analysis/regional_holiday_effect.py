@@ -14,8 +14,8 @@ import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
 from linearmodels.panel import PanelOLS
-
-from integration.build_df import get_build_df
+from scripts.Q2.analysis.calendar_regression import holiday_effect
+from scripts.Q2.integration.build_df import get_build_df
 from scripts import config
 
 
@@ -40,24 +40,9 @@ def fit_category(cat_df: pd.DataFrame):
 
     panel = cat_df.set_index(["region", "date"])
     model = PanelOLS(panel[config.TARGET], panel[["holiday_share"]],
-                     entity_effects=True,     # region effect: levels differences between regions
+                     entity_effects=True,  # region effect: levels differences between regions
                      time_effects=True)       # date effect: everything common to all regions on a day
     return model.fit(cov_type="kernel")
-
-
-def holiday_effect(result) -> dict:
-    """Read the holiday effect from a fitted model as % change.
-        Args:
-            result: Fitted PanelOLS result containing holiday_share
-        Returns:
-            Dict with effect_pct, ci_low, ci_high (95% interval), p_value and n_obs
-        """
-
-    b = result.params["holiday_share"]
-    low, high = result.conf_int().loc["holiday_share"]
-    to_pct = lambda x: (np.exp(x) - 1) * 100        # log points -> % change
-    return {"effect_pct": to_pct(b), "ci_low": to_pct(low), "ci_high": to_pct(high),
-            "p_value": result.pvalues["holiday_share"], "n_obs": int(result.nobs)}
 
 
 def regional_effect_by_category(df: pd.DataFrame) -> pd.DataFrame:
@@ -112,7 +97,7 @@ def run_regional_holiday_effect() -> None:
     regional.to_csv(config.TABLES_DIR / "holiday_effect_regional_only.csv")
     print("Regional holiday effect per category (% change on a full holiday):\n", regional)
 
-    # estimate from calendar_regression.py, for the comparison in the plot
+    # estimate from calendar_regression.py, for comparison in the plot
     all_holidays = pd.read_csv(config.TABLES_DIR / "holiday_effect_all.csv", index_col=0)
     plot_effects(regional, all_holidays)
     print(f"Figure saved to {config.FIGURES_DIR / 'holiday_effects.png'}")

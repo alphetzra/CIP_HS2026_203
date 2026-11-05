@@ -10,7 +10,6 @@ Specifics:
   pipeline stops if the export is incomplete.
 """
 
-from pathlib import Path
 import pandas as pd
 from narwhals import DataFrame
 

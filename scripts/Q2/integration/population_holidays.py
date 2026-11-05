@@ -23,8 +23,8 @@ Specifics:
 
 import pandas as pd
 
-from holidays.holidays import get_holidays
-from population.population import get_population
+from scripts.Q2.holidays.holidays import get_holidays
+from scripts.Q2.population.population import get_population
 from scripts import config
 
 

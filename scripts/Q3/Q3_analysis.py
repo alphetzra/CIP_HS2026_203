@@ -14,8 +14,9 @@ def _():
     from matplotlib.patches import Patch  #used for the COVID period in the legend
     from pathlib import Path  #https://docs.python.org/3/library/pathlib.html
     import pyarrow #used to read the parquet file
+    from scripts import config
 
-    return Patch, Path, mo, np, pd, plt, smf
+    return Patch, config, mo, np, pd, plt, smf
 
 
 @app.cell(hide_code=True)
@@ -84,8 +85,8 @@ def _(plt):
 
 
 @app.cell
-def _(Path, mo):
-    input_file = Path("../../data/processed/q3_data.parquet")
+def _(config, mo):
+    input_file = config.DF_Q3
  
     #output folders inside the analysis_Q3 folder
     #output folders inside the analysis_Q3 folder, built from the location of this notebook,
