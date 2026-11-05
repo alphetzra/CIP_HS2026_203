@@ -38,12 +38,20 @@ def _():
     # (pyarrow is not called directly, but pandas needs it to read/write parquet)
 
     import marimo as mo
+    import sys
     import pandas as pd
     import numpy as np 
     from pathlib import Path
     import pyarrow
     import matplotlib.pyplot as plt
 
+    #add the repo root (the folder that contains scripts/config.py) to the Python path,
+    #so that the import below finds our own scripts folder and not a pip package
+    _root = next(p for p in Path(__file__).resolve().parents if (p / "scripts" / "config.py").exists())
+    if str(_root) not in sys.path:
+        sys.path.insert(0, str(_root))
+
+    from scripts import config
 
     return Path, mo, np, pd
 
@@ -78,19 +86,16 @@ def _(mo):
     return
 
 
-app._unparsable_cell(
-    r"""
+@app.cell
+def _(raw_spending):
     #renaming columns to remove spaces in the columns names
 
     spending = raw_spending.rename(columns={"Date": "date",
                                             "Region": "region",
                                             "Merchant category": "category",
                                             "Scaled Value": "spending",
-                                            "Scaled Number of Transactions",
-                                            "transactions",})
-    """,
-    name="_"
-)
+                                            "Scaled Number of Transactions":"transactions",})
+    return (spending,)
 
 
 @app.cell
@@ -159,38 +164,45 @@ def _(pd, spending):
     #we can see that some regions are marked as 9999, we need to exclude them as part of our preprocessing
     #to combine both processes I will attempt a for loop to iterate into each row of the affected columns and keep those that do not match the criteria 
 
+    #converting the datatypes on a copy, so this cell always works with the right types
+    #(marimo does not guarantee that a cell changing "spending" in place runs before this one)
+    spending_typed = spending.copy()
+    spending_typed["date"] = pd.to_datetime(spending_typed["date"])
+    spending_typed["region"] = spending_typed["region"].astype(str).astype("category")
+    spending_typed["category"] = spending_typed["category"].astype(str).astype("category")
+    spending_typed["spending"] = spending_typed["spending"].astype(float)
 
     print("CHECKING VALUES:")
     for x in ["date","region", "category","spending","transactions"]:
-        as_text = spending[x].astype(str).str.strip()
+        as_text = spending_typed[x].astype(str).str.strip()
         print()
         print(f"----------------- checking {x} ------------------")
         print(f"total rows containing '9999' in {x}: {(as_text == '9999').sum()}")
-        print(f"total rows containing 'NaN' in {x}: {(spending[x].isna().sum())}")
+        print(f"total rows containing 'NaN' in {x}: {(spending_typed[x].isna().sum())}")
         print(f"total rows with empty text in {x}: {(as_text == '').sum()}")
 
-        if pd.api.types.is_numeric_dtype(spending[x]):
-            print(f"negative values in {x}: {(spending[x] < 0).sum()}")
-            print(f"zero values in {x}: {(spending[x] == 0).sum()}")
-            print(f"min: {spending[x].min()}, max: {spending[x].max()}")
+        if pd.api.types.is_numeric_dtype(spending_typed[x]):
+            print(f"negative values in {x}: {(spending_typed[x] < 0).sum()}")
+            print(f"zero values in {x}: {(spending_typed[x] == 0).sum()}")
+            print(f"min: {spending_typed[x].min()}, max: {spending_typed[x].max()}")
         else:
-            print(f"number of unique values in {x}: {spending[x].nunique()}")
+            print(f"number of unique values in {x}: {spending_typed[x].nunique()}")
     print()
 
-    print(f"duplicated rows: {spending.duplicated(subset=['date', 'region', 'category']).sum()}")
+    print(f"duplicated rows: {spending_typed.duplicated(subset=['date', 'region', 'category']).sum()}")
     print()
 
 
-    #The output of the first loop showed ustat only columns region and category show the presence of 9999 and none of the columns contain NaN, we filter the 9999 values and the date range with boolean masks, which is faster and simpler than a loop
+    #The output of the first loop showed that only columns region and category show the presence of 9999 and none of the columns contain NaN, we filter the 9999 values and the date range with boolean masks, which is faster and simpler than a loop
 
     print("FILTERING 9999:")
-    # Filter out 9999 from both columns at once without a loop
-    spending_filtered = spending[
-        (spending["region"] != '9999') & 
-        (spending["category"] != '9999')]
+    #Filter out 9999 from both columns at once without a loop (.copy() so that the new columns below are added to a real new dataframe)
+    spending_filtered = spending_typed[
+        (spending_typed["region"] != '9999') & 
+        (spending_typed["category"] != '9999')].copy()
 
-    # Calculate and print how many rows were removed
-    rows_removed = len(spending) - len(spending_filtered)
+    #Calculate and print how many rows were removed
+    rows_removed = len(spending_typed) - len(spending_filtered)
     print(f"Total rows removed: {rows_removed}")
     print(f"Total rows remaining: {len(spending_filtered)}")
     print()
@@ -223,7 +235,7 @@ def _(pd, spending):
 
     spending_filtered = spending_filtered[
         (spending_filtered["date"] >= start_date) & 
-        (spending_filtered["date"] <= end_date)]
+        (spending_filtered["date"] <= end_date)].copy()
 
     rows_removed = n_rows - len(spending_filtered)
     print(f"Total rows removed: {rows_removed}")
@@ -311,7 +323,6 @@ def _(spending_filtered):
 
     spending_filtered["border_region"] = spending_filtered["region"].isin(border_countries.keys())
     spending_filtered["border_country"] = spending_filtered["region"].astype(str).map(border_countries)
-
     return
 
 

@@ -10,8 +10,17 @@ We study how daily card spending in Switzerland relates to calendar effects, pub
 | Q2 | How much of the daily variation in spending by category is explained by calendar effects (weekday, month, public holidays)? How does a regional public holiday change spending by category in regions where it applies, compared with regions where the same date is a normal working day? |
 | Q3 | Is spending in border regions more strongly affected by a decrease in the EUR/CHF exchange rate than spending in non-border regions, and does this effect differ between border regions? |
 
-All three questions use daily card-payment data from [Monitoring Consumption Switzerland](https://monitoringconsumption.com)
-(MCS) for the seven Swiss Grossregionen, 2019-2025. Each question adds further sources:
+All three questions use daily card-payment data from [Monitoring Consumption Switzerland](https://monitoringconsumption.com)(2019-2025)
+The data-set contains seven Swiss Grossregionen and seven categories: 
+1. Accommodation, 
+2. Food and beverage services, 
+3. Retail: Food, beverage and tobacco, 
+4. Retail: Fuel stations, 
+5. Retail: Other goods, 
+6. Transport services, 
+7. Other
+
+Each question adds further sources:
 
 - Q1: dates and attendance of major events in Zürich (Street Parade, Züri Fäscht), scraped from official and public web pages
 - Q2: public holidays per canton, scraped from [feiertagskalender.ch](https://www.feiertagskalender.ch), and population per canton from the [Federal Statistical Office (BFS)](https://www.bfs.admin.ch) to aggregate holidays to Grossregion level
@@ -31,24 +40,29 @@ CIP_HS2026_203/
 ├── data/
 │   ├── raw/  # Unchanged downloads, API answers and scraped data
 │   │   ├── raw_spending.parquet   
-│   │   └── raw_exchange.parquet
-├   │   └── raw_holidays/  
-├   │   └── raw_population.csv 
+│   │   ├── raw_exchange.parquet
+│   │   ├── raw_holidays/  
+│   │   ├── raw_population.csv 
+│   │   └── ACQ_POS_Grossregion_NOGA.csv
 │   └── processed/  # Cleaned single sources
-│       └── clean_spending.parquet
-│       └── cleaned_holidays.csv  
-│       └── cleaned_population.csv 
-│       └── q3_data.parquet
-│       └── region_holiday_share.csv  
+│       ├── clean_spending.parquet
+│       ├── cleaned_holidays.csv  
+│       ├── cleaned_population.csv 
+│       ├── q3_data.parquet
+│       ├── region_holiday_share.csv
+│       ├── q1_event_editions_clean.csv 
+│       ├── q1_event_spending_integrated.csv 
+│       ├── q1_spending_zurich_clean.csv 
+│       ├── zurich_event_days.csv 
 │       └── df_q2.parquet
 ├── scripts/
 │   ├── Q1/ 
-│   │    └── 01_event_web_scraping
-│   │    └── 02_data_cleaning_transformation_integration
-│   │    └── 03_data_analysis_visualization
+│   │    └── 01_event_web_scraping                          #Retrieveal event data via scraping
+│   │    └── 02_data_cleaning_transformation_integration    #Preprocessing script (jupyter)
+│   │    └── 03_data_analysis_visualization                 #Q1 final analysis (jupyter)
 │   │    └── output/
-│   │          ├── figures/ # Figures used in the report
-│   │          └── tables/  # Tables used in the reports
+│   │          ├── figures/                                 # Figures used in the report
+│   │          └── tables/                                  # Tables used in the reports
 │   ├── Q2/
 │   │   ├── analysis/
 │   │   │   ├── calendar_regression.py         # Calendar-effect regression models
@@ -83,12 +97,12 @@ CIP_HS2026_203/
 │       │      ├── download_spending.py       # MCS spending data download
 │       │      └── preprocessing_spending.py  # MCS spending data preprocessing
 │       ├── exchange
-│       │      └── api_SNB.py  # API data retrieval from SNB
-│       ├── Q3_merge.py        # Merging datasets for Q3
-│       ├── Q3_analysis.py     # Final data analysis for Q3
+│       │      └── api_SNB.py                 # API data retrieval from SNB
+│       ├── Q3_merge.py                       # Merging datasets for Q3
+│       ├── Q3_analysis.py                    # Final data analysis for Q3
 │       └── output/
-│           ├── figures/  # Figures used in the report
-│           └── tables/   # Regression and diagnostic tables
+│           ├── figures/                      # Figures used in the report
+│           └── tables/                       # Regression and diagnostic tables
 │
 └── report/   # Final documentation (LaTeX) and feasibility study
 ```
@@ -105,7 +119,10 @@ git clone https://github.com/alphetzra/CIP_HS2026_203.git
 cd CIP_HS2026_203
 python -m venv .venv
 source .venv/bin/activate          
-pip install -r requirements.txt
+
+pip install -r dev_requirements.txt
+playwright install chromium
+jupyter lab
 ```
 
 ---
@@ -172,7 +189,7 @@ python main.py analysis spending    # -> scripts/Q3/output/
 | Member | Research question | Code |
 |---|---|---|
 | **Morteza Nejati** | Q1: major events in Zürich | 01_event_web_scraping.ipynb, 02_data_cleaning_transformation_integration.ipynb, 03_data_analysis_visualization.ipynb |
-| **Laura Da Silva Cunha** | Q2: population and public holidays | `scripts/Q2`, `report/Q2`, `main.py`, `config.py`, `README.md` |
+| **Laura Da Silva Cunha** | Q2: population and public holidays | `scripts/Q2`, `main.py`, `config.py`, `README.md` |
 | **Salvatore Nicolosi** | Q3: EUR/CHF and border regions + MCS spending data, Git repository | `scripts/Q3/spending/download_spending.py`, `scripts/Q3/spending/preprocesssing_spending.py`, `scripts/Q3/exchange/api_SNB.py`, `scripts/Q3/Q3_merge.py`, `scripts/Q3/Q3_analysis.py` , `requirements.txt`, `README.md`, `.gitignore`, `git repo management and structure` |
 
 
