@@ -7,8 +7,9 @@ of the scrapping but needs a user to restart browser and go through the security
 Setup: copy .example.env to .env (not tracked in git) and fill in
   BROWSER_DEBUGGING_PORT and BROWSER_PATH (path to the Chrome executable).
 """
-
+import asyncio
 import os
+import sys
 import time
 import subprocess
 from dotenv import load_dotenv
@@ -197,6 +198,8 @@ def scrape_holidays() -> None:
     if cfg is None:
         return
     debug_port, browser_exe = cfg
+    if sys.platform == "win32":
+        asyncio.set_event_loop_policy(asyncio.WindowsProactorEventLoopPolicy())
     with sync_playwright() as p:
         message = "Close all browsers and press Enter."
         for attempt in range(max_retries):

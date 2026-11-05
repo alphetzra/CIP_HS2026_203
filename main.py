@@ -48,12 +48,12 @@ def exchange(args):
     print(get_raw_exchange().head())  # raw is already cleaned
 
 def events(args):
-    print(get_events().head) # TODO: Morteza please test it after the other fixes
+    print(get_events().head)
 
 # scrape
 
 def scrape_h(args):
-    scrape_holidays() # TODO: Laura please test holiday scrape
+    scrape_holidays()
 
 def scrape_population(args):
     acquire_population()
@@ -84,7 +84,12 @@ def q2_merge(args):
     print(get_build_df().head())
 
 def q1_merge(args):
-    print() #TODO: Morteza add here the call for your integration merge
+    nb = Path("scripts/Q1/code/02_data_cleaning_transformation_integration.ipynb")
+    subprocess.run(
+        [sys.executable, "-m", "IPython", nb.name],
+        cwd=nb.parent,
+        check=True,
+    )
 
 def q3_merge(args):
     q3_merge_app.run()
