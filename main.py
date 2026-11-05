@@ -13,9 +13,9 @@ from scripts.Q2.integration.build_df import get_build_df
 from scripts.Q2.population.population import get_population, get_raw_population
 from scripts.Q2.population.acquire import acquire_population
 from scripts.Q2.holidays.scrape import scrape_holidays
-from scripts.Q3.aquisition.download_spending import app as acquire_spending_app
+from scripts.Q3.spending.download_spending import app as acquire_spending_app
 from scripts.Q3.Q3_analysis import app as q3_analysis_app
-from scripts.Q3.aquisition.api_SNB import app as acquire_exchange_app
+from scripts.Q3.exchange.api_SNB import app as acquire_exchange_app
 from scripts.Q2.spending.spending import get_raw_spending, get_spending
 from scripts.Q2.exchange.exchange import get_raw_exchange
 from scripts.Q2.events.events import get_events, get_raw_events
@@ -99,7 +99,7 @@ def regional_holiday_effect(args):
     run_regional_holiday_effect()
 
 def q3(args):
-    q3_analysis_app.run() #TODO: Salvatore key error for year and month
+    q3_analysis_app.run()
 
 def q1(args): # TODO: Morteza please test it after the other fixes
     nb = Path("scripts/Q1/code/03_data_analysis_visualization.ipynb")
