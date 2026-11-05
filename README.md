@@ -92,23 +92,28 @@ python main.py  #CHANGED TO UPDATE
  
 The Q3 scripts are [marimo] notebooks. 
 They use relative paths (`../../data/...`), so run them from inside their own folder, in this order:
+All commands are run from the repository root (use `python3` instead of `python` on macOS/Linux if needed).
 
 ```bash
-
 cd scripts/Q3/spending
-python download_spending.py          # Output: Spending --> data/raw/raw_spending.parquet
+python download_spending.py          # Output: Spending -> data/raw/raw_spending.parquet
+cd ../../..
 
 cd scripts/Q3/exchange
 python api_SNB.py                    # Output: EUR/CHF rates from the SNB API -> data/raw/raw_exchange.parquet
- 
+cd ../../..
+
 cd scripts/Q3/spending
 python preprocesssing_spending.py    # Output: Clean MCS data -> data/processed/clean_spending.parquet
- 
+cd ../../..
+
 cd scripts/Q3
 python Q3_merge.py                   # Output: Join rates and holiday share -> data/processed/q3_data.parquet
- 
-cd scripts/Q3/
-python Q3_analysis.py                # Output: Regressions, diagnostics, figures and tables -> output/
+cd ../..
+
+cd scripts/Q3
+python Q3_analysis.py                # Output: Regressions, diagnostics, figures and tables -> scripts/Q3/output/
+cd ../..
 ```
 ---
 
