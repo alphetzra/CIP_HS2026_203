@@ -180,13 +180,9 @@ cython_debug/
 .cursorignore
 .cursorindexingignore
 
-# Generated data
-data/interim/
-data/processed/
 
 # Keep the empty data folder structure in repo
 !data/raw/.gitkeep
-!data/interim/.gitkeep
 !data/processed/.gitkeep
 
 # PyCharm settings
