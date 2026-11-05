@@ -123,7 +123,7 @@ cd ../..
 |---|---|---|
 | **Morteza Nejati** | Q1: major events in Zürich | 01_event_web_scraping.ipynb, 02_data_cleaning_transformation_integration.ipynb, 03_data_analysis_visualization.ipynb |
 | **Laura Da Silva Cunha** | Q2: population and public holidays + README.md | `main.py`, `scripts/config.py`, `scripts/acquisition/scrape_holidays.py`, `scripts/acquisition/download_spending.py`, `scripts/cleaning/cleaning_holidays.py`, `scripts/cleaning/cleaning_population.py`, `scripts/cleaning/cleaning_spending.py`, `scripts/integration/holiday_share.py`, `scripts/integration/build_df.py`, `scripts/analysis/calendar_index.py`, `scripts/analysis/calendar_regression.py`, `scripts/analysis/regional_holiday_effect.py` |
-| **Salvatore Nicolosi** | `MCS data`,  `Q3: EUR/CHF and border regions`, `Git`, `README.md`, `requirements.txt` |
+| **Salvatore Nicolosi** | Q3: EUR/CHF and border regions + MCS spending data, Git repository | `scripts/Q3/spending/download_spending.py`, `scripts/Q3/spending/preprocesssing_spending.py`, `scripts/Q3/exchange/api_SNB.py`, `scripts/Q3/Q3_merge.py`, `scripts/Q3/Q3_analysis.py , `requirements.txt`, `README.md`, `.gitignore`, `git repo management and structure' |
 
 
 ## Use of generative AI
