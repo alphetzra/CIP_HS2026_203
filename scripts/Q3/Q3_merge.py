@@ -32,9 +32,9 @@ def _(mo):
 
     | File | Content | Level | Folder |
     | --- | --- | --- | --- |
-    | `clean_spending.parquet` | Cleaned daily spending with calendar, COVID and border-region columns | date x region x category | `data/interim/` |
+    | `clean_spending.parquet` | Cleaned daily spending with calendar, COVID and border-region columns | date x region x category | `data/processed/` |
     | `raw_exchange.parquet` | Monthly average EUR/CHF rate from the SNB | month | `data/raw/` |
-    | `region_holiday_sharein.csv` | Share of residents with a public holiday (0 to 1), only for holiday dates | date x region | `data/interim/` |
+    | `region_holiday_sharein.csv` | Share of residents with a public holiday (0 to 1), only for holiday dates | date x region | `data/processed/` |
 
     ## 3. Script description
     1. **Load** the three files
@@ -150,7 +150,7 @@ def _(pd, raw_holiday, spending):
 
     print(f"- Regions not found in spending: {unknown_regions}")
     print()
-                          
+
     #creating a copy of raw_holiday (otherwise marimo gives an error as it doesn't allow us to re-define a variable previusly used)
     holiday = raw_holiday.copy()
 

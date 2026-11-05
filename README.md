@@ -21,76 +21,46 @@ MCS publishes *scaled* transaction values, not CHF amounts, so all results are r
 
 ---
 ## Repository structure
- 
-```
-CIP_HS2026_203/
-├── README.md
-├── requirements.txt               # Python dependencies
-├── main.py                        # Runs the Q2 pipeline end to end
-│
-├── data/
-│   ├── raw/                       # Unchanged downloads, API answers and scraped data
-│   │   ├── raw_spending.parquet   
-│   │   └── raw_exchange.parquet   
-│   ├── interim/                   # Cleaned single sources
-│   │   └── clean_spending.parquet 
-│   └── processed/                 # Merged datasets, one per research question
-│
-├── scripts/
-│   ├── config.py                  # Paths and global settings
-│   ├── acquisition/               # Download, API and scraping scripts
-│   ├── cleaning/                  # Cleaning of each source
-│   ├── integration/               # Holiday share and merging into analysis panels
-│   ├── analysis_Q1/               # Q1 main analysis (juniper notebooks)
-│   ├── analysis_Q2/               # Q2 main analysis (python scripts)
-│   └── analysis_Q3/               # Q3 main analysis (marimo notebook)
-│       └── output/
-│           ├── figures/           # Figures used in the report
-│           └── tables/            # Regression and diagnostic tables
-│
-└── report/                        # Final documentation (LaTeX) and feasibility study
-```
 
 
 ```
 CIP_HS2026_203/
 ├── README.md
-├── requirements.txt               # Python dependencies
+├── requirements.txt  # Python dependencies
 │
 ├── data/
-│   ├── raw/                       # Unchanged downloads, API answers and scraped data
+│   ├── raw/  # Unchanged downloads, API answers and scraped data
 │   │   ├── raw_spending.parquet   
 │   │   └── raw_exchange.parquet   
-│   └── processed/                   # Cleaned single sources
-│       └── clean_spending.parquet
+│   └── processed/  # Cleaned single sources
+│       ├── clean_spending.parquet
 │       └── Q3_spending.parquet
 │
 ├── scripts/
-│   └── Q1/               # Download, API and scraping scripts
-│       └── Q1_scarping.py
-│       └── Q1_preprocessing.py
-│       └── Q1_data_analysis.py
+│   ├── Q1/ 
+│   │    └── 01_event_web_scraping
+│   │    └── 02_data_cleaning_transformation_integration
+│   │    └── 03_data_analysis_visualization
+│   │    └── output/
+│   │          ├── figures/ # Figures used in the report
+│   │          └── tables/  # Tables used in the reports
+│   ├── Q2/
+│   │    └── output/
+│   │          ├── figures/           # Figures used in the report
+│   │          └── tables/            # Regression and diagnostic tables
+│   └── Q3/ 
+│       ├── spending
+│       │      ├── download_spending.py       # MCS spending data download
+│       │      └── preprocessing_spending.py  # MCS spending data preprocessing
+│       ├── exchange
+│       │      └── api_SNB.py  # API data retrieval from SNB
+│       ├── Q3_merge.py        # Merging datasets for Q3
+│       ├── Q3_analysis.py     # Final data analysis for Q3
 │       └── output/
-│           ├── figures/           # Figures used in the report
-│           └── tables/            # Regression and diagnostic tables
-│   └── Q2/                  # Cleaning of each source
-│       └── output/
-│           ├── figures/           # Figures used in the report
-│           └── tables/            # Regression and diagnostic tables
-│   └── Q3/               # Holiday share and merging into analysis panels
-│       └── spending
-│               └── download_spending.py
-│               └── preprocessing_spending.py
-│       └── spending_snb.py             #Output: data/raw/raw_snb.parquet
-│       └── Q3_download_spending.py
-│       └── Q3_preprocessing.py
-│       └── Q3_merging.py
-│       └── Q1_data_analysis.py
-│       └── output/
-│           ├── figures/           # Figures used in the report
-│           └── tables/            # Regression and diagnostic tables
+│           ├── figures/  # Figures used in the report
+│           └── tables/   # Regression and diagnostic tables
 │
-└── report/                        # Final documentation (LaTeX) and feasibility study
+└── report/   # Final documentation (LaTeX) and feasibility study
 ```
 
 
@@ -112,6 +82,24 @@ pip install -r requirements.txt
 
 ## How to run
  
+### Q1 pipeline
+
+The Q1 analysis uses three Jupyter notebooks. Run them in the following order from scripts/Q1/code/. The notebooks use relative paths (../../../data/...) to access the shared data folders.
+
+# Starting from the repository root
+cd scripts/Q1/code
+
+jupyter notebook 01_event_web_scraping.ipynb
+# Output: Event dates and attendance -> data/processed/zurich_event_days.csv
+
+jupyter notebook 02_data_cleaning_transformation_integration.ipynb
+# Output: Cleaned spending data, event editions, and integrated event-spending data -> data/processed/
+
+jupyter notebook 03_data_analysis_visualization.ipynb
+# Output: Event-spending comparisons, analysis, and visualizations -> figures/
+
+Execute all cells in each notebook before opening the next one. The notebooks should be run in the order 01 → 02 → 03, since later notebooks depend on files generated by earlier ones.
+
 ### Q2 pipeline
  
 ```bash
@@ -120,28 +108,31 @@ python main.py
  
 ### Q3 pipeline
  
-The Q3 scripts are [marimo](https://marimo.io) notebooks. They use relative paths (`../../data/...`), so run them from inside their own folder, in this order:
+The Q3 scripts are [marimo] notebooks. 
+They use relative paths (`../../data/...`), so run them from inside their own folder, in this order:
+All commands are run from the repository root (use `python3` instead of `python` on macOS/Linux if needed).
 
 ```bash
+cd scripts/Q3/spending
+python download_spending.py          # Output: Spending -> data/raw/raw_spending.parquet
+cd ../../..
 
-cd scripts/acquisition
-python download_spending.py          # Output: Spending --> data/raw/raw_spending.parquet
-
-cd scripts/acquisition
+cd scripts/Q3/exchange
 python api_SNB.py                    # Output: EUR/CHF rates from the SNB API -> data/raw/raw_exchange.parquet
- 
-cd ../cleaning
-python preprocesssing_spending.py    # Output: Clean MCS data -> data/interim/clean_spending.parquet
- 
-cd ../integration
-python merge_Q3.py                   # Output: Join rates and holiday share -> data/processed/q3_panel.parquet
- 
-cd ../analysis_Q3
-python analysis_Q3.py                # Output: Regressions, diagnostics, figures and tables -> output/
-```
- 
-To open a notebook interactively (e.g. to use the year slider in `api_SNB.py`), use `marimo edit <file>.py` instead of `python <file>.py`.
+cd ../../..
 
+cd scripts/Q3/spending
+python preprocesssing_spending.py    # Output: Clean MCS data -> data/processed/clean_spending.parquet
+cd ../../..
+
+cd scripts/Q3
+python Q3_merge.py                   # Output: Join rates and holiday share -> data/processed/q3_data.parquet
+cd ../..
+
+cd scripts/Q3
+python Q3_analysis.py                # Output: Regressions, diagnostics, figures and tables -> scripts/Q3/output/
+cd ../..
+```
 ---
 
 ## Contributions
@@ -150,7 +141,7 @@ To open a notebook interactively (e.g. to use the year slider in `api_SNB.py`), 
 |---|---|---|
 | **Morteza Nejati** | Q1: major events in Zürich | 01_event_web_scraping.ipynb, 02_data_cleaning_transformation_integration.ipynb, 03_data_analysis_visualization.ipynb |
 | **Laura Da Silva Cunha** | Q2: population and public holidays + README.md | data/raw/raw_holidays, data/raw/raw_population.csv, scripts/Q2, report/Q2, main.py
-| **Salvatore Nicolosi** | Q3: EUR/CHF and border regions + Git |
+| **Salvatore Nicolosi** | Q3: EUR/CHF and border regions + MCS spending data, Git repository | `scripts/Q3/spending/download_spending.py`, `scripts/Q3/spending/preprocesssing_spending.py`, `scripts/Q3/exchange/api_SNB.py`, `scripts/Q3/Q3_merge.py`, `scripts/Q3/Q3_analysis.py` , `requirements.txt`, `README.md`, `.gitignore`, `git repo management and structure` |
 
 
 ## Use of generative AI
@@ -159,6 +150,5 @@ To open a notebook interactively (e.g. to use the year slider in `api_SNB.py`), 
 |---|---|---|
 | Q1 | Improving and debugging Python code, refining data processing and visualizations, writing and improving Markdown documentation, and assisting with drafting, structuring, and polishing the project report. | checking the report and visual for accuracy and readibility |
 | Q2 | Debugging the Playwright scraper; clarifying the syntax of both models (`statsmodels` OLS with HC1 standard errors and `linearmodels` PanelOLS with region and date effects); improving English wording on the report.| AI output was checked against documentation and tested |
-| Q3 | Suggestions to improve and debug visualizations with matplotlib | Debugging tips the marimo notebooks whenever necessary (e.g. shallow copy); clarifying `statsmodels` syntax for HC1 standard errors and VIF; polishing the English of the Q3 report to match style and repository structure section and the README.md | Collecting ideas for order-region classification, robustness check without COVID debug; every AI suggestion was reviewed by manually searching libraries and tested before committing |
+| Q3 | Suggestions to improve and debug visualizations with matplotlib,  Debugging tips the marimo notebooks whenever necessary (e.g. shallow copy); clarifying `statsmodels` syntax for HC1 standard errors and VIF; polishing the English of the Q3 report to match style and repository structure section and the README.md | Collecting ideas for order-region classification, robustness check without COVID debug; every AI suggestion was reviewed by manually searching libraries and tested before committing | All research questions, methodological choices, analyses and conclusions were developed and checked by the team. |
  
-All research questions, methodological choices, analyses and conclusions were developed and checked by the team.

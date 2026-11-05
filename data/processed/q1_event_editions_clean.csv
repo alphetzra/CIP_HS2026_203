@@ -1,0 +1,8 @@
+﻿event_id,event_name,event_year,event_start_date,event_end_date,event_reference_date,event_duration_days,edition_attendance,date_source,attendance_source
+ZF_2019,Züri Fäscht,2019,2019-07-05,2019-07-07,2019-07-06,3,2500000,https://www.zhk.ch/de/wirtschaft-und-politik/mobilitaet-und-infrastruktur/verkehrskonzept-zueri-faescht-2019.html,https://de.wikipedia.org/wiki/Z%C3%BCri_F%C3%A4scht
+SP_2019,Street Parade,2019,2019-08-10,2019-08-10,2019-08-10,1,850000,https://www.stadt-zuerich.ch/misc/de/mitteilungsarchiv/medienmitteilungen/2019/08/street_parade_2019zwischenbilanzderstadtpolizeizuerich.html,https://www.streetparade.com/en/historie
+SP_2022,Street Parade,2022,2022-08-13,2022-08-13,2022-08-13,1,900000,https://www.stadt-zuerich.ch/de/aktuell/medienmitteilungen/2022/08/220809a.html,https://www.streetparade.com/en/historie
+ZF_2023,Züri Fäscht,2023,2023-07-07,2023-07-09,2023-07-08,3,2000000,https://www.freizeit.ch/kalender/zuri-fascht/,https://www.swissinfo.ch/eng/society/two-million-people-flock-to-three-day-zurich-festival/48653204
+SP_2023,Street Parade,2023,2023-08-12,2023-08-12,2023-08-12,1,920000,https://polizei.news/2023/08/09/stadt-zuerich-zh-verkehrsvorschriften-street-parade-2023/,https://www.streetparade.com/en/historie
+SP_2024,Street Parade,2024,2024-08-10,2024-08-10,2024-08-10,1,920000,https://www.polizeinews.ch/2024/08/06/stadt-zuerich-zh-verkehrsvorschriften-street-parade-2024/,https://www.streetparade.com/en/historie
+SP_2025,Street Parade,2025,2025-08-09,2025-08-09,2025-08-09,1,800000,https://polizeiticker.ch/artikel/street-parade-2025-in-zuerich-sperrungen-und-umleitungen-im-stadtzentrum-246738,https://www.streetparade.com/en/historie
