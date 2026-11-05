@@ -21,76 +21,46 @@ MCS publishes *scaled* transaction values, not CHF amounts, so all results are r
 
 ---
 ## Repository structure
- 
-```
-CIP_HS2026_203/
-├── README.md
-├── requirements.txt               # Python dependencies
-├── main.py                        # Runs the Q2 pipeline end to end
-│
-├── data/
-│   ├── raw/                       # Unchanged downloads, API answers and scraped data
-│   │   ├── raw_spending.parquet   
-│   │   └── raw_exchange.parquet   
-│   ├── interim/                   # Cleaned single sources
-│   │   └── clean_spending.parquet 
-│   └── processed/                 # Merged datasets, one per research question
-│
-├── scripts/
-│   ├── config.py                  # Paths and global settings
-│   ├── acquisition/               # Download, API and scraping scripts
-│   ├── cleaning/                  # Cleaning of each source
-│   ├── integration/               # Holiday share and merging into analysis panels
-│   ├── analysis_Q1/               # Q1 main analysis (juniper notebooks)
-│   ├── analysis_Q2/               # Q2 main analysis (python scripts)
-│   └── analysis_Q3/               # Q3 main analysis (marimo notebook)
-│       └── output/
-│           ├── figures/           # Figures used in the report
-│           └── tables/            # Regression and diagnostic tables
-│
-└── report/                        # Final documentation (LaTeX) and feasibility study
-```
 
 
 ```
 CIP_HS2026_203/
 ├── README.md
-├── requirements.txt               # Python dependencies
+├── requirements.txt  # Python dependencies
 │
 ├── data/
-│   ├── raw/                       # Unchanged downloads, API answers and scraped data
+│   ├── raw/  # Unchanged downloads, API answers and scraped data
 │   │   ├── raw_spending.parquet   
 │   │   └── raw_exchange.parquet   
-│   └── processed/                   # Cleaned single sources
-│       └── clean_spending.parquet
+│   └── processed/  # Cleaned single sources
+│       ├── clean_spending.parquet
 │       └── Q3_spending.parquet
 │
 ├── scripts/
-│   └── Q1/               # Download, API and scraping scripts
-│       └── Q1_scarping.py
-│       └── Q1_preprocessing.py
-│       └── Q1_data_analysis.py
+│   ├── Q1/ 
+│   │    └── Q1_scarping.py
+│   │    └── Q1_preprocessing.py
+│   │    └── Q1_data_analysis.py
+│   │    └── output/
+│   │          ├── figures/ # Figures used in the report
+│   │          └── tables/  # Tables used in the reports
+│   ├── Q2/
+│   │    └── output/
+│   │          ├── figures/           # Figures used in the report
+│   │          └── tables/            # Regression and diagnostic tables
+│   └── Q3/ 
+│       ├── spending
+│       │      ├── download_spending.py       # MCS spending data download
+│       │      └── preprocessing_spending.py  # MCS spending data preprocessing
+│       ├── exchange
+│       │      └── api_SNB.py  # API data retrieval from SNB
+│       ├── Q3_merge.py        # Merging datasets for Q3
+│       ├── Q3_analysis.py     # Final data analysis for Q3
 │       └── output/
-│           ├── figures/           # Figures used in the report
-│           └── tables/            # Regression and diagnostic tables
-│   └── Q2/                  # Cleaning of each source
-│       └── output/
-│           ├── figures/           # Figures used in the report
-│           └── tables/            # Regression and diagnostic tables
-│   └── Q3/               # Holiday share and merging into analysis panels
-│       └── spending
-│               └── download_spending.py
-│               └── preprocessing_spending.py
-│       └── spending_snb.py             #Output: data/raw/raw_snb.parquet
-│       └── Q3_download_spending.py
-│       └── Q3_preprocessing.py
-│       └── Q3_merging.py
-│       └── Q1_data_analysis.py
-│       └── output/
-│           ├── figures/           # Figures used in the report
-│           └── tables/            # Regression and diagnostic tables
+│           ├── figures/  # Figures used in the report
+│           └── tables/   # Regression and diagnostic tables
 │
-└── report/                        # Final documentation (LaTeX) and feasibility study
+└── report/   # Final documentation (LaTeX) and feasibility study
 ```
 
 
@@ -120,28 +90,26 @@ python main.py  #CHANGED TO UPDATE
  
 ### Q3 pipeline
  
-The Q3 scripts are [marimo](https://marimo.io) notebooks. They use relative paths (`../../data/...`), so run them from inside their own folder, in this order:
+The Q3 scripts are [marimo] notebooks. 
+They use relative paths (`../../data/...`), so run them from inside their own folder, in this order:
 
 ```bash
 
-cd scripts/acquisition
+cd scripts/Q3/spending
 python download_spending.py          # Output: Spending --> data/raw/raw_spending.parquet
 
-cd scripts/acquisition
+cd scripts/Q3/exchange
 python api_SNB.py                    # Output: EUR/CHF rates from the SNB API -> data/raw/raw_exchange.parquet
  
-cd ../cleaning
-python preprocesssing_spending.py    # Output: Clean MCS data -> data/interim/clean_spending.parquet
+cd scripts/Q3/spending
+python preprocesssing_spending.py    # Output: Clean MCS data -> data/processed/clean_spending.parquet
  
-cd ../integration
-python merge_Q3.py                   # Output: Join rates and holiday share -> data/processed/q3_panel.parquet
+cd scripts/Q3
+python Q3_merge.py                   # Output: Join rates and holiday share -> data/processed/q3_data.parquet
  
-cd ../analysis_Q3
-python analysis_Q3.py                # Output: Regressions, diagnostics, figures and tables -> output/
+cd scripts/Q3/
+python Q3_analysis.py                # Output: Regressions, diagnostics, figures and tables -> output/
 ```
- 
-To open a notebook interactively (e.g. to use the year slider in `api_SNB.py`), use `marimo edit <file>.py` instead of `python <file>.py`.
-
 ---
 
 ## Contributions
@@ -150,7 +118,7 @@ To open a notebook interactively (e.g. to use the year slider in `api_SNB.py`), 
 |---|---|---|
 | **Morteza Nejati** | Q1: major events in Zürich | 01_event_web_scraping.ipynb, 02_data_cleaning_transformation_integration.ipynb, 03_data_analysis_visualization.ipynb |
 | **Laura Da Silva Cunha** | Q2: population and public holidays + README.md | `main.py`, `scripts/config.py`, `scripts/acquisition/scrape_holidays.py`, `scripts/acquisition/download_spending.py`, `scripts/cleaning/cleaning_holidays.py`, `scripts/cleaning/cleaning_population.py`, `scripts/cleaning/cleaning_spending.py`, `scripts/integration/holiday_share.py`, `scripts/integration/build_df.py`, `scripts/analysis/calendar_index.py`, `scripts/analysis/calendar_regression.py`, `scripts/analysis/regional_holiday_effect.py` |
-| **Salvatore Nicolosi** | Q3: EUR/CHF and border regions + Git |
+| **Salvatore Nicolosi** | `MCS data`,  `Q3: EUR/CHF and border regions`, `Git`, `README.md`, `requirements.txt` |
 
 
 ## Use of generative AI
