@@ -38,9 +38,9 @@ CIP_HS2026_203/
 │
 ├── scripts/
 │   ├── Q1/ 
-│   │    └── Q1_scarping.py
-│   │    └── Q1_preprocessing.py
-│   │    └── Q1_data_analysis.py
+│   │    └── 01_event_web_scraping
+│   │    └── 02_data_cleaning_transformation_integration
+│   │    └── 03_data_analysis_visualization
 │   │    └── output/
 │   │          ├── figures/ # Figures used in the report
 │   │          └── tables/  # Tables used in the reports
