@@ -59,7 +59,7 @@ def _(Path):
 
     url = ("https://drive.switch.ch/index.php/s/yLISs3KVE7ASE68/download?path=/2_ACQUIRING%20DATA&files=ACQ_POS_Grossregion_NOGA.csv")
 
-    output_folder = Path("../../data/raw/raw_spending.parquet")
+    output_folder = Path("../../../data/raw/raw_spending.parquet")
     return output_folder, url
 
 

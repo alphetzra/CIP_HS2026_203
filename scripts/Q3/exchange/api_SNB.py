@@ -4,17 +4,6 @@ __generated_with = "0.25.2"
 app = marimo.App()
 
 
-@app.cell
-def _():
-    import marimo as mo
-    import requests
-    import json
-    import pandas as pd #https://pandas.pydata.org/docs/user_guide/index.html#user-guide
-    from pathlib import Path  #https://docs.python.org/3/library/pathlib.html
-
-    return Path, mo, pd, requests
-
-
 @app.cell(hide_code=True)
 def _(mo):
     mo.md(r"""
@@ -34,6 +23,17 @@ def _(mo):
     return
 
 
+@app.cell
+def _():
+    import marimo as mo
+    import requests
+    import json
+    import pandas as pd #https://pandas.pydata.org/docs/user_guide/index.html#user-guide
+    from pathlib import Path  #https://docs.python.org/3/library/pathlib.html
+
+    return Path, mo, pd, requests
+
+
 @app.cell(hide_code=True)
 def slider_datarange(mo):
     date_range = mo.ui.range_slider(
@@ -43,7 +43,6 @@ def slider_datarange(mo):
         value=[2019, 2025],
         label="Select the data range",
     )
-
     return (date_range,)
 
 
@@ -70,13 +69,12 @@ def _(date_range, pd, requests):
 
 
 
-
     return (raw_exchange_pd,)
 
 
 @app.cell
 def _(Path, raw_exchange_pd):
-    output_folder = Path("../../data/raw/raw_exchange.parquet")
+    output_folder = Path("../../../data/raw/raw_exchange.parquet")
 
     raw_exchange_pd.to_parquet(output_folder, index=False)
     return

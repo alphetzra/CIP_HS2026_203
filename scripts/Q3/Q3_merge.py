@@ -4,16 +4,6 @@ __generated_with = "0.25.2"
 app = marimo.App()
 
 
-@app.cell
-def _():
-    import marimo as mo
-    import pandas as pd  #https://pandas.pydata.org/docs/user_guide/index.html#user-guide
-    from pathlib import Path #https://docs.python.org/3/library/pathlib.html
-    import pyarrow #used to read and write the parquet files
-
-    return Path, mo, pd
-
-
 @app.cell(hide_code=True)
 def _(mo):
     mo.md(r"""
@@ -30,9 +20,9 @@ def _(mo):
 
     | File | Content | Level | Folder |
     | --- | --- | --- | --- |
-    | `clean_spending.parquet` | Cleaned daily spending with calendar, COVID and border-region columns | date x region x category | `data/interim/` |
+    | `clean_spending.parquet` | Cleaned daily spending with calendar, COVID and border-region columns | date x region x category | `data/processed/` |
     | `raw_exchange.parquet` | Monthly average EUR/CHF rate from the SNB | month | `data/raw/` |
-    | `region_holiday_sharein.csv` | Share of residents with a public holiday (0 to 1), only for holiday dates | date x region | `data/interim/` |
+    | `region_holiday_sharein.csv` | Share of residents with a public holiday (0 to 1), only for holiday dates | date x region | `data/processed/` |
 
     ## 3. Script description
     1. **Load** the three files
@@ -45,16 +35,26 @@ def _(mo):
 
 
 @app.cell
+def _():
+    import marimo as mo
+    import pandas as pd  #https://pandas.pydata.org/docs/user_guide/index.html#user-guide
+    from pathlib import Path #https://docs.python.org/3/library/pathlib.html
+    import pyarrow #used to read and write the parquet files
+
+    return Path, mo, pd
+
+
+@app.cell
 def _(Path):
     #Setting global variables
  
-    spending_file = Path("../../data/interim/clean_spending.parquet")
+    spending_file = Path("../../data/processed/clean_spending.parquet")
 
     exchange_file = Path("../../data/raw/raw_exchange.parquet")
 
-    holiday_file = Path("../../data/interim/region_holiday_share(in).csv")
+    holiday_file = Path("../../data/processed/region_holiday_share(in).csv")
 
-    output_file = Path("../../data/processed/q3_data.parquet")
+    output_file = Path("../../data/processed/Q3_data.parquet")
     return exchange_file, holiday_file, output_file, spending_file
 
 
@@ -150,7 +150,7 @@ def _(pd, raw_holiday, spending):
 
     print(f"- Regions not found in spending: {unknown_regions}")
     print()
-                              
+                          
     #creating a copy of raw_holiday (otherwise marimo gives an error as it doesn't allow us to re-define a variable previusly used)
     holiday = raw_holiday.copy()
 
@@ -244,6 +244,11 @@ def _(output_file, q3_merge):
     q3_merge.to_parquet(output_file, index=False)
 
     print(f"Saved {len(q3_merge)} rows to {output_file.resolve()}")
+    return
+
+
+@app.cell
+def _():
     return
 
 

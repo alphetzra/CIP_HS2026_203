@@ -4,8 +4,39 @@ __generated_with = "0.25.2"
 app = marimo.App()
 
 
+@app.cell(hide_code=True)
+def _(mo):
+    mo.md(r"""
+    # Spending data preprocessing
+
+    ## Script summary
+
+    This notebook cleans the raw card-payment data from **Monitoring Consumption Switzerland** (`data/raw/raw_spending.parquet`) and prepares it for the analyses of all three research questions (Q1 events, Q2 calendar effects, Q3 EUR/CHF and border regions).
+
+    ## What is done
+
+    1. **Load:** read the raw parquet file
+    2. **Rename and convert:** remove spaces from column names, set datatypes (datetime, category, float),
+    3. **Check values:** look for `9999` codes, missing and empty values, negative/zero values and duplicates,
+    4. **Filter:** drop the unidentified `9999` region/category and keep only 2019–2025
+    5. **Outliers detection:** flag outliers per region and category with the IQR rule (flagged, not removed),
+    6. **Add columns:** add calendar columns, a COVID flag and a border-region indicator
+    7. **Distributions:** check skewness and add `log_spending`,
+    8. **Save output:** store the result in `data/interim/clean_spending.parquet`,
+
+    **Notes:**
+    - Spending values are scaled due to the nature of the dataset iself, CHF amounts cannot be recorder or retrieved, so only relative changes in % are interpreted in the analyses.
+    - The merges with the other sources (exchange rate, holidays, events) are done per research question and saved in `scripts/Q3/Q3_merge.py`.
+    """)
+    return
+
+
 @app.cell
 def _():
+    # Required packages: install them first with:
+    # pip install -r requirements.txt
+    # (pyarrow is not called directly, but pandas needs it to read/write parquet)
+
     import marimo as mo
     import pandas as pd
     import numpy as np 
@@ -20,25 +51,17 @@ def _():
 @app.cell(hide_code=True)
 def _(mo):
     mo.md(r"""
- 
+    **Load:** read the raw parquet file
     """)
     return
 
 
 @app.cell
 def _(Path, pd):
-    input_file = Path("../../data/raw/raw_spending.parquet")
+    input_file = Path("../../../data/raw/raw_spending.parquet")
 
     raw_spending = pd.read_parquet(input_file)
     return (raw_spending,)
-
-
-@app.cell(hide_code=True)
-def _(mo):
-    mo.md(r"""
- 
-    """)
-    return
 
 
 @app.cell
@@ -47,18 +70,27 @@ def _(raw_spending):
     return
 
 
-@app.cell
-def _(raw_spending):
+@app.cell(hide_code=True)
+def _(mo):
+    mo.md(r"""
+    **Rename and convert:** remove spaces from column names, set datatypes (datetime, category, float)
+    """)
+    return
+
+
+app._unparsable_cell(
+    r"""
     #renaming columns to remove spaces in the columns names
 
-    spending = raw_spending.rename(columns={
-        "Date": "date",
-        "Region": "region",
-        "Merchant category": "category",
-        "Scaled Value": "spending",
-        "Scaled Number of Transactions": "transactions",
-        })
-    return (spending,)
+    spending = raw_spending.rename(columns={"Date": "date",
+                                            "Region": "region",
+                                            "Merchant category": "category",
+                                            "Scaled Value": "spending",
+                                            "Scaled Number of Transactions",
+                                            "transactions",})
+    """,
+    name="_"
+)
 
 
 @app.cell
@@ -77,6 +109,24 @@ def _(spending):
 @app.cell
 def _(pd, spending):
     def convert_columns (x):
+        """Convert the spending columns to their correct datatypes.
+
+        - date: string -> datetime
+        - region, category: string -> category (saves memory, enables .cat methods)
+        - spending: -> float
+
+        Parameters
+        ----------
+        x : pandas.DataFrame
+            Spending data with the renamed columns
+            (date, region, category, spending).
+
+        Returns
+        -------
+        pandas.DataFrame
+            The same DataFrame, modified in place, with converted columns.
+        """
+        x = x.copy()
         x["date"] = pd.to_datetime(x["date"])
         x["region"] = x["region"].astype("category")
         x["category"] = x["category"].astype("category")
@@ -92,6 +142,14 @@ def _(spending):
     #we print again the statistics, to see if our conversions fix the output of the old statistics, NaN now appear in categorical values as its impossible to calculate certain summary statistics using Region and Merchant category
 
     print(spending.describe(include="all"))
+    return
+
+
+@app.cell(hide_code=True)
+def _(mo):
+    mo.md(r"""
+    **Check values:** look for `9999` codes, missing and empty values, negative/zero values and duplicates
+    """)
     return
 
 
@@ -180,7 +238,7 @@ def _(pd, spending):
 @app.cell(hide_code=True)
 def _(mo):
     mo.md(r"""
- 
+    **Outliers detection:** flag outliers per region and category with the IQR rule (flagged, not removed)
     """)
     return
 
@@ -220,16 +278,12 @@ def _(spending_filtered):
 @app.cell(hide_code=True)
 def _(mo):
     mo.md(r"""
-    The outlier detection phase is now concluded, we move on to build features to subsequent anaylses
+    **Building features:** the outlier detection phase is now concluded, we move on to build features to subsequent anaylses
 
 
-    - adding more granularity by adding a single columns for year, month, weekday and weekend
-
-    - flag COVID period (hardcoded)
-
-    - creating a dict of regions with cantons at the border
-
-    - we
+    - **Calendar columns:** `year`, `month`, `weekday` (0 = Monday, 6 = Sunday) and `is_weekend`, used as calendar controls in the regressions (Q2, Q3);
+    - **COVID flag:** `covid_period` is `True` from the first lockdown (16.03.2020) until the end of most measures (31.12.2022). The period is flagged instead of deleted, so it can be used as a control or excluded in a robustness check;
+    - **Border regions:** spending is only available per Grossregion, so a region counts as a border region if it contains a canton with a main cross-border shopping area. A dictionary maps each border region to its neighbouring country.
     """)
     return
 
@@ -258,47 +312,56 @@ def _(spending_filtered):
     spending_filtered["border_region"] = spending_filtered["region"].isin(border_countries.keys())
     spending_filtered["border_country"] = spending_filtered["region"].astype(str).map(border_countries)
 
-
     return
 
 
 @app.cell(hide_code=True)
 def _(mo):
     mo.md(r"""
-    Now we simply create one plot for the distributions
+    **Distributions:** check skewness and add `log_spending`
     """)
     return
 
 
 @app.cell
 def _(spending_filtered):
-    def _():
+    def fig_distribution():
         import matplotlib.pyplot as plt
 
-        print("CHECKING DISTRIBUTIONS PER CATEGORY:")
+        print("PLOTTING DISTRIBUTIONS PER CATEGORY:")
         columns = ["spending", "transactions"]
         categories = spending_filtered["category"].cat.categories
-        colors = {"spending": "green", "transactions": "darkorange"}
+        colors = {"spending": "green", 
+                  "transactions": "darkorange"}
+        fig, axes = plt.subplots(len(columns), 
+                                 len(categories), 
+                                 figsize=(20, 8))
 
-        fig, axes = plt.subplots(
-            len(columns), len(categories), figsize=(20, 8)
-        )
         for row, x in enumerate(columns):
             for col, cat in enumerate(categories):
-                data = spending_filtered[spending_filtered["category"] == cat][
-                    x
-                ]
+                data = spending_filtered[spending_filtered["category"] == cat][x]
                 ax = axes[row, col]
-                ax.hist(data, bins=50, color=colors[x])
+                ax.hist(data, 
+                        bins=50, 
+                        color=colors[x])
                 ax.set_title(
-                    f"{cat}\n(skewness: {data.skew():.2f})", fontsize=9
-                )
+                    f"{cat}\n(skewness: {data.skew():.2f})", fontsize=9)
                 ax.set_xlabel(f"{x} (scaled)", fontsize=8)
             axes[row, 0].set_ylabel("Number of rows")
         plt.tight_layout()
-        return plt.show()
+        return fig
 
-    _()
+    distribution_fig = fig_distribution()
+
+    distribution_fig
+    return (distribution_fig,)
+
+
+@app.cell(hide_code=True)
+def _(mo):
+    mo.md(r"""
+    A log transformation is applied on the skewed spending data and the columns 'transactions' is dropped
+    """)
     return
 
 
@@ -324,16 +387,19 @@ def _(np, spending_filtered):
 @app.cell(hide_code=True)
 def _(mo):
     mo.md(r"""
-    now that we cleaned the data, detected our outliers (which we keep because are whitin scope of our analysis) and build all necessary features the data gets saved again in a parquet file in the folder interim, we will do a final merging for each research question that will subsequently be saved in processed
+    **Save output:** store the result in 'data/interim/clean_spending.parquet'
     """)
     return
 
 
 @app.cell
-def _(Path, spending_clean):
-    output_file = Path("../../data/interim/clean_spending.parquet")
+def _(Path, distribution_fig, spending_clean):
+    output_file = Path("../../../data/processed/clean_spending.parquet")
+    output_figure = Path("../output/figures")
 
     spending_clean.to_parquet(output_file, index=False)
+    distribution_fig.savefig(output_figure / "distributions_per_category.pdf",
+                        format="pdf", bbox_inches="tight")
     return
 
 

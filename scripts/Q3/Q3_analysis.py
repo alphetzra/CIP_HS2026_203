@@ -43,7 +43,6 @@ def _(mo):
     **Notes:**
     - The target is `log_spending`, so the coefficients can be read as (approximate) percentage changes.
     - The spending values are scaled, so only relative changes are interpreted.
-        "\"\")
     """)
     return
 
@@ -74,15 +73,13 @@ def _(plt):
         "savefig.bbox": "tight",
         "pdf.fonttype": 42,})
 
-    colors = {
-            "Border regions": "tab:blue",
-            "Non-border": "tab:gray",
-            "France": "tab:blue",
-            "Germany": "tab:green",
-            "Italy": "tab:purple",
-            "EUR/CHF": "tab:orange",
-            "Non-border higher": "tab:red",
-        }
+    colors = {"Border regions": "tab:blue",
+              "Non-border": "tab:gray",
+              "France": "tab:blue",
+              "Germany": "tab:green",
+              "Italy": "tab:purple",
+              "EUR/CHF": "tab:orange",
+              "Non-border higher": "tab:red",}
     return (colors,)
 
 
@@ -109,11 +106,11 @@ def _(Path, mo):
 @app.cell(hide_code=True)
 def _(mo):
     mo.md(r"""
-    ## Step 1: Load the data and prepare the exchange rate
+    ## Load the data and prepare the exchange rate
 
     The exchange rate is **centered**: we subtract its mean, so the `border_region` coefficient is the difference between border and non-border regions at the **average** exchange rate (and not at a rate of 0, which never happens).
 
-    The rate is also multiplied by 100, so one unit means a change of **0.01 CHF per EUR** (1 Rappen). With `log_spending` as target, the coefficient x 100 is then the % change of spending when the rate goes up by 0.01 CHF.
+    The rate is also multiplied by 100, so one unit means a change of **0.01 CHF per EUR**. With `log_spending` as target, the coefficient x 100 is then the % change of spending when the rate goes up by 0.01 CHF.
     A **decrease** of the rate (stronger franc) has the opposite sign.
     """)
     return
@@ -250,7 +247,7 @@ def _(Patch, colors, monthly_rate, np, pd, plt, q3_data, save_figure):
 @app.cell(hide_code=True)
 def _(mo):
     mo.md(r"""
-    ## Step 3: Main regression
+    ## Main regression
 
     $$\log(\text{spending}) = \beta_1 \cdot \text{EUR/CHF} + \beta_2 \cdot \text{EUR/CHF} \times \text{border} + \text{region} \times \text{category} + \text{controls}$$
 
@@ -261,7 +258,7 @@ def _(mo):
 
     If the hypothesis is right, $\beta_2$ is **positive**: when the rate goes down, spending goes down more in border regions.
 
-    Step 4 shows in the data why region x category is used instead of category only.
+    **Step 4 **shows in the data why region x category is used instead of category only.
 
     Since the exchange rate is monthly, the year is used as a trend and not as a category: `C(month) + C(year)` together would pick out every single month and absorb the effect of the exchange rate.
 
@@ -272,9 +269,9 @@ def _(mo):
 
 @app.cell
 def _(q3_data, smf, tables_folder):
-    model = "C(region):C(category) + C(weekday) + C(month) + year + covid_period + holiday_share"
+    controls = "C(region):C(category) + C(weekday) + C(month) + year + covid_period + holiday_share"
 
-    model_main = smf.ols(f"log_spending ~ eur_chf_c + eur_chf_c:border_region + {model}", data=q3_data).fit(cov_type="HC1")
+    model_main = smf.ols(f"log_spending ~ eur_chf_c + eur_chf_c:border_region + {controls}", data=q3_data).fit(cov_type="HC1")
  
     #saving the full output as text file
     with open(tables_folder / "model_main_summary.txt", "w") as _f:
@@ -282,7 +279,7 @@ def _(q3_data, smf, tables_folder):
  
     print(f"R squared: {model_main.rsquared:.3f}")
     print(model_main.summary().tables[1])
-    return model, model_main
+    return controls, model_main
 
 
 @app.cell(hide_code=True)
@@ -316,7 +313,7 @@ def _(pd, q3_data, smf, tables_folder):
                 "M4: + COVID and holidays": "log_spending ~ eur_chf_c * border_region + C(category) + C(weekday) + C(month) + year + covid_period + holiday_share",
                 "M5: region x category": "log_spending ~ eur_chf_c + eur_chf_c:border_region + C(region):C(category) + C(weekday) + C(month) + year + covid_period + holiday_share",
             }
-     
+ 
         nested_results = []
         for model_name, formula in nested_formulas.items():
             model = smf.ols(formula, data=q3_data).fit(cov_type="HC1")
@@ -326,7 +323,7 @@ def _(pd, q3_data, smf, tables_folder):
                 "aic": model.aic,
                 "interaction_coef": model.params["eur_chf_c:border_region[T.True]"],
                 "interaction_p_value": model.pvalues["eur_chf_c:border_region[T.True]"],})
-     
+ 
         nested_table = pd.DataFrame(nested_results).round(4)
 
         nested_table.to_csv(tables_folder / "table_validation_nested_models.csv", index=False)
@@ -386,7 +383,7 @@ def _(colors, model_main, plt, save_figure):
  
     print(f"mean of residuals: {residuals.mean():.4f}, skewness: {residuals.skew():.2f}")
  
-    save_figure(fig_res, "fig_validation_residuals")
+    save_figure(fig_res, "validation_residuals")
     fig_res
     return
 
@@ -403,8 +400,8 @@ def _(mo):
 
 
 @app.cell
-def _(model, q3_data, smf, tables_folder):
-    model_country = smf.ols(f"log_spending ~ eur_chf_c + eur_chf_c:C(border_group, Treatment('Non-border')) + {model}", data=q3_data).fit(cov_type="HC1")
+def _(controls, q3_data, smf, tables_folder):
+    model_country = smf.ols(f"log_spending ~ eur_chf_c + eur_chf_c:C(border_group, Treatment('Non-border')) + {controls}", data=q3_data).fit(cov_type="HC1")
  
     with open(tables_folder / "model_country_summary.txt", "w") as _f:
         _f.write(model_country.summary().as_text())
@@ -508,13 +505,11 @@ def _(colors, model_country, np, pd, plt, q3_data, save_figure, tables_folder):
 
         #converted into the % change of spending caused by the actual change of the rate
         effect_values = [(np.exp(value * rate_change) - 1) * 100 for value in [coefficient, ci_low, ci_high]]
-        effects.append({
-            "group": group,
-            "extra_change_%": effect_values[0],
-            "ci_low_%": min(effect_values[1:]),   #min and max, since the rate change is negative and switches the order
-            "ci_high_%": max(effect_values[1:]),
-            "p_value": model_country.pvalues[name],
-        })
+        effects.append({"group": group,
+                        "extra_change_%": effect_values[0],
+                        "ci_low_%": min(effect_values[1:]),   #min and max, since the rate change is negative and switches the order
+                        "ci_high_%": max(effect_values[1:]),
+                        "p_value": model_country.pvalues[name],})
 
     #sorted from the biggest loss to the smallest
     effects_table = pd.DataFrame(effects).sort_values("extra_change_%").reset_index(drop=True)

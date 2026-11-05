@@ -3,8 +3,8 @@
 Dep. Variable:           log_spending   R-squared:                       0.719
 Model:                            OLS   Adj. R-squared:                  0.719
 Method:                 Least Squares   F-statistic:                     4967.
-Date:                Tue, 03 Nov 2026   Prob (F-statistic):               0.00
-Time:                        21:00:27   Log-Likelihood:            -1.2636e+05
+Date:                Thu, 05 Nov 2026   Prob (F-statistic):               0.00
+Time:                        09:36:35   Log-Likelihood:            -1.2636e+05
 No. Observations:              125293   AIC:                         2.529e+05
 Df Residuals:                  125220   BIC:                         2.536e+05
 Df Model:                          72                                         
