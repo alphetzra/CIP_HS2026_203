@@ -120,7 +120,8 @@ cd CIP_HS2026_203
 python -m venv .venv
 source .venv/bin/activate          
 
-pip install -r dev_requirements.txt
+pip install -r requirements.txt
+dev_requirements.txt
 playwright install chromium
 jupyter lab
 ```
